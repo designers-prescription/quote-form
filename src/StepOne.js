@@ -6,6 +6,14 @@ import { v4 as uuidv4 } from 'uuid';
 import StandUpPouches from './components/StandUpPouches';
 import Boxes from './components/Boxes';
 import Bottles from './components/Bottles';
+import Caps from './components/Caps';
+import Blisters from './components/Blisters';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from './firebase'; // Adjust the path to match your file structure
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 // Import other product type components
 
 const StepOne = () => {
@@ -14,6 +22,7 @@ const StepOne = () => {
   const [productFields, setProductFields] = useState({});
   const [customerName, setCustomerName] = useState('');
   const [salesRepName, setSalesRepName] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // New state for loading
 
   const updateProductFields = (field, value) => {
     setProductFields({ ...productFields, [field]: value });
@@ -21,7 +30,19 @@ const StepOne = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Set loading to true
+
     const quoteId = uuidv4();
+
+  
+    let artworkURL = null;
+    if (productFields.artwork) {
+      // Upload the artwork file to Firebase Storage
+      const storageRef = ref(storage, `artwork/${productFields.artwork.name}`);
+      const snapshot = await uploadBytes(storageRef, productFields.artwork);
+      artworkURL = await getDownloadURL(snapshot.ref);
+    }
+  
     const quoteData = {
       createdBy: user.uid,
       createdOn: serverTimestamp(),
@@ -29,20 +50,29 @@ const StepOne = () => {
       salesRepName,
       product: {
         type: productType,
-        fields: productFields,
+        fields: {
+          ...productFields,
+          artwork: artworkURL, // Store the URL of the uploaded artwork
+        },
       },
     };
+  
     try {
       await setDoc(doc(db, 'QuoteRequirements', quoteId), quoteData);
-      // Handle success, e.g., show a message or redirect
-  
-      // Reset the form to its initial state
-      setCustomerName('');
-      setSalesRepName('');
-      setProductType('');
-      setProductFields({});
+      toast.success('Form submitted successfully!'); // Display success toast
+      // Reset form and reload page after a short delay
+      setTimeout(() => {
+        setCustomerName('');
+        setSalesRepName('');
+        setProductType('');
+        setProductFields({});
+        setIsLoading(false); // Set loading to false
+        window.location.reload();
+      }, 2000);
     } catch (error) {
       console.error(error.message);
+      toast.error('Failed to submit the form.'); // Display error toast
+      setIsLoading(false); // Set loading to false
     }
   };
   
@@ -54,6 +84,12 @@ const StepOne = () => {
         return <Boxes product={{ fields: productFields }} updateProduct={updateProductFields} />;
       case 'bottles':
         return <Bottles product={{ fields: productFields }} updateProduct={updateProductFields} />;
+      case 'caps':
+        return <Caps product={{ fields: productFields }} updateProduct={updateProductFields} />;
+      case 'shrinkSleeves':
+        return <div>Shrink Sleeves selected. No additional fields required.</div>;
+      case 'blisters':
+        return <Blisters product={{ fields: productFields }} updateProduct={updateProductFields} />;
       // Add cases for other product types
       default:
         return null;
@@ -84,15 +120,121 @@ const StepOne = () => {
           <option value="standUpPouches">Stand Up Pouches</option>
           <option value="boxes">Boxes</option>
           <option value="bottles">Bottles</option>
+          <option value="caps">Caps</option>
+          <option value="shrinkSleeves">Shrink Sleeves</option>
+          <option value="blisters">Blisters</option>
           {/* Add more product types as needed */}
         </select>
 
-        {renderProductForm()}
+        <div className='product-form'>
+          {renderProductForm()}
+        </div>
 
-        <button type="submit">Submit Quote</button>
+        {/* Additional fields */}
+        <div className="product-form">
+          <div className="form-group">
+            <label>Is the order over 10K USD before shipping:</label>
+            <div className="radio-group">
+              <label>
+                <input
+                  type="radio"
+                  name="orderOver10K"
+                  checked={productFields.orderOver10K === 'yes'}
+                  onChange={(e) => updateProductFields('orderOver10K', 'yes')}
+                />
+                Yes
+              </label>
+              <label>
+              <input
+                  type="radio"
+                  name="orderOver10K"
+                  checked={productFields.orderOver10K === 'no'}
+                  onChange={(e) => updateProductFields('orderOver10K', 'no')}
+                />
+                No
+              </label>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Artwork:</label>
+            <input
+              type="file"
+              onChange={(e) => updateProductFields('artwork', e.target.files[0])}
+            />
+            <small>Artwork is optional unless the order is over 10K</small>
+          </div>
+
+          <div className="form-group">
+            <label>Material:</label>
+            <input
+              type="text"
+              value={productFields.material || ''}
+              onChange={(e) => updateProductFields('material', e.target.value)}
+              placeholder="Material"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Finish Type:</label>
+            <input
+              type="text"
+              value={productFields.finishType || ''}
+              onChange={(e) => updateProductFields('finishType', e.target.value)}
+              placeholder="Finish Type"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Finish Option:</label>
+            <input
+              type="text"
+              value={productFields.finishOption || ''}
+              onChange={(e) => updateProductFields('finishOption', e.target.value)}
+              placeholder="Finish Option"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Size:</label>
+            <input
+              type="text"
+              value={productFields.size || ''}
+              onChange={(e) => updateProductFields('size', e.target.value)}
+              placeholder="Size"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Qty of SKU's:</label>
+            <input
+              type="number"
+              value={productFields.qtyOfSKUs || ''}
+              onChange={(e) => updateProductFields('qtyOfSKUs', e.target.value)}
+              placeholder="Qty of SKU's"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Total Qty:</label>
+            <input
+              type="number"
+              value={productFields.totalQty || ''}
+              onChange={(e) => updateProductFields('totalQty', e.target.value)}
+              placeholder="Total Qty"
+            />
+          </div>
+        </div>
+
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Submitting...' : 'Submit Quote'}
+        </button>
       </form>
+      <ToastContainer position="top-center" autoClose={5000} />
+
     </div>
   );
 };
 
 export default StepOne;
+

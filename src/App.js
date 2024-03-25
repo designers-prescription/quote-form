@@ -7,6 +7,9 @@ import StepOne from './StepOne';
 import Header from './Header';
 import PrivateRoute from './PrivateRoute';
 import './App.css'
+import StepTwo from './StepTwo';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 const App = () => {
   return (
@@ -16,6 +19,7 @@ const App = () => {
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/step-one" element={<PrivateRoute><StepOne /></PrivateRoute>} />
+        <Route path="/step-two" element={<PrivateRoute><StepTwo /></PrivateRoute>} />
         <Route path="/complete-profile" element={<PrivateRoute><CompleteProfile /></PrivateRoute>} />
       </Routes>
     </Router>
