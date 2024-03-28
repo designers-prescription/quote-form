@@ -34,7 +34,7 @@ const StepOne = () => {
 
     const quoteId = uuidv4();
 
-  
+
     let artworkURL = null;
     if (productFields.artwork) {
       // Upload the artwork file to Firebase Storage
@@ -42,7 +42,7 @@ const StepOne = () => {
       const snapshot = await uploadBytes(storageRef, productFields.artwork);
       artworkURL = await getDownloadURL(snapshot.ref);
     }
-  
+
     const quoteData = {
       createdBy: user.uid,
       createdOn: serverTimestamp(),
@@ -56,7 +56,7 @@ const StepOne = () => {
         },
       },
     };
-  
+
     try {
       await setDoc(doc(db, 'QuoteRequirements', quoteId), quoteData);
       toast.success('Form submitted successfully!'); // Display success toast
@@ -75,20 +75,20 @@ const StepOne = () => {
       setIsLoading(false); // Set loading to false
     }
   };
-  
+
   const renderProductForm = () => {
     switch (productType) {
-      case 'standUpPouches':
+      case 'Stand Up Pouches':
         return <StandUpPouches product={{ fields: productFields }} updateProduct={updateProductFields} />;
-      case 'boxes':
+      case 'Boxes':
         return <Boxes product={{ fields: productFields }} updateProduct={updateProductFields} />;
-      case 'bottles':
+      case 'Bottles':
         return <Bottles product={{ fields: productFields }} updateProduct={updateProductFields} />;
-      case 'caps':
+      case 'Caps':
         return <Caps product={{ fields: productFields }} updateProduct={updateProductFields} />;
-      case 'shrinkSleeves':
+      case 'Shrink Sleeves':
         return <div>Shrink Sleeves selected. No additional fields required.</div>;
-      case 'blisters':
+      case 'Blisters':
         return <Blisters product={{ fields: productFields }} updateProduct={updateProductFields} />;
       // Add cases for other product types
       default:
@@ -98,7 +98,7 @@ const StepOne = () => {
 
   return (
     <div style={{ maxWidth: '450px', margin: 'auto' }}>
-      <h2 style={{textAlign:'center'}}>Step One: Quote Requirements</h2>
+      <h2 style={{ textAlign: 'center' }}>Step One: Quote Requirements</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -117,13 +117,11 @@ const StepOne = () => {
           onChange={(e) => setProductType(e.target.value)}
         >
           <option value="">Select Product Type</option>
-          <option value="standUpPouches">Stand Up Pouches</option>
-          <option value="boxes">Boxes</option>
-          <option value="bottles">Bottles</option>
-          <option value="caps">Caps</option>
-          <option value="shrinkSleeves">Shrink Sleeves</option>
-          <option value="blisters">Blisters</option>
-          {/* Add more product types as needed */}
+          <option value="Stand Up Pouches">Stand Up Pouches</option>
+          <option value="Boxes">Boxes</option>
+          <option value="Bottles">Bottles</option>
+          <option value="Caps">Caps</option>
+          <option value="Shrink Sleeves">Shrink Sleeves</option>
         </select>
 
         <div className='product-form'>
@@ -145,7 +143,7 @@ const StepOne = () => {
                 Yes
               </label>
               <label>
-              <input
+                <input
                   type="radio"
                   name="orderOver10K"
                   checked={productFields.orderOver10K === 'no'}
