@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth, db } from './firebase';
+import { auth, db } from '../firebase';
 import { doc, setDoc } from 'firebase/firestore';
 
 const CompleteProfile = () => {

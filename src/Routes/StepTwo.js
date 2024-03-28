@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { db } from './firebase';
+import { db } from '../firebase';
 import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
-import { Modal, Button, Form } from 'react-bootstrap'; // Using react-bootstrap for modal and form
+import ShrinkSleeveModal from '../components/ShrinkSleevesModal';
+
 
 const StepTwo = () => {
   const [quotes, setQuotes] = useState([]);
@@ -66,6 +67,25 @@ const StepTwo = () => {
     setAdditionalData({ ...additionalData, [e.target.name]: e.target.value });
   };
 
+  const renderEditModal = () => {
+    switch (selectedQuote.product.type) {
+      case 'Shrink Sleeves':
+        return (
+          <ShrinkSleeveModal
+            show={showModal}
+            onHide={() => setShowModal(false)}
+            quote={selectedQuote}
+            handleChange={handleChange}
+            handleUpdateQuote={handleUpdateQuote}
+            additionalData={additionalData}
+          />
+        );
+      // Add cases for other product types and their respective modals
+      default:
+        return null;
+    }
+  };
+  
   
 
   return (
@@ -95,38 +115,9 @@ const StepTwo = () => {
           ))}
         </tbody>
       </table>
+      {/* Render the appropriate edit modal based on the selected quote */}
+      {selectedQuote && renderEditModal()}
 
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit Quote</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {/* Render custom fields based on product type */}
-          {selectedQuote && (
-            <Form>
-              {/* Additional form fields */}
-              <Form.Group className="mb-3">
-                <Form.Label>Unit Price</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="unitPrice"
-                  value={additionalData.unitPrice}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              {/* Add more form groups for other fields */}
-            </Form>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleUpdateQuote}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 };

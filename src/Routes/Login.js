@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { auth, googleProvider, db } from './firebase';
+import { useNavigate, Link } from 'react-router-dom';
+import { auth, googleProvider, db } from '../firebase';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { Link } from 'react-router-dom';
+import { Input, Button, Card, Spacer } from '@nextui-org/react';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -39,18 +39,19 @@ const Login = () => {
     };
 
     return (
-        <div style={{ maxWidth: '300px', margin: 'auto' }}>
+        <Card style={{ maxWidth: '300px', margin: 'auto' }}>
             <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
-                <button type="submit">Login</button>
-                <button type="button" onClick={handleGoogleSignIn}>Sign in with Google</button>
+                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
+                <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+                <Button type="submit">Login</Button>
+                <Button type="button" onClick={handleGoogleSignIn}>Sign in with Google</Button>
             </form>
-            {error && <div style={{ color: 'red', marginTop: '10px' }}>{error}</div>}
-            <div>
+            {error && <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
+            <Spacer />
+            <p>
                 Don't have an account? <Link to="/signup">Sign up</Link>
-            </div>
-        </div>
+            </p>
+        </Card>
     );
 };
 
