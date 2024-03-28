@@ -7,6 +7,7 @@ import CompleteProfile from './Routes/CompleteProfile';
 import StepOne from './Routes/StepOne';
 import StepTwo from './Routes/StepTwo';
 import PrivateRoute from './PrivateRoute';
+<<<<<<< HEAD
 import Header from './components/Header';
 import './App.css';
 
@@ -23,6 +24,20 @@ const App = () => {
           <Route path="/complete-profile" element={<PrivateRoute><CompleteProfile /></PrivateRoute>} />
         </Routes>
       </Card>
+=======
+import './App.css'
+
+const App = () => {
+  return (
+<Router>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/step-one" element={<PrivateRoute><StepOne /></PrivateRoute>} />
+        <Route path="/complete-profile" element={<PrivateRoute><CompleteProfile /></PrivateRoute>} />
+      </Routes>
+>>>>>>> parent of 0b6f8fd (so much added,)
     </Router>
   );
 };
