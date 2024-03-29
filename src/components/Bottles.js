@@ -20,13 +20,13 @@ const Bottles = ({ product, updateProduct }) => {
   return (
     <div className="product-form">
       <div className="form-group">
-        <label>Image Upload:</label>
+        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Image Upload:</label>
         <input type="file" onChange={handleImageUpload} />
         <small>Clear picture of the bottle must be attached</small>
       </div>
 
       <div className="form-group">
-        <label>Volume of the Bottle:</label>
+        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Volume of the Bottle:</label>
         <input
           type="text"
           value={product.fields.volume || ''}
@@ -36,7 +36,7 @@ const Bottles = ({ product, updateProduct }) => {
       </div>
 
       <div className="form-group">
-        <label>Additional Materials:</label>
+        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Additional Materials:</label>
         <div className="radio-group">
           {['wood', 'metal', 'glass'].map((material) => (
             <label key={material}>
@@ -53,9 +53,9 @@ const Bottles = ({ product, updateProduct }) => {
       </div>
 
       <div className="form-group">
-        <label>Silk Screen Printing:</label>
+        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Silk Screen Printing:</label>
         <div className="radio-group">
-          <label>
+          <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
             <input
               type="radio"
               name="silkScreenPrinting"
@@ -64,7 +64,7 @@ const Bottles = ({ product, updateProduct }) => {
             />
             Yes
           </label>
-          <label>
+          <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
             <input
               type="radio"
               name="silkScreenPrinting"
@@ -77,7 +77,7 @@ const Bottles = ({ product, updateProduct }) => {
       </div>
 
       <div className="form-group">
-        <label>Color:</label>
+        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Color:</label>
         <input
           type="text"
           value={product.fields.color || ''}

@@ -4,10 +4,10 @@ const StandUpPouches = ({ product, updateProduct }) => {
     return (
         <div className="product-form">
             <div className="form-group">
-                <label>Custom Die Cut Shape Pouch:</label>
+                <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Custom Die Cut Shape Pouch:</label>
                 <div>
                     <div className="radio-group">
-                        <label>
+                        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
                             <input
                                 type="radio"
                                 name="customDieCutShape"
@@ -16,7 +16,7 @@ const StandUpPouches = ({ product, updateProduct }) => {
                             />
                             Yes
                         </label>
-                        <label>
+                        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
                             <input
                                 type="radio"
                                 name="customDieCutShape"
@@ -30,7 +30,7 @@ const StandUpPouches = ({ product, updateProduct }) => {
             </div>
 
             <div className="form-group">
-                <label>Pouch Type:</label>
+                <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Pouch Type:</label>
                 <select
                     value={product.fields.pouchType}
                     onChange={(e) => updateProduct('pouchType', e.target.value)}
@@ -45,9 +45,9 @@ const StandUpPouches = ({ product, updateProduct }) => {
             </div>
 
             <div className="form-group">
-                <label>Environmentally Friendly:</label>
+                <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Environmentally Friendly:</label>
                 <div className="radio-group">
-                    <label>
+                    <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
                         <input
                             type="radio"
                             name="environmentallyFriendly"
@@ -56,7 +56,7 @@ const StandUpPouches = ({ product, updateProduct }) => {
                         />
                         Yes
                     </label>
-                    <label>
+                    <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
                         <input
                             type="radio"
                             name="environmentallyFriendly"
@@ -68,7 +68,7 @@ const StandUpPouches = ({ product, updateProduct }) => {
                 </div>
                 {product.fields.environmentallyFriendly === 'yes' && (
                     <div className="radio-group">
-                        <label>
+                        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
                             <input
                                 type="radio"
                                 name="environmentalOption"
@@ -77,7 +77,7 @@ const StandUpPouches = ({ product, updateProduct }) => {
                             />
                             Biodegradable
                         </label>
-                        <label>
+                        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
                             <input
                                 type="radio"
                                 name="environmentalOption"
@@ -86,7 +86,7 @@ const StandUpPouches = ({ product, updateProduct }) => {
                             />
                             Recyclable
                         </label>
-                        <label>
+                        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
                             <input
                                 type="radio"
                                 name="environmentalOption"
@@ -99,9 +99,9 @@ const StandUpPouches = ({ product, updateProduct }) => {
                 )}
             </div>
             <div className="form-group">
-                <label>Child Proof:</label>
+                <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Child Proof:</label>
                 <div className="radio-group">
-                    <label>
+                    <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
                         <input
                             type="radio"
                             name="childProof"
@@ -110,7 +110,7 @@ const StandUpPouches = ({ product, updateProduct }) => {
                         />
                         Yes
                     </label>
-                    <label>
+                    <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
                         <input
                             type="radio"
                             name="childProof"
@@ -124,9 +124,9 @@ const StandUpPouches = ({ product, updateProduct }) => {
 
             {/* Add more common fields for all product types */}
             <div className="form-group">
-                <label>Is the order over 10K USD before shipping:</label>
+                <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Is the order over 10K USD before shipping:</label>
                 <div className="radio-group">
-                    <label>
+                    <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
                         <input
                             type="radio"
                             name="orderOver10K"
@@ -135,7 +135,7 @@ const StandUpPouches = ({ product, updateProduct }) => {
                         />
                         Yes
                     </label>
-                    <label>
+                    <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
                         <input
                             type="radio"
                             name="orderOver10K"
@@ -148,7 +148,7 @@ const StandUpPouches = ({ product, updateProduct }) => {
             </div>
 
             <div className="form-group">
-                <label>Material:</label>
+                <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Material:</label>
                 <input
                     type="text"
                     value={product.fields.material || ''}
@@ -157,7 +157,7 @@ const StandUpPouches = ({ product, updateProduct }) => {
             </div>
 
             <div className="form-group">
-                <label>Finish Type:</label>
+                <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Finish Type:</label>
                 <input
                     type="text"
                     value={product.fields.finishType || ''}
@@ -166,7 +166,7 @@ const StandUpPouches = ({ product, updateProduct }) => {
             </div>
 
             <div className="form-group">
-                <label>Finish Option:</label>
+                <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Finish Option:</label>
                 <input
                     type="text"
                     value={product.fields.finishOption || ''}
@@ -175,7 +175,7 @@ const StandUpPouches = ({ product, updateProduct }) => {
             </div>
 
             <div className="form-group">
-                <label>Size:</label>
+                <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Size:</label>
                 <input
                     type="text"
                     value={product.fields.size || ''}
@@ -184,7 +184,7 @@ const StandUpPouches = ({ product, updateProduct }) => {
             </div>
 
             <div className="form-group">
-                <label>Qty of SKU's:</label>
+                <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Qty of SKU's:</label>
                 <input
                     type="number"
                     value={product.fields.qtyOfSKUs || ''}
@@ -193,7 +193,7 @@ const StandUpPouches = ({ product, updateProduct }) => {
             </div>
 
             <div className="form-group">
-                <label>Total Qty:</label>
+                <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Total Qty:</label>
                 <input
                     type="number"
                     value={product.fields.totalQty || ''}

@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@firebase/firestore": "^4.5.0",
+    "@headlessui/react": "^1.7.18",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -41,5 +42,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.3"
   }
 }

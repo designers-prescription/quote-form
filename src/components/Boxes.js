@@ -8,7 +8,7 @@ const Boxes = ({ product, updateProduct }) => {
       </div>
 
       <div className="form-group">
-        <label>Design Type:</label>
+        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Design Type:</label>
         <select
           value={product.fields.designType}
           onChange={(e) => updateProduct('designType', e.target.value)}
@@ -23,9 +23,9 @@ const Boxes = ({ product, updateProduct }) => {
       </div>
 
       <div className="form-group">
-        <label>Requires Magnet:</label>
+        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Requires Magnet:</label>
         <div className="radio-group">
-          <label>
+          <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
             <input
               type="radio"
               name="requiresMagnet"
@@ -34,7 +34,7 @@ const Boxes = ({ product, updateProduct }) => {
             />
             Yes
           </label>
-          <label>
+          <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
             <input
               type="radio"
               name="requiresMagnet"
@@ -47,9 +47,9 @@ const Boxes = ({ product, updateProduct }) => {
       </div>
 
       <div className="form-group">
-        <label>Child Proof:</label>
+        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Child Proof:</label>
         <div className="radio-group">
-          <label>
+          <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
             <input
               type="radio"
               name="childProof"
@@ -58,7 +58,7 @@ const Boxes = ({ product, updateProduct }) => {
             />
             Yes
           </label>
-          <label>
+          <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
             <input
               type="radio"
               name="childProof"

@@ -4,9 +4,9 @@ const Blisters = ({ product, updateProduct }) => {
   return (
     <div className="product-form">
       <div className="form-group">
-        <label>Clamshell:(restricted materials apply)</label>
+         <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Clamshell:(restricted materials apply)</label>
         <div className="radio-group">
-          <label>
+           <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
             <input
               type="radio"
               name="clamshell"
@@ -15,7 +15,7 @@ const Blisters = ({ product, updateProduct }) => {
             />
             Yes 
           </label>
-          <label>
+           <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
             <input
               type="radio"
               name="clamshell"
@@ -28,9 +28,9 @@ const Blisters = ({ product, updateProduct }) => {
       </div>
 
       <div className="form-group">
-        <label>3M Adhesive:</label>
+         <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>3M Adhesive:</label>
         <div className="radio-group">
-          <label>
+           <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
             <input
               type="radio"
               name="adhesive3M"
@@ -39,7 +39,7 @@ const Blisters = ({ product, updateProduct }) => {
             />
             Yes
           </label>
-          <label>
+           <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
             <input
               type="radio"
               name="adhesive3M"

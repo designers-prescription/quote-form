@@ -4,7 +4,7 @@ const Caps = ({ product, updateProduct }) => {
   return (
     <div className="product-form">
       <div className="form-group">
-        <label>Cap Types:</label>
+        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Cap Types:</label>
         <select
           value={product.fields.capType}
           onChange={(e) => updateProduct('capType', e.target.value)}
@@ -20,7 +20,7 @@ const Caps = ({ product, updateProduct }) => {
       </div>
 
       <div className="form-group">
-        <label>Additional Materials:</label>
+        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Additional Materials:</label>
         <div className="radio-group">
           {['wood', 'metal', 'glass'].map((material) => (
             <label key={material}>
@@ -37,9 +37,9 @@ const Caps = ({ product, updateProduct }) => {
       </div>
 
       <div className="form-group">
-        <label>Child Proof:</label>
+        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Child Proof:</label>
         <div className="radio-group">
-          <label>
+          <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
             <input
               type="radio"
               name="childProofForCaps"
@@ -48,7 +48,7 @@ const Caps = ({ product, updateProduct }) => {
             />
             Yes
           </label>
-          <label>
+          <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
             <input
               type="radio"
               name="childProofForCaps"
@@ -61,7 +61,7 @@ const Caps = ({ product, updateProduct }) => {
       </div>
 
       <div className="form-group">
-        <label>Color:</label>
+        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Color:</label>
         <input
           type="text"
           value={product.fields.colorForCaps || ''}
