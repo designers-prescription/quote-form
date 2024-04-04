@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import Header from '../components/Header';
 import StandUpPouchModal from '../components/StandUpPouchModal';
 import ShrinkSleeveModal from '../components/ShrinkSleeveModal';
+import BlistersModal from '../components/BlistersModal';
+import BottlesModal from '../components/BottlesModal';
+import BoxesModal from '../components/BoxesModal';
+import CapsModal from '../components/CapsModal';
 // Import other product type modals
 
 const StepTwo = () => {
@@ -13,10 +17,12 @@ const StepTwo = () => {
 
   useEffect(() => {
     const fetchQuotes = async () => {
-      const querySnapshot = await getDocs(collection(db, 'QuoteRequirements'));
+      const q = query(collection(db, 'QuoteRequirements'), orderBy('createdOn', 'desc'));
+      const querySnapshot = await getDocs(q);
       const quotesData = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setQuotes(quotesData);
-    };
+  };
+  
 
     fetchQuotes();
   }, []);
@@ -34,14 +40,22 @@ const StepTwo = () => {
   const renderModal = () => {
     switch (selectedQuote?.product.type) {
       case 'Stand Up Pouches':
-        return <StandUpPouchModal quote={selectedQuote} onClose={handleCloseModal} setQuote={setQuotes} />;
+        return <StandUpPouchModal quote={selectedQuote} onClose={handleCloseModal} />;
       case 'Shrink Sleeves':
         return <ShrinkSleeveModal quote={selectedQuote} onClose={handleCloseModal} />;
-      // Add cases for other product types
+      case 'Blisters':
+        return <BlistersModal quote={selectedQuote} onClose={handleCloseModal} />;
+      case 'Bottles':
+        return <BottlesModal quote={selectedQuote} onClose={handleCloseModal} />;
+      case 'Boxes':
+        return <BoxesModal quote={selectedQuote} onClose={handleCloseModal} />;
+      case 'Caps':
+        return <CapsModal quote={selectedQuote} onClose={handleCloseModal} />;
       default:
         return null;
     }
   };
+  
 
   return (
     <>
@@ -66,7 +80,8 @@ const StepTwo = () => {
                   <td className='p-3 pl-0'>{quote.customerName}</td>
                   <td className='p-3 pr-0 text-end'>{quote.salesRepName}</td>
                   <td className='p-3 pr-0 text-end'>{quote.product.type}</td>
-                  <td className='p-3 pr-12 text-end'>{quote.createdOn.toDate().toLocaleString()}</td>
+                  <td className='p-3 pr-12 text-end'>{quote.createdOn.toDate().toLocaleDateString()}</td>
+
                   <td className='p-3 pr-0 text-end'>
                     <button className='ml-auto relative text-secondary-dark bg-light-dark hover:text-primary flex items-center h-[25px] w-[25px] text-base font-medium leading-normal text-center align-middle cursor-pointer rounded-2xl transition-colors duration-200 ease-in-out shadow-none border-0 justify-center' onClick={() => handleEditClick(quote)}>
                       <span className='flex items-center justify-center p-0 m-0 leading-none shrink-0 '> Edit

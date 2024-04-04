@@ -129,6 +129,7 @@ const StepOne = () => {
             <option value="Bottles">Bottles</option>
             <option value="Caps">Caps</option>
             <option value="Shrink Sleeves">Shrink Sleeves</option>
+            <option value="Blisters">Blisters</option>
           </select>
 
           <div className='product-form'>

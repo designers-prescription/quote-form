@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 
-const StandUpPouchesModal = ({ quote, onClose }) => {
+const BoxesModal = ({ quote, onClose }) => {
     const [additionalData, setAdditionalData] = useState({
         unitPrice: '',
         overallPrice: '',
@@ -50,7 +50,7 @@ const StandUpPouchesModal = ({ quote, onClose }) => {
             <div className="flex items-center justify-center min-h-screen">
                 <div className="fixed inset-0 bg-black w-full opacity-50"></div>
                 <div className="relative bg-white rounded-lg p-6 m-2 w-7/12">
-                    <div className="text-lg font-semibold mb-4">Edit Quote - Stand-up Pouches</div>
+                    <div className="text-lg font-semibold mb-4">Edit Quote - Boxes</div>
                     <div className="mb-4 grid text-sm grid-cols-4">
                         <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Material:</span> {realTimeQuote.product.fields.material}</p>
                         <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Size: </span>{realTimeQuote.product.fields.size}</p>
@@ -58,12 +58,10 @@ const StandUpPouchesModal = ({ quote, onClose }) => {
                         <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Finish type: </span>{realTimeQuote.product.fields.finishType}</p>
                         <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Finish option:</span> {realTimeQuote.product.fields.finishOption}</p>
                         <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Qty of SKU's:</span> {realTimeQuote.product.fields.qtyOfSKUs}</p>
-                        <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Spout Type:</span> {realTimeQuote.product.fields.spoutType}</p>
                         <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Total Qty:</span> {realTimeQuote.product.fields.totalQty}</p>
                         
-                        <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Custom Die Cut Shape Pouch::</span> {realTimeQuote.product.fields.customDieCutShape}</p>
-                        <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Pouch Type:</span> {realTimeQuote.product.fields.pouchType}</p>
-                        <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Environmentally Friendly:</span> {realTimeQuote.product.fields.environmentallyFriendly}</p>
+                        <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Design Type:</span> {realTimeQuote.product.fields.designType}</p>
+                        <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Requires Magnet:</span> {realTimeQuote.product.fields.requiresMagnet}</p>
                         <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Child Proof:</span> {realTimeQuote.product.fields.childProof}</p>
                     </div>
                     <form className='grid grid-cols-2 gap-4'>
@@ -113,4 +111,4 @@ const StandUpPouchesModal = ({ quote, onClose }) => {
     );
 };
 
-export default StandUpPouchesModal;
+export default BoxesModal;
