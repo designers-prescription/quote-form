@@ -54,6 +54,19 @@ const Sidebar = () => {
                                     </g>
                                 </svg>
 
+                                <span className="ms-3">Shipping Details</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link to="/step-four" className="flex items-center p-2 py-4 bg-blue-900 text-sm  text-white rounded-lg hover:bg-blue-500 group">
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" className="iconify iconify--tabler" width="16" height="16" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
+                                    <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
+                                        <path d="M5 17a2 2 0 1 0 4 0a2 2 0 1 0-4 0m10 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0"></path>
+                                        <path d="M5 17H3v-4M2 5h11v12m-4 0h6m4 0h2v-6h-8m0-5h5l3 5M3 9h4"></path>
+                                    </g>
+                                </svg>
+
                                 <span className="ms-3">Shipping Pricing</span>
                             </Link>
                         </li>

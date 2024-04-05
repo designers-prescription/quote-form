@@ -8,7 +8,7 @@ import BlistersModal from '../components/BlistersModal';
 import BottlesModal from '../components/BottlesModal';
 import BoxesModal from '../components/BoxesModal';
 import CapsModal from '../components/CapsModal';
-// Import other product type modals
+
 
 const StepTwo = () => {
   const [quotes, setQuotes] = useState([]);
