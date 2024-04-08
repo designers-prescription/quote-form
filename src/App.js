@@ -9,6 +9,7 @@ import StepOne from './Routes/StepOne';
 import PrivateRoute from './PrivateRoute';
 import './App.css'
 import StepTwo from './Routes/StepTwo';
+import StepFour from './Routes/StepFour';
 
 
 
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="/step-one" element={<PrivateRoute><StepOne /></PrivateRoute>} />
         <Route path="/step-two" element={<PrivateRoute><StepTwo /></PrivateRoute>} />
         <Route path="/step-three" element={<PrivateRoute><StepThree /></PrivateRoute>} />
+        <Route path="/step-four" element={<PrivateRoute><StepFour /></PrivateRoute>} />
         <Route path="/complete-profile" element={<PrivateRoute><CompleteProfile /></PrivateRoute>} />
       </Routes>
 

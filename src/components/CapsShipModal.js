@@ -8,8 +8,8 @@ const CapsShipModal = ({ quote, onClose }) => {
         totalUnitsPerCommodity: '',
         numberOfUnitsPerBox: '',
         totalNumberOfBoxesPerCommodity: '',
-        boxDimensions: '',
-        weightPerBox: '',
+        shipBoxDimensions: '',
+        shipWeightPerBox: '',
         totalQtyOfBoxesPerCommodity: '',
         totalValuePerProductPerSize: '',
         overallValueForTheShipment: '',
@@ -37,7 +37,7 @@ const CapsShipModal = ({ quote, onClose }) => {
     const handleUpdateQuote = async (field) => {
         const quoteRef = doc(db, 'QuoteRequirements', realTimeQuote.id);
         await updateDoc(quoteRef, {
-            [`productPricing.${field}`]: additionalData[field]
+            [`productShipping.${field}`]: additionalData[field]
         });
 
         setAdditionalData({ ...additionalData, [field]: '' });
@@ -69,35 +69,50 @@ const CapsShipModal = ({ quote, onClose }) => {
                         <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Additional Materials:</span> {realTimeQuote.product.fields.additionalMaterialsForCaps}</p>
                         <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Child Proof:</span> {realTimeQuote.product.fields.childProofForCaps}</p>
                         <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Color:</span> {realTimeQuote.product.fields.colorForCaps}</p>
+
+                        <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Unit Price: </span>{realTimeQuote.productPricing.unitPrice}</p>
+                        <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Overall Price: </span>{realTimeQuote.productPricing.overallPrice}</p>
+                        <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>One Time Charges: </span>{realTimeQuote.productPricing.oneTimeCharges}</p>
+                        <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Price Negotiated:</span> {realTimeQuote.productPricing.priceNegotiated}</p>
+                        <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Units Per Box:</span> {realTimeQuote.productPricing.unitsPerBox}</p>
+                        <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Total Boxes:</span> {realTimeQuote.productPricing.totalBoxes}</p>
+                        <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Box Dimensions:</span> {realTimeQuote.productPricing.boxDimensions}</p>
+                        <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Weight Per Box:</span> {realTimeQuote.productPricing.weightPerBox}</p>
+                        <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Total Weight:</span> {realTimeQuote.productPricing.totalWeight}</p>
                     </div>
                     <form className='grid grid-cols-2 gap-4'>
                         {Object.keys(additionalData).map((field) => (
                             <React.Fragment key={field}>
-                                {realTimeQuote.productPricing?.[field] ? (
-                                    <p className='text-sm p-2 mb-4 rounded-md border border-dashed border-slate-500 bg-slate-50'> <span className='tracking-wide font-bold leading-6 text-gray-900'>{formatFieldName(field)}: </span> {realTimeQuote.productPricing[field]}</p>
-                                ) : (<div className='col-span-2'>
-                                    <div className="mb-4 grid grid-cols-3 gap-4 middle">
-                                        <div className='col-span-2'>
-                                            <label htmlFor={field} className="tracking-wide text-sm font-bold leading-6 text-gray-900">{formatFieldName(field)}</label>
-                                            <input
-                                                type="text"
-                                                id={field}
-                                                name={field}
-                                                value={additionalData[field]}
-                                                onChange={handleChange}
-                                                className="block w-full p-1 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50"
-                                            />
+                                {realTimeQuote.productShipping?.[field] ? (
+                                    <p className='text-sm p-2 mb-4 rounded-md border border-dashed border-slate-500 bg-slate-50'>
+                                        <span className='tracking-wide font-bold leading-6 text-gray-900'>{formatFieldName(field)}: </span>
+                                        {realTimeQuote.productShipping[field]}
+                                    </p>
+                                ) : (
+                                    <div className='col-span-2'>
+                                        <div className="mb-4 grid grid-cols-3 gap-4 middle">
+                                            <div className='col-span-2'>
+                                                <label htmlFor={field} className="tracking-wide text-sm font-bold leading-6 text-gray-900">{formatFieldName(field)}</label>
+                                                <input
+                                                    type="text"
+                                                    id={field}
+                                                    name={field}
+                                                    value={additionalData[field]}
+                                                    onChange={handleChange}
+                                                    className="block w-full p-1 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50"
+                                                />
+                                            </div>
+                                            <div className='flex flex-col justify-end'>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleUpdateQuote(field)}
+                                                    className="px-4 py-2 border border-transparent text-sm font-medium rounded-md bg-black text-white bg-secondary hover:bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-light"
+                                                >
+                                                    Save
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div className='flex flex-col justify-end'>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleUpdateQuote(field)}
-                                                className="px-4 py-2 border border-transparent text-sm font-medium rounded-md bg-black text-white bg-secondary hover:bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-light"
-                                            >
-                                                Save
-                                            </button></div>
                                     </div>
-                                </div>
                                 )}
                             </React.Fragment>
                         ))}

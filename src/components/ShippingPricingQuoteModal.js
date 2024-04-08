@@ -2,22 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 
-const BoxesShipModal = ({ quote, onClose }) => {
+const ShippingPricingQuoteModal = ({ quote, onClose }) => {
     const [additionalData, setAdditionalData] = useState({
-        commodityType: '',
-        totalUnitsPerCommodity: '',
-        numberOfUnitsPerBox: '',
-        totalNumberOfBoxesPerCommodity: '',
-        shipBoxDimensions: '',
-        shipWeightPerBox: '',
-        totalQtyOfBoxesPerCommodity: '',
-        totalValuePerProductPerSize: '',
-        overallValueForTheShipment: '',
-        shippingVolumePerProduct: '',
-        totalVolumeForTheWholeOrder: '',
-        fromShippingAddress: '',
-        toShippingAddress: '',
-        splitShipping: ''
+        expressAir: '',
+        regularAir: '',
+        regularSeaLimitedContainer: '',
+        expressSeaLimitedContainer: ''
     });
 
     const [realTimeQuote, setRealTimeQuote] = useState(quote);
@@ -55,28 +45,25 @@ const BoxesShipModal = ({ quote, onClose }) => {
             <div className="flex items-center justify-center min-h-screen">
                 <div className="fixed inset-0 bg-black w-full opacity-50"></div>
                 <div className="relative bg-white rounded-lg p-6 m-2 w-7/12">
-                    <div className="text-lg font-semibold mb-4">Edit Quote - Boxes</div>
-                    <div className="mb-4 grid text-sm grid-cols-4">
-                    <p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Size: </span>{realTimeQuote.product.fields.size}</p>
-<p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Order over 10K: </span>{realTimeQuote.product.fields.orderOver10K}</p>
-<p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Finish type: </span>{realTimeQuote.product.fields.finishType}</p>
-<p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Finish option:</span> {realTimeQuote.product.fields.finishOption}</p>
-<p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Qty of SKU's:</span> {realTimeQuote.product.fields.qtyOfSKUs}</p>
-<p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Total Qty:</span> {realTimeQuote.product.fields.totalQty}</p>
+                    <div className="text-lg font-semibold mb-4">Edit Quote - Shipping Pricing</div>
+                    <div className="mb-4 grid text-sm grid-cols-3">
 
-<p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Design Type:</span> {realTimeQuote.product.fields.designType}</p>
-<p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Requires Magnet:</span> {realTimeQuote.product.fields.requiresMagnet}</p>
-<p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Child Proof:</span> {realTimeQuote.product.fields.childProof}</p>
-
-<p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Unit Price: </span>{realTimeQuote.productPricing.unitPrice}</p>
-<p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Overall Price: </span>{realTimeQuote.productPricing.overallPrice}</p>
-<p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>One Time Charges: </span>{realTimeQuote.productPricing.oneTimeCharges}</p>
-<p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Price Negotiated:</span> {realTimeQuote.productPricing.priceNegotiated}</p>
-<p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Units Per Box:</span> {realTimeQuote.productPricing.unitsPerBox}</p>
-<p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Total Boxes:</span> {realTimeQuote.productPricing.totalBoxes}</p>
-<p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Box Dimensions:</span> {realTimeQuote.productPricing.boxDimensions}</p>
-<p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Weight Per Box:</span> {realTimeQuote.productPricing.weightPerBox}</p>
-<p className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'><span className='tracking-wide font-bold leading-6 text-gray-900'>Total Weight:</span> {realTimeQuote.productPricing.totalWeight}</p>
+                        {Object.keys(realTimeQuote.productShipping)
+                            .map((field) => {
+                                const formattedFieldName = field
+                                    .replace(/([A-Z])/g, ' $1') // Add space before capital letters
+                                    .replace(/^./, (str) => str.toUpperCase()); // Capitalize the first letter
+                                return { originalFieldName: field, formattedFieldName, value: realTimeQuote.productShipping[field] };
+                            })
+                            .sort((a, b) => a.formattedFieldName.localeCompare(b.formattedFieldName))
+                            .map(({ originalFieldName, formattedFieldName, value }) => (
+                                <p key={originalFieldName} className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'>
+                                    <span className='tracking-wide font-bold leading-6 text-gray-900'>{formattedFieldName}: </span>
+                                    {value}
+                                </p>
+                            ))
+                        }
+                        
                     </div>
                     <form className='grid grid-cols-2 gap-4'>
                         {Object.keys(additionalData).map((field) => (
@@ -130,4 +117,4 @@ const BoxesShipModal = ({ quote, onClose }) => {
     );
 };
 
-export default BoxesShipModal;
+export default ShippingPricingQuoteModal;
