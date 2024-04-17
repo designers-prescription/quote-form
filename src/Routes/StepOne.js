@@ -254,7 +254,7 @@ const StepOne = () => {
                   className=' bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
                   type="number"
                   value={productFields.size?.height || ''}
-                  onChange={(e) => updateProductFields('size', { ...productFields.size, length: e.target.value })}
+                  onChange={(e) => updateProductFields('size', { ...productFields.size, height: e.target.value })}
                   placeholder="Height"
                 />
               </div>
