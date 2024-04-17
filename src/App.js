@@ -20,10 +20,10 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/step-one" element={<PrivateRoute><StepOne /></PrivateRoute>} />
-        <Route path="/step-two" element={<PrivateRoute><StepTwo /></PrivateRoute>} />
-        <Route path="/step-three" element={<PrivateRoute><StepThree /></PrivateRoute>} />
-        <Route path="/step-four" element={<PrivateRoute><StepFour /></PrivateRoute>} />
+        <Route path="/create-request" element={<PrivateRoute><StepOne /></PrivateRoute>} />
+        <Route path="/update-quote" element={<PrivateRoute><StepTwo /></PrivateRoute>} />
+        <Route path="/shipping-requirements" element={<PrivateRoute><StepThree /></PrivateRoute>} />
+        <Route path="/shipping-quote" element={<PrivateRoute><StepFour /></PrivateRoute>} />
         <Route path="/complete-profile" element={<PrivateRoute><CompleteProfile /></PrivateRoute>} />
       </Routes>
 

@@ -33,7 +33,7 @@ const LoginComponent = () => {
       const userDocSnap = await getDoc(userDocRef);
   
       if (userDocSnap.exists()) {
-        navigate('/step-one'); // User exists, navigate to step one
+        navigate('/create-request'); // User exists, navigate to step one
       } else {
         navigate('/complete-profile'); // User does not exist, navigate to complete profile
       }
