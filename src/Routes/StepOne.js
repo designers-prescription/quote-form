@@ -121,7 +121,7 @@ const StepOne = () => {
         <>
           {/* {productType === 'Boxes' && ( */}
             <div className="form-group">
-              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Gusset:</label>
+              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Gusset: (in Inches)</label>
               <input
                 className=' bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
                 type="number"
