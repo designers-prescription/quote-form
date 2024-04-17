@@ -4,7 +4,7 @@ const Boxes = ({ product, updateProduct }) => {
   return (
     <div className="product-form">
       <div className="form-group">
-        <img src="https://via.placeholder.com/150" alt="Placeholder" />
+        <img src="https://shipping-quote.labelslab.com/boxes.jpg" alt="Placeholder" />
       </div>
 
       <div className="form-group">
