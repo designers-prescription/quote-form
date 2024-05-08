@@ -3,24 +3,24 @@ import { Link } from 'react-router-dom';
 import { auth } from '../firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import Notification from './Notification';
-import {  doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebase'; // Assuming db is correctly initialized in firebase.js
+// import {  doc, getDoc } from 'firebase/firestore';
+// import { db } from '../firebase'; // Assuming db is correctly initialized in firebase.js
 
 const Header = () => {
     const [user] = useAuthState(auth);
-    const [userRole, setUserRole] = useState(null);
+    // const [userRole, setUserRole] = useState(null);
 
-    useEffect(() => {
-        const fetchUserRole = async () => {
-            if (user) {
-                const docRef = doc(db, 'users', user.uid);
-                const docSnap = await getDoc(docRef);
-                const userData = docSnap.data();
-                setUserRole(userData.role);
-            }
-        };
-        fetchUserRole();
-    });
+    // useEffect(() => {
+    //     const fetchUserRole = async () => {
+    //         if (user) {
+    //             const docRef = doc(db, 'users', user.uid);
+    //             const docSnap = await getDoc(docRef);
+    //             const userData = docSnap.data();
+    //             setUserRole(userData.role);
+    //         }
+    //     };
+    //     fetchUserRole();
+    // });
 
     
     const handleLogout = () => {
@@ -49,7 +49,7 @@ const Header = () => {
                             </Link>
                         </li>
 
-                        {userRole === 'PackagingAdmin' &&
+                        {/* {userRole === 'PackagingAdmin' &&} */}
                             <li>
                                 <Link to="/update-quote" className="flex items-center p-2 py-4 bg-blue-900 text-sm  text-white rounded-lg hover:bg-blue-500 group">
                                     <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" className="iconify iconify--iconoir" width="16" height="16" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
@@ -63,9 +63,9 @@ const Header = () => {
                                     <span className="ms-3">Packaging Pricing</span>
                                 </Link>
                             </li>
-                        }
+                     
 
-                        {userRole === 'ShippingAdmin' &&
+                        {/* {userRole === 'ShippingAdmin' && } */}
                             <li>
                                 <Link to="/shipping-requirements" className="flex items-center p-2 py-4 bg-blue-900 text-sm  text-white rounded-lg hover:bg-blue-500 group">
                                     <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" className="iconify iconify--tabler" width="16" height="16" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
@@ -78,8 +78,8 @@ const Header = () => {
                                     <span className="ms-3">Shipping Details</span>
                                 </Link>
                             </li>
-                        }
-                        {userRole === 'ShippingAdmin' &&
+                        
+                        {/* {userRole === 'ShippingAdmin' && } */}
                             <li>
                                 <Link to="/shipping-quote" className="flex items-center p-2 py-4 bg-blue-900 text-sm  text-white rounded-lg hover:bg-blue-500 group">
                                     <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" className="iconify iconify--tabler" width="16" height="16" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
@@ -92,7 +92,7 @@ const Header = () => {
                                     <span className="ms-3">Shipping Pricing</span>
                                 </Link>
                             </li>
-                        }
+                       
                     </div>
                 </ul>
 

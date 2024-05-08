@@ -20,7 +20,7 @@ const CompleteProfile = () => {
                 companyName,
             });
 
-            navigate('/step-one');
+            navigate('/create-request');
         } catch (error) {
             console.error(error.message);
         }

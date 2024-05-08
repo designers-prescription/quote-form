@@ -66,10 +66,10 @@ const StepTwo = () => {
     switch (selectedQuote?.product.type) {
       case 'Stand Up Pouches': return <StandUpPouchModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
       case 'Shrink Sleeves': return <ShrinkSleeveModal quote={selectedQuote} userRole={userRole}  onClose={handleCloseModal} />;
-      case 'Blisters': return <BlistersModal quote={selectedQuote} onClose={handleCloseModal} />;
-      case 'Bottles': return <BottlesModal quote={selectedQuote} onClose={handleCloseModal} />;
-      case 'Boxes': return <BoxesModal quote={selectedQuote} onClose={handleCloseModal} />;
-      case 'Caps': return <CapsModal quote={selectedQuote} onClose={handleCloseModal} />;
+      case 'Blisters': return <BlistersModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
+      case 'Bottles': return <BottlesModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
+      case 'Boxes': return <BoxesModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
+      case 'Caps': return <CapsModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
       default: return null;
     }
   };
