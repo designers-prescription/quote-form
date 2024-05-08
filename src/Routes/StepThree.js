@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { db, auth } from '../firebase';
+import { collection, getDocs, query, orderBy, where, doc, getDoc } from 'firebase/firestore';
 import Header from '../components/Header';
 import StandUpPouchShipModal from '../components/StandUpPouchShipModal';
 import ShrinkSleeveShipModal from '../components/ShrinkSleeveShipModal';
@@ -9,27 +9,54 @@ import BottlesShipModal from '../components/BottlesShipModal';
 import BoxesShipModal from '../components/BoxesShipModal';
 import CapsShipModal from '../components/CapsShipModal';
 
-
 const StepThree = () => {
   const [quotes, setQuotes] = useState([]);
   const [selectedQuote, setSelectedQuote] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [userRole, setUserRole] = useState('');
+  const [currentUserUid, setCurrentUserUid] = useState('');
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        setCurrentUserUid(user.uid);
+        const docRef = doc(db, 'users', user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const userData = docSnap.data();
+          setUserRole(userData.role);
+        }
+      }
+    };
+    fetchUserRole();
+  }, []);
 
   useEffect(() => {
     const fetchQuotes = async () => {
-      const q = query(collection(db, 'QuoteRequirements'), orderBy('createdOn', 'desc'));
+      let q;
+      if (userRole === 'ShippingAdmin') {
+        console.log("admin")
+        q = query(collection(db, 'QuoteRequirements'), orderBy('createdOn', 'desc'));
+      } else {
+        console.log("not shipping admin")
+        q = query(collection(db, 'QuoteRequirements'), where('createdBy', '==', currentUserUid), orderBy('createdOn', 'desc'));
+      }
       const querySnapshot = await getDocs(q);
       const quotesData = querySnapshot.docs
         .map((doc) => ({ id: doc.id, ...doc.data() }))
         .filter(quote => (
           quote.productPricing &&
-          'unitPrice' in quote.productPricing &&
-          'overallPrice' in quote.productPricing &&
+          'quantityOnePrice' in quote.productPricing &&
+          'quantityTwoPrice' in quote.productPricing &&
+          'quantityThreePrice' in quote.productPricing &&
+          'invoiceNumber' in quote.productPricing &&
+          'quoteNumber' in quote.productPricing &&
+          'approved' in quote.productPricing &&
           'oneTimeCharges' in quote.productPricing &&
           'priceNegotiated' in quote.productPricing &&
           'unitsPerBox' in quote.productPricing &&
           'totalBoxes' in quote.productPricing &&
-          'boxDimensions' in quote.productPricing &&
           'weightPerBox' in quote.productPricing &&
           'totalWeight' in quote.productPricing
         ));
@@ -37,7 +64,7 @@ const StepThree = () => {
     };
   
     fetchQuotes();
-  }, []);
+  }, [userRole, currentUserUid]);
   
 
   const handleEditClick = (quote) => {
@@ -53,17 +80,17 @@ const StepThree = () => {
   const renderModal = () => {
     switch (selectedQuote?.product.type) {
       case 'Stand Up Pouches':
-        return <StandUpPouchShipModal quote={selectedQuote} onClose={handleCloseModal} />;
+        return <StandUpPouchShipModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
       case 'Shrink Sleeves':
-        return <ShrinkSleeveShipModal quote={selectedQuote} onClose={handleCloseModal} />;
+        return <ShrinkSleeveShipModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
       case 'Blisters':
-        return <BlistersShipModal quote={selectedQuote} onClose={handleCloseModal} />;
+        return <BlistersShipModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
       case 'Bottles':
-        return <BottlesShipModal quote={selectedQuote} onClose={handleCloseModal} />;
+        return <BottlesShipModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
       case 'Boxes':
-        return <BoxesShipModal quote={selectedQuote} onClose={handleCloseModal} />;
+        return <BoxesShipModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
       case 'Caps':
-        return <CapsShipModal quote={selectedQuote} onClose={handleCloseModal} />;
+        return <CapsShipModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
       default:
         return null;
     }
@@ -73,7 +100,6 @@ const StepThree = () => {
   return (
     <>
       <Header />
-
       <div className='parent-container pt-5 h-100 pb-10 p-4 sm:ml-64'>
         <h2 className='text-3xl p-10 mb-6' style={{ textAlign: 'center' }}>Please Add Shipping Details</h2>
         <div className='width-full flex flex-col items-center'>
@@ -97,9 +123,9 @@ const StepThree = () => {
 
                   <td className='p-3 pr-0 text-end'>
                     <button className='ml-auto relative text-secondary-dark bg-light-dark hover:text-primary flex items-center h-[25px] w-[25px] text-base font-medium leading-normal text-center align-middle cursor-pointer rounded-2xl transition-colors duration-200 ease-in-out shadow-none border-0 justify-center' onClick={() => handleEditClick(quote)}>
-                      <span className='flex items-center justify-center p-0 m-0 leading-none shrink-0 '> Edit
-                        <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' className='w-4 h-4'>
-                          <path stroke-linecap='round' stroke-linejoin='round' d='M8.25 4.5l7.5 7.5-7.5 7.5' />
+                      <span className='flex items-center justify-center p-0 m-0 leading-none shrink-0 '> {userRole === 'ShippingAdmin' ? 'Edit' : 'View'}
+                        <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth='1.5' stroke='currentColor' className='w-4 h-4'>
+                          <path strokeLinecap='round' strokeLinejoin='round' d='M8.25 4.5l7.5 7.5-7.5 7.5' />
                         </svg>
                       </span>
                     </button>
@@ -117,4 +143,3 @@ const StepThree = () => {
 };
 
 export default StepThree;
-
