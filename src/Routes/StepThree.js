@@ -2,12 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebase';
 import { collection, getDocs, query, orderBy, where, doc, getDoc } from 'firebase/firestore';
 import Header from '../components/Header';
-import StandUpPouchShipModal from '../components/StandUpPouchShipModal';
-import ShrinkSleeveShipModal from '../components/ShrinkSleeveShipModal';
-import BlistersShipModal from '../components/BlistersShipModal';
-import BottlesShipModal from '../components/BottlesShipModal';
-import BoxesShipModal from '../components/BoxesShipModal';
-import CapsShipModal from '../components/CapsShipModal';
+import ShippingModal from '../components/ShippingModal';
 
 const StepThree = () => {
   const [quotes, setQuotes] = useState([]);
@@ -36,10 +31,8 @@ const StepThree = () => {
     const fetchQuotes = async () => {
       let q;
       if (userRole === 'ShippingAdmin') {
-        console.log("admin")
         q = query(collection(db, 'QuoteRequirements'), orderBy('createdOn', 'desc'));
       } else {
-        console.log("not shipping admin")
         q = query(collection(db, 'QuoteRequirements'), where('createdBy', '==', currentUserUid), orderBy('createdOn', 'desc'));
       }
       const querySnapshot = await getDocs(q);
@@ -65,7 +58,6 @@ const StepThree = () => {
   
     fetchQuotes();
   }, [userRole, currentUserUid]);
-  
 
   const handleEditClick = (quote) => {
     setSelectedQuote(quote);
@@ -76,26 +68,6 @@ const StepThree = () => {
     setShowModal(false);
     setSelectedQuote(null);
   };
-
-  const renderModal = () => {
-    switch (selectedQuote?.product.type) {
-      case 'Stand Up Pouches':
-        return <StandUpPouchShipModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
-      case 'Shrink Sleeves':
-        return <ShrinkSleeveShipModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
-      case 'Blisters':
-        return <BlistersShipModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
-      case 'Bottles':
-        return <BottlesShipModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
-      case 'Boxes':
-        return <BoxesShipModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
-      case 'Caps':
-        return <CapsShipModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
-      default:
-        return null;
-    }
-  };
-  
 
   return (
     <>
@@ -120,10 +92,9 @@ const StepThree = () => {
                   <td className='p-3 pr-0 text-end'>{quote.salesRepName}</td>
                   <td className='p-3 pr-0 text-end'>{quote.product.type}</td>
                   <td className='p-3 pr-12 text-end'>{quote.createdOn.toDate().toLocaleDateString()}</td>
-
                   <td className='p-3 pr-0 text-end'>
                     <button className='ml-auto relative text-secondary-dark bg-light-dark hover:text-primary flex items-center h-[25px] w-[25px] text-base font-medium leading-normal text-center align-middle cursor-pointer rounded-2xl transition-colors duration-200 ease-in-out shadow-none border-0 justify-center' onClick={() => handleEditClick(quote)}>
-                      <span className='flex items-center justify-center p-0 m-0 leading-none shrink-0 '> {userRole === 'ShippingAdmin' ? 'Edit' : 'View'}
+                      <span className='flex items-center justify-center p-0 m-0 leading-none shrink-0 '>{userRole === 'ShippingAdmin' ? 'Edit' : 'View'}
                         <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth='1.5' stroke='currentColor' className='w-4 h-4'>
                           <path strokeLinecap='round' strokeLinejoin='round' d='M8.25 4.5l7.5 7.5-7.5 7.5' />
                         </svg>
@@ -136,7 +107,9 @@ const StepThree = () => {
           </table>
         </div>
 
-        {showModal && renderModal()}
+        {showModal && (
+          <ShippingModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />
+        )}
       </div>
     </>
   );

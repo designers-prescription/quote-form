@@ -2,12 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebase';
 import { collection, getDocs, query, orderBy, where, doc, getDoc } from 'firebase/firestore';
 import Header from '../components/Header';
-import StandUpPouchModal from '../components/StandUpPouchModal';
-import ShrinkSleeveModal from '../components/ShrinkSleeveModal';
-import BlistersModal from '../components/BlistersModal';
-import BottlesModal from '../components/BottlesModal';
-import BoxesModal from '../components/BoxesModal';
-import CapsModal from '../components/CapsModal';
+import Modal from '../components/Modal.js';
 
 const StepTwo = () => {
   const [quotes, setQuotes] = useState([]);
@@ -32,7 +27,7 @@ const StepTwo = () => {
     fetchUserRole();
   }, []);
 
-  console.log(currentUserUid , userRole)
+  console.log(currentUserUid, userRole);
 
   useEffect(() => {
     const fetchQuotes = async () => {
@@ -60,18 +55,6 @@ const StepTwo = () => {
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedQuote(null);
-  };
-
-  const renderModal = () => {
-    switch (selectedQuote?.product.type) {
-      case 'Stand Up Pouches': return <StandUpPouchModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
-      case 'Shrink Sleeves': return <ShrinkSleeveModal quote={selectedQuote} userRole={userRole}  onClose={handleCloseModal} />;
-      case 'Blisters': return <BlistersModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
-      case 'Bottles': return <BottlesModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
-      case 'Boxes': return <BoxesModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
-      case 'Caps': return <CapsModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />;
-      default: return null;
-    }
   };
 
   return (
@@ -111,7 +94,9 @@ const StepTwo = () => {
             </tbody>
           </table>
         </div>
-        {showModal && renderModal()}
+        {showModal && (
+          <Modal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />
+        )}
       </div>
     </>
   );
