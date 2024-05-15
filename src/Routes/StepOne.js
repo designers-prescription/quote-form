@@ -169,6 +169,26 @@ const StepOne = () => {
           />
         </div>
       );
+    } else if (productType === "Boxes") {
+      return (
+        <div className="form-group">
+          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
+            Length: (in Inches)
+          </label>
+          <input
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            type="number"
+            value={productFields.size?.length || ""}
+            onChange={(e) =>
+              updateProductFields("size", {
+                ...productFields.size,
+                length: e.target.value,
+              })
+            }
+            placeholder="Length"
+          />
+        </div>
+      );
     }
     return null;
   };

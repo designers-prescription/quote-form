@@ -71,9 +71,9 @@ const ShippingModal = ({ quote, onClose, userRole }) => {
         <div className="fixed inset-0 bg-black w-full opacity-50"></div>
         <div className="relative bg-white rounded-lg p-6 m-2 w-7/12">
           <div className="text-lg font-semibold mb-4">Edit Shipping Pricing - {realTimeQuote.product.type}</div>
-          {realTimeQuote.product.artwork && (
+          {realTimeQuote.product.fields.artwork && (
             <div className="mb-4">
-              <img src={realTimeQuote.product.artwork} alt="Product Artwork" className="max-w-full h-auto" />
+              <img src={realTimeQuote.product.fields.artwork} alt="Product Artwork" className="max-w-full h-auto" />
             </div>
           )}
           {realTimeQuote.product.fields.bottleImage && (
@@ -87,7 +87,7 @@ const ShippingModal = ({ quote, onClose, userRole }) => {
               key !== 'bottleImage' && key !== 'artwork' && (
                 <p key={key} className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'>
                   <span className='tracking-wide font-bold leading-6 text-gray-900'>{formatFieldName(key)}: </span>
-                  {typeof value === 'object' && value !== null ? `${value.width} Width (in Inches) x ${value.height} Height (in Inches)` : value}
+                  {typeof value === 'object' && value !== null ? `Width: ${value.width} x Height ${value.height}  x Length ${value.length} x Gusset ${value.gusset}` : value}
                 </p>
               )
             ))}
