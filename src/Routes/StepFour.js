@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebase';
-import { collection, getDocs, query, orderBy, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, where, doc, getDoc } from 'firebase/firestore';
 import Header from '../components/Header';
 import ShippingPricingQuoteModal from '../components/ShippingPricingQuoteModal';
 
@@ -9,11 +9,13 @@ const StepFour = () => {
   const [selectedQuote, setSelectedQuote] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [userRole, setUserRole] = useState('');
+  const [currentUserUid, setCurrentUserUid] = useState('');
 
   useEffect(() => {
     const fetchUserRole = async () => {
       const user = auth.currentUser;
       if (user) {
+        setCurrentUserUid(user.uid);
         const docRef = doc(db, 'users', user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
@@ -27,7 +29,12 @@ const StepFour = () => {
 
   useEffect(() => {
     const fetchQuotes = async () => {
-      const q = query(collection(db, 'QuoteRequirements'), orderBy('createdOn', 'desc'));
+      let q;
+      if (userRole === 'ShippingAdmin') {
+        q = query(collection(db, 'QuoteRequirements'), orderBy('createdOn', 'desc'));
+      } else {
+        q = query(collection(db, 'QuoteRequirements'), where('createdBy', '==', currentUserUid), orderBy('createdOn', 'desc'));
+      }
       const querySnapshot = await getDocs(q);
       const quotesData = querySnapshot.docs
         .map((doc) => ({ id: doc.id, ...doc.data() }))
@@ -53,8 +60,10 @@ const StepFour = () => {
       setQuotes(quotesData);
     };
 
-    fetchQuotes();
-  }, []);
+    if (userRole) {
+      fetchQuotes();
+    }
+  }, [userRole, currentUserUid]);
 
   const handleEditClick = (quote) => {
     setSelectedQuote(quote);

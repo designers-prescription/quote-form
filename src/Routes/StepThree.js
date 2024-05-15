@@ -43,9 +43,9 @@ const StepThree = () => {
           'quantityOnePrice' in quote.productPricing &&
           'quantityTwoPrice' in quote.productPricing &&
           'quantityThreePrice' in quote.productPricing &&
-          'invoiceNumber' in quote.productPricing &&
+          // 'invoiceNumber' in quote.productPricing &&
           'quoteNumber' in quote.productPricing &&
-          'approved' in quote.productPricing &&
+          // 'approved' in quote.productPricing &&
           'oneTimeCharges' in quote.productPricing &&
           'priceNegotiated' in quote.productPricing &&
           'unitsPerBox' in quote.productPricing &&
