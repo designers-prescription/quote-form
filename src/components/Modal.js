@@ -112,7 +112,6 @@ const Modal = ({ quote, onClose, userRole }) => {
               key !== 'bottleImage' && (
                 <p key={key} className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'>
                   <span className='tracking-wide font-bold leading-6 text-gray-900'>{formatFieldName(key)}: </span>
-                  {typeof value === 'object' && value !== null ? `${value.width}x${value.height}` : value}
                   {typeof value === 'object' && value !== null ? `Width: ${value.width} x Height ${value.height}  x Length ${value.length} x Gusset ${value.gusset}` : value}
                 </p>
               )
