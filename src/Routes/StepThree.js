@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebase';
 import { collection, getDocs, query, orderBy, where, doc, getDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
-import ShippingModal from '../components/ShippingModal';
 
 const StepThree = () => {
   const [quotes, setQuotes] = useState([]);
-  const [selectedQuote, setSelectedQuote] = useState(null);
-  const [showModal, setShowModal] = useState(false);
   const [userRole, setUserRole] = useState('');
   const [currentUserUid, setCurrentUserUid] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -39,19 +38,7 @@ const StepThree = () => {
       const quotesData = querySnapshot.docs
         .map((doc) => ({ id: doc.id, ...doc.data() }))
         .filter(quote => (
-          quote.productPricing &&
-          'quantityOnePrice' in quote.productPricing &&
-          'quantityTwoPrice' in quote.productPricing &&
-          'quantityThreePrice' in quote.productPricing &&
-          // 'invoiceNumber' in quote.productPricing &&
-          'quoteNumber' in quote.productPricing &&
-          // 'approved' in quote.productPricing &&
-          'oneTimeCharges' in quote.productPricing &&
-          'priceNegotiated' in quote.productPricing &&
-          'unitsPerBox' in quote.productPricing &&
-          'totalBoxes' in quote.productPricing &&
-          'weightPerBox' in quote.productPricing &&
-          'totalWeight' in quote.productPricing
+          quote.vendorDetails && quote.vendorDetails.length > 0
         ));
       setQuotes(quotesData);
     };
@@ -60,13 +47,7 @@ const StepThree = () => {
   }, [userRole, currentUserUid]);
 
   const handleEditClick = (quote) => {
-    setSelectedQuote(quote);
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setSelectedQuote(null);
+    navigate(`/shipping-details/${quote.id}`);
   };
 
   return (
@@ -93,8 +74,12 @@ const StepThree = () => {
                   <td className='p-3 pr-0 text-end'>{quote.product.type}</td>
                   <td className='p-3 pr-12 text-end'>{quote.createdOn.toDate().toLocaleDateString()}</td>
                   <td className='p-3 pr-0 text-end'>
-                    <button className='ml-auto relative text-secondary-dark bg-light-dark hover:text-primary flex items-center h-[25px] w-[25px] text-base font-medium leading-normal text-center align-middle cursor-pointer rounded-2xl transition-colors duration-200 ease-in-out shadow-none border-0 justify-center' onClick={() => handleEditClick(quote)}>
-                      <span className='flex items-center justify-center p-0 m-0 leading-none shrink-0 '>{userRole === 'ShippingAdmin' ? 'Edit' : 'View'}
+                    <button
+                      className='ml-auto relative text-secondary-dark bg-light-dark hover:text-primary flex items-center h-[25px] w-[25px] text-base font-medium leading-normal text-center align-middle cursor-pointer rounded-2xl transition-colors duration-200 ease-in-out shadow-none border-0 justify-center'
+                      onClick={() => handleEditClick(quote)}
+                    >
+                      <span className='flex items-center justify-center p-0 m-0 leading-none shrink-0 '>
+                        {userRole === 'ShippingAdmin' ? 'Edit' : 'View'}
                         <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth='1.5' stroke='currentColor' className='w-4 h-4'>
                           <path strokeLinecap='round' strokeLinejoin='round' d='M8.25 4.5l7.5 7.5-7.5 7.5' />
                         </svg>
@@ -106,10 +91,6 @@ const StepThree = () => {
             </tbody>
           </table>
         </div>
-
-        {showModal && (
-          <ShippingModal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />
-        )}
       </div>
     </>
   );

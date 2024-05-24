@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebase';
 import { collection, getDocs, query, orderBy, where, doc, getDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
-import Modal from '../components/Modal.js';
 
 const StepTwo = () => {
   const [quotes, setQuotes] = useState([]);
-  const [selectedQuote, setSelectedQuote] = useState(null);
-  const [showModal, setShowModal] = useState(false);
   const [userRole, setUserRole] = useState('');
   const [currentUserUid, setCurrentUserUid] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -26,8 +25,6 @@ const StepTwo = () => {
     };
     fetchUserRole();
   }, []);
-
-  console.log(currentUserUid, userRole);
 
   useEffect(() => {
     const fetchQuotes = async () => {
@@ -48,13 +45,7 @@ const StepTwo = () => {
   }, [userRole, currentUserUid]);
 
   const handleEditClick = (quote) => {
-    setSelectedQuote(quote);
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setSelectedQuote(null);
+    navigate(`/quote-details/${quote.id}`);
   };
 
   return (
@@ -94,9 +85,6 @@ const StepTwo = () => {
             </tbody>
           </table>
         </div>
-        {showModal && (
-          <Modal quote={selectedQuote} userRole={userRole} onClose={handleCloseModal} />
-        )}
       </div>
     </>
   );

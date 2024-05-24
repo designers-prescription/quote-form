@@ -23,20 +23,33 @@ const StepOne = () => {
   const [projectName, setProjectName] = useState("");
   const [projectId, setProjectId] = useState("");
   const [isLoading, setIsLoading] = useState(false); // New state for loading
-  const [skuTotalQty, setSkuTotalQty] = useState("");
-  const [totalQtyOne, setTotalQtyOne] = useState("");
-  const [totalQtyTwo, setTotalQtyTwo] = useState("");
-  const [totalQtyThree, setTotalQtyThree] = useState("");
+  const [totalQty01, setTotalQty01] = useState("");
+  const [totalQty02, setTotalQty02] = useState("");
+  const [totalQty03, setTotalQty03] = useState("");
 
   useEffect(() => {
-    let totalSkuQuantity = 0;
+    let totalSkuQuantity01 = 0;
+    let totalSkuQuantity02 = 0;
+    let totalSkuQuantity03 = 0;
+
     for (let i = 1; i <= parseInt(productFields.numberOfSKUs, 10); i++) {
-      totalSkuQuantity += parseInt(productFields[`sku${i}Quantity`], 10) || 0;
+      totalSkuQuantity01 += parseInt(productFields[`sku${i}Quantity01`], 10) || 0;
+      totalSkuQuantity02 += parseInt(productFields[`sku${i}Quantity02`], 10) || 0;
+      totalSkuQuantity03 += parseInt(productFields[`sku${i}Quantity03`], 10) || 0;
     }
-    setSkuTotalQty(totalSkuQuantity);
+
+    setTotalQty01(totalSkuQuantity01);
+    setTotalQty02(totalSkuQuantity02);
+    setTotalQty03(totalSkuQuantity03);
   }, [productFields]);
 
   const updateProductFields = (field, value) => {
+    if (field === "size" && value.heightMM) {
+      value.height = (value.heightMM / 25.4).toFixed(2);
+    }
+    if (field === "size" && value.widthMM) {
+      value.width = (value.widthMM / 25.4).toFixed(2);
+    }
     setProductFields({ ...productFields, [field]: value });
   };
 
@@ -72,10 +85,9 @@ const StepOne = () => {
         fields: {
           ...productFields,
           artwork: artworkURL, // Store the URL of the uploaded artwork
-          totalQuantity: skuTotalQty, // Update to use skuTotalQty
-          quantityOne: totalQtyOne,
-          quantityTwo: totalQtyTwo,
-          quantityThree: totalQtyThree,
+          quantity01: totalQty01,
+          quantity02: totalQty02,
+          quantity03: totalQty03,
         },
       },
     };
@@ -131,10 +143,6 @@ const StepOne = () => {
             updateProduct={updateProductFields}
           />
         );
-      case "Shrink Sleeves":
-        return (
-          <div>Shrink Sleeves selected. No additional fields required.</div>
-        );
       case "Blisters":
         return (
           <Blisters
@@ -148,50 +156,67 @@ const StepOne = () => {
     }
   };
 
-  const renderSizeFields = () => {
-    if (productType === "Stand Up Pouches") {
-      return (
-        <div className="form-group">
-          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-            Gusset: (in Inches)
-          </label>
-          <input
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            type="number"
-            value={productFields.size?.gusset || ""}
-            onChange={(e) =>
-              updateProductFields("size", {
-                ...productFields.size,
-                gusset: e.target.value,
-              })
-            }
-            placeholder="Gusset"
-          />
-        </div>
-      );
-    } else if (productType === "Boxes") {
-      return (
-        <div className="form-group">
-          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-            Length: (in Inches)
-          </label>
-          <input
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            type="number"
-            value={productFields.size?.length || ""}
-            onChange={(e) =>
-              updateProductFields("size", {
-                ...productFields.size,
-                length: e.target.value,
-              })
-            }
-            placeholder="Length"
-          />
-        </div>
-      );
-    }
-    return null;
-  };
+  // const renderSizeFields = () => {
+  //   return (
+  //     <div>
+  //       <div className="form-group">
+  //         <label className="block tracking-wide text-sm font-bold leading-6 text-red-500">Height: (in Inches)</label>
+  //         <input
+  //           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+  //           type="number"
+  //           value={productFields.size?.height || ""}
+  //           readOnly
+  //           placeholder="Height"
+  //         />
+  //       </div>
+
+  //       <div className="form-group">
+  //         <label className="block tracking-wide text-sm font-bold leading-6 text-red-500">Width: (in Inches)</label>
+  //         <input
+  //           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+  //           type="number"
+  //           value={productFields.size?.width || ""}
+  //           readOnly
+  //           placeholder="Width"
+  //         />
+  //       </div>
+
+  //       <div className="form-group">
+  //         <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Height: (in mm)</label>
+  //         <input
+  //           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+  //           type="number"
+  //           value={productFields.size?.heightMM || ""}
+  //           onChange={(e) =>
+  //             updateProductFields("size", {
+  //               ...productFields.size,
+  //               heightMM: e.target.value,
+  //               height: (e.target.value / 25.4).toFixed(2)
+  //             })
+  //           }
+  //           placeholder="Height in mm"
+  //         />
+  //       </div>
+
+  //       <div className="form-group">
+  //         <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Width: (in mm)</label>
+  //         <input
+  //           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+  //           type="number"
+  //           value={productFields.size?.widthMM || ""}
+  //           onChange={(e) =>
+  //             updateProductFields("size", {
+  //               ...productFields.size,
+  //               widthMM: e.target.value,
+  //               width: (e.target.value / 25.4).toFixed(2)
+  //             })
+  //           }
+  //           placeholder="Width in mm"
+  //         />
+  //       </div>
+  //     </div>
+  //   );
+  // };
 
   const renderSKUQuantityFields = () => {
     const numberOfSKUs = parseInt(productFields.numberOfSKUs, 10) || 0;
@@ -199,17 +224,45 @@ const StepOne = () => {
     for (let i = 1; i <= numberOfSKUs; i++) {
       skuQuantityFields.push(
         <div key={`sku${i}`} className="form-group">
-          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-            SKU {i} Quantity:
-          </label>
+          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">SKU {i} Quantity 01:</label>
           <input
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             type="number"
-            value={productFields[`sku${i}Quantity`] || ""}
+            value={productFields[`sku${i}Quantity01`] || ""}
             onChange={(e) =>
-              updateProductFields(`sku${i}Quantity`, e.target.value)
+              updateProductFields(`sku${i}Quantity01`, e.target.value)
             }
-            placeholder={`SKU ${i} Quantity`}
+            placeholder={`SKU ${i} Quantity 01`}
+          />
+        </div>
+      );
+
+      skuQuantityFields.push(
+        <div key={`sku${i}`} className="form-group">
+          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">SKU {i} Quantity 02:</label>
+          <input
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            type="number"
+            value={productFields[`sku${i}Quantity02`] || ""}
+            onChange={(e) =>
+              updateProductFields(`sku${i}Quantity02`, e.target.value)
+            }
+            placeholder={`SKU ${i} Quantity 02`}
+          />
+        </div>
+      );
+
+      skuQuantityFields.push(
+        <div key={`sku${i}`} className="form-group">
+          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">SKU {i} Quantity 03:</label>
+          <input
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            type="number"
+            value={productFields[`sku${i}Quantity03`] || ""}
+            onChange={(e) =>
+              updateProductFields(`sku${i}Quantity03`, e.target.value)
+            }
+            placeholder={`SKU ${i} Quantity 03`}
           />
         </div>
       );
@@ -227,9 +280,7 @@ const StepOne = () => {
         <form className="grid grid-cols-2 gap-4" onSubmit={handleSubmit}>
           <div>
             <div className="form-group">
-              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                Project Name
-              </label>
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Project Name</label>
               <input
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 type="text"
@@ -239,9 +290,7 @@ const StepOne = () => {
               />
             </div>
             <div className="form-group">
-              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                Project ID
-              </label>
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Project ID</label>
               <input
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 type="text"
@@ -252,9 +301,7 @@ const StepOne = () => {
             </div>
 
             <div className="form-group">
-              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                Customer Name<span className="text-red-500">*</span>
-              </label>
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Customer Name<span className="text-red-500">*</span></label>
               <input
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 type="text"
@@ -266,9 +313,7 @@ const StepOne = () => {
             </div>
 
             <div className="form-group">
-              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                Sales Rep Name<span className="text-red-500">*</span>
-              </label>
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Sales Rep Name<span className="text-red-500">*</span></label>
               <input
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 type="text"
@@ -280,9 +325,7 @@ const StepOne = () => {
             </div>
 
             <div className="form-group">
-              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                Select Product Type<span className="text-red-500">*</span>
-              </label>
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Select Product Type<span className="text-red-500">*</span></label>
               <select
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 value={productType}
@@ -292,7 +335,7 @@ const StepOne = () => {
                 <option value="">Select Product Type</option>
                 <option value="Stand Up Pouches">Stand Up Pouches</option>
                 <option value="Boxes">Boxes</option>
-                <option value="Bottles">Bottles</option>
+                <option value="Bottles">Bottles and Jars</option>
                 <option value="Caps">Caps</option>
                 <option value="Shrink Sleeves">Shrink Sleeves</option>
                 <option value="Blisters">Blisters</option>
@@ -303,104 +346,7 @@ const StepOne = () => {
           <div>
             <div className="product-form">
               <div className="form-group">
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                  Artwork:
-                </label>
-                <input
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  type="file"
-                  onChange={(e) =>
-                    updateProductFields("artwork", e.target.files[0])
-                  }
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                  Material:
-                </label>
-                <input
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  type="text"
-                  value={productFields.material || ""}
-                  onChange={(e) =>
-                    updateProductFields("material", e.target.value)
-                  }
-                  placeholder="Material"
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                  Finish Type:
-                </label>
-                <input
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  type="text"
-                  value={productFields.finishType || ""}
-                  onChange={(e) =>
-                    updateProductFields("finishType", e.target.value)
-                  }
-                  placeholder="Finish Type"
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                  Finish Option:
-                </label>
-                <input
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  type="text"
-                  value={productFields.finishOption || ""}
-                  onChange={(e) =>
-                    updateProductFields("finishOption", e.target.value)
-                  }
-                  placeholder="Finish Option"
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                  Height: (in Inches)
-                </label>
-                <input
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  type="number"
-                  value={productFields.size?.height || ""}
-                  onChange={(e) =>
-                    updateProductFields("size", {
-                      ...productFields.size,
-                      height: e.target.value,
-                    })
-                  }
-                  placeholder="Height"
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                  Width: (in Inches)
-                </label>
-                <input
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  type="number"
-                  value={productFields.size?.width || ""}
-                  onChange={(e) =>
-                    updateProductFields("size", {
-                      ...productFields.size,
-                      width: e.target.value,
-                    })
-                  }
-                  placeholder="Width"
-                />
-              </div>
-              {renderSizeFields()}
-
-              <div className="form-group">
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                  Number of SKU's:
-                </label>
+                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Number of SKU's:</label>
                 <input
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   type="number"
@@ -415,54 +361,35 @@ const StepOne = () => {
               </div>
 
               <div className="form-group">
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                  Total Quantity:
-                </label>
+                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity 01:</label>
                 <input
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   type="number"
-                  value={skuTotalQty || ""}
+                  value={totalQty01 || ""}
                   readOnly
-                  placeholder="Total Quantity"
+                  placeholder="Quantity 01"
                 />
               </div>
 
               <div className="form-group">
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                  Quantity One:
-                </label>
+                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity 02:</label>
                 <input
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   type="number"
-                  value={totalQtyOne || ""}
-                  onChange={(e) => setTotalQtyOne(e.target.value)}
-                  placeholder="Quantity One : for ex 3000"
+                  value={totalQty02 || ""}
+                  readOnly
+                  placeholder="Quantity 02"
                 />
               </div>
 
               <div className="form-group">
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                  Quantity Two:
-                </label>
+                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity 03:</label>
                 <input
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   type="number"
-                  value={totalQtyTwo || ""}
-                  onChange={(e) => setTotalQtyTwo(e.target.value)}
-                  placeholder="Quantity Two : for ex 12000"
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                  Quantity Three:
-                </label>
-                <input
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  type="number"
-                  value={totalQtyThree || ""}
-                  onChange={(e) => setTotalQtyThree(e.target.value)}
-                  placeholder="Quantity Three : for ex 20000"
+                  value={totalQty03 || ""}
+                  readOnly
+                  placeholder="Quantity 03"
                 />
               </div>
             </div>

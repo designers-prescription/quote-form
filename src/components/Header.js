@@ -80,7 +80,7 @@ const Header = () => {
                             </li>
                         
                         {/* {userRole === 'ShippingAdmin' && } */}
-                            <li>
+                            {/* <li>
                                 <Link to="/shipping-quote" className="flex items-center p-2 py-4 bg-blue-900 text-sm  text-white rounded-lg hover:bg-blue-500 group">
                                     <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" className="iconify iconify--tabler" width="16" height="16" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
                                         <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
@@ -91,7 +91,7 @@ const Header = () => {
 
                                     <span className="ms-3">Shipping Pricing</span>
                                 </Link>
-                            </li>
+                            </li> */}
                        
                     </div>
                 </ul>
