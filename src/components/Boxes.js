@@ -15,6 +15,16 @@ const Boxes = ({ product, updateProduct }) => {
     updateProduct('size', size);
   };
 
+  const handleSpecialEffectsChange = (effect) => {
+    let effects = product.fields.specialEffects ? product.fields.specialEffects.split(',') : [];
+    if (effects.includes(effect)) {
+      effects = effects.filter(e => e !== effect);
+    } else {
+      effects.push(effect);
+    }
+    updateProduct('specialEffects', effects.join(','));
+  };
+
   return (
     <div className="product-form">
       <div className="form-group">
@@ -145,15 +155,10 @@ const Boxes = ({ product, updateProduct }) => {
         </select>
       </div>
 
-      {/* Special Effects Dropdown */}
-      <div className="form-group">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Special Effects:</label>
-        <select
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          value={product.fields.specialEffects || ""}
-          onChange={(e) => updateProduct('specialEffects', e.target.value)}
-        >
-          <option value="">Select Special Effects</option>
+      {/* Special Effects Checkboxes */}
+      <div className="form-group col-span-2 mb-2">
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900 mb-5">Special Effects:</label>
+        <div className="grid gap-2 grid-cols-2">
           {[
             'Spot UV',
             'Embossing',
@@ -164,11 +169,18 @@ const Boxes = ({ product, updateProduct }) => {
             'Hologram',
             'Window'
           ].map((effect) => (
-            <option key={effect} value={effect}>
+            <label key={effect} className="tracking-wide text-xs font-bold leading-6 text-gray-900 flex w-full flex-row" style={{ justifySelf: 'flex-start' }}>
+              <input
+                type="checkbox"
+                checked={product.fields.specialEffects?.split(',').includes(effect) || false}
+                onChange={() => handleSpecialEffectsChange(effect)}
+                className="mr-2 text-gray-900 dark:text-gray-300"
+                style={{ width: '15px', height: '15px' }}
+              />
               {effect}
-            </option>
+            </label>
           ))}
-        </select>
+        </div>
       </div>
 
       {/* Insert Dropdown */}

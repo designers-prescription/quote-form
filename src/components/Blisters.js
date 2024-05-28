@@ -12,9 +12,19 @@ const Blisters = ({ product, updateProduct }) => {
     updateProduct('size', size);
   };
 
+  const handleSpecialEffectsChange = (effect) => {
+    let effects = product.fields.specialEffects ? product.fields.specialEffects.split(',') : [];
+    if (effects.includes(effect)) {
+      effects = effects.filter(e => e !== effect);
+    } else {
+      effects.push(effect);
+    }
+    updateProduct('specialEffects', effects.join(','));
+  };
+
   return (
-    <div className="product-form">
-      <div className="form-group">
+    <div className="product-form grid gap-2 grid-cols-2">
+      <div className="form-group col-span-2">
         <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Clamshell:(restricted materials apply)</label>
         <div className="radio-group">
           <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
@@ -23,6 +33,7 @@ const Blisters = ({ product, updateProduct }) => {
               name="clamshell"
               checked={product.fields.clamshell === 'yes'}
               onChange={() => updateProduct('clamshell', 'yes')}
+              className="mr-2"
             />
             Yes
           </label>
@@ -32,13 +43,14 @@ const Blisters = ({ product, updateProduct }) => {
               name="clamshell"
               checked={product.fields.clamshell === 'no'}
               onChange={() => updateProduct('clamshell', 'no')}
+              className="mr-2"
             />
             No
           </label>
         </div>
       </div>
 
-      <div className="form-group">
+      <div className="form-group col-span-2">
         <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">3M Adhesive:</label>
         <div className="radio-group">
           <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
@@ -47,6 +59,7 @@ const Blisters = ({ product, updateProduct }) => {
               name="adhesive3M"
               checked={product.fields.adhesive3M === 'yes'}
               onChange={() => updateProduct('adhesive3M', 'yes')}
+              className="mr-2"
             />
             Yes
           </label>
@@ -56,46 +69,107 @@ const Blisters = ({ product, updateProduct }) => {
               name="adhesive3M"
               checked={product.fields.adhesive3M === 'no'}
               onChange={() => updateProduct('adhesive3M', 'no')}
+              className="mr-2"
             />
             No
           </label>
         </div>
       </div>
 
-      <div className="form-group">
+      <div className="form-group col-span-2">
         <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Material:</label>
-        <input
+        <select
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="text"
           value={product.fields.material || ""}
           onChange={(e) => updateProduct('material', e.target.value)}
-          placeholder="Material"
-        />
+        >
+          <option value="">Select Material</option>
+          <option value="CLEAR CLAM SHELL (BLISTER)">CLEAR CLAM SHELL (BLISTER)</option>
+        </select>
       </div>
 
-      <div className="form-group">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Finish Type:</label>
+      <div className="form-group col-span-2">
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Thickness (in gsm):</label>
         <input
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="text"
-          value={product.fields.finishType || ""}
-          onChange={(e) => updateProduct('finishType', e.target.value)}
-          placeholder="Finish Type"
+          type="number"
+          value={product.fields.thickness || ""}
+          onChange={(e) => updateProduct('thickness', e.target.value)}
+          placeholder="Thickness in gsm"
         />
       </div>
 
-      <div className="form-group">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Finish Option:</label>
-        <input
+      <div className="form-group col-span-2">
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Finish:</label>
+        <select
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="text"
-          value={product.fields.finishOption || ""}
-          onChange={(e) => updateProduct('finishOption', e.target.value)}
-          placeholder="Finish Option"
-        />
+          value={product.fields.finish || ""}
+          onChange={(e) => updateProduct('finish', e.target.value)}
+        >
+          <option value="">Select Finish</option>
+          {[
+            'Matte Lamination',
+            'Gloss Lamination',
+            'Matte Varnish',
+            'Gloss Varnish',
+            'Soft Touch'
+          ].map((finish) => (
+            <option key={finish} value={finish}>
+              {finish}
+            </option>
+          ))}
+        </select>
       </div>
 
-      <div className="form-group">
+      <div className=" col-span-2 mb-2">
+        <label className="block tracking-wide text-sm font-bold leading-6 mb-5 text-gray-900">Special Effects:</label>
+        <div className="grid gap-2 grid-cols-2">
+          {[
+            'Spot UV',
+            'Embossing',
+            'Metallics',
+            'Debossing',
+            'Hot Stamping / Foil',
+            'Raised Varnish',
+            'Hologram',
+            'Window'
+          ].map((effect) => (
+            <label key={effect} className="tracking-wide text-xs font-bold leading-6 text-gray-900 flex w-full flex-row" style={{ justifySelf: 'flex-start' }}>
+              <input
+                type="checkbox"
+                checked={product.fields.specialEffects?.split(',').includes(effect) || false}
+                onChange={() => handleSpecialEffectsChange(effect)}
+                className="mr-2 text-gray-900 dark:text-gray-300"
+                style={{ width: '15px', height: '15px' }}
+              />
+              {effect}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="form-group col-span-2">
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Insert:</label>
+        <select
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          value={product.fields.insert || ""}
+          onChange={(e) => updateProduct('insert', e.target.value)}
+        >
+          <option value="">Select Insert</option>
+          {[
+            'None',
+            'White Cardboard',
+            'EVA',
+            'Foam'
+          ].map((insert) => (
+            <option key={insert} value={insert}>
+              {insert}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="form-group col-span-2">
         <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Artwork:</label>
         <input
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
@@ -147,8 +221,6 @@ const Blisters = ({ product, updateProduct }) => {
           placeholder="Width"
         />
       </div>
-
-
     </div>
   );
 };
