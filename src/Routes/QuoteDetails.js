@@ -45,9 +45,33 @@ const QuoteDetails = () => {
       .join(' ');
   };
 
+  // const handleDownloadPNG = async () => {
+  //   const input = printRef.current;
+  //   const canvas = await html2canvas(input, { scale: 1.5 });
+  //   const link = document.createElement('a');
+  //   link.href = canvas.toDataURL('image/png');
+  //   link.download = `quote-details - (${realTimeQuote.projectId}).png`;
+  //   link.click();
+  // };
+
   const handleDownloadPNG = async () => {
     const input = printRef.current;
-    const canvas = await html2canvas(input, { scale: 1.5 });
+  
+    // Ensure all images are loaded
+    const images = input.querySelectorAll('img');
+    const promises = Array.from(images).map(img => {
+      if (img.complete) return Promise.resolve();
+      return new Promise(resolve => {
+        img.onload = img.onerror = resolve;
+      });
+    });
+  
+    await Promise.all(promises);
+  
+    const canvas = await html2canvas(input, {
+      scale: 2,
+      useCORS: true, // Enable cross-origin handling
+    });
     const link = document.createElement('a');
     link.href = canvas.toDataURL('image/png');
     link.download = `quote-details - (${realTimeQuote.projectId}).png`;
@@ -94,9 +118,10 @@ const QuoteDetails = () => {
               <img
                 src={realTimeQuote.product.fields.artwork}
                 alt="Product Artwork"
-                className="max-w-full h-auto"
+                style={{ width: '500px', height: 'auto' }}
                 onLoad={() => console.log('Artwork image loaded')}
               />
+
             </div>
           )}
           {realTimeQuote.product.fields.bottleImage && (
@@ -104,7 +129,7 @@ const QuoteDetails = () => {
               <img
                 src={realTimeQuote.product.fields.bottleImage}
                 alt="Bottle"
-                className="max-w-full h-auto"
+                style={{ width: '500px', height: 'auto' }}
                 onLoad={() => console.log('Bottle image loaded')}
               />
             </div>
@@ -415,7 +440,7 @@ const QuoteDetails = () => {
       <div className="flex justify-between mt-4">
         <button
           type="button"
-          onClick={() => navigate('/update-quote')}
+          onClick={() => navigate('/packaging-details')}
           className="px-4 py-2 border border-transparent text-sm font-medium rounded-md bg-black text-white bg-secondary hover:bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-light"
         >
           Previous
@@ -425,7 +450,7 @@ const QuoteDetails = () => {
           onClick={handleDownloadPNG}
           className="px-4 py-2 border border-transparent text-sm font-medium rounded-md bg-black text-white bg-secondary hover:bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-light"
         >
-          Download as PNG
+          Download Requirement
         </button>
       </div>
     </div>

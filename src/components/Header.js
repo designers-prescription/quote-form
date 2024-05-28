@@ -7,8 +7,6 @@ import Notification from './Notification';
 
 const Header = () => {
     const [user] = useAuthState(auth);
-
-
     
     const handleLogout = () => {
         auth.signOut();

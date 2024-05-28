@@ -9,6 +9,9 @@ const Boxes = ({ product, updateProduct }) => {
     if (dimension === 'widthMM') {
       size.width = (value / 25.4).toFixed(2);
     }
+    if (dimension === 'lengthMM') {
+      size.length = (value / 25.4).toFixed(2);
+    }
     updateProduct('size', size);
   };
 
@@ -81,37 +84,113 @@ const Boxes = ({ product, updateProduct }) => {
         </div>
       </div>
 
+      {/* Material Dropdown */}
       <div className="form-group">
         <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Material:</label>
-        <input
+        <select
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="text"
           value={product.fields.material || ""}
           onChange={(e) => updateProduct('material', e.target.value)}
-          placeholder="Material"
+        >
+          <option value="">Select Material</option>
+          {[
+            'BLACK CARDBOARD',
+            'CORRUGATED PAPER',
+            'GRAY RIGID CARDBOARD',
+            'HOLOGRAM MATERIAL',
+            'INSERT (CARDBOARD)',
+            'KRAFT PAPER',
+            'SILVER CARDBOARD',
+            'WHITE CARDBOARD'
+          ].map((material) => (
+            <option key={material} value={material}>
+              {material}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Thickness Input */}
+      <div className="form-group">
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Thickness (in gsm):</label>
+        <input
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          type="number"
+          value={product.fields.thickness || ""}
+          onChange={(e) => updateProduct('thickness', e.target.value)}
+          placeholder="Thickness in gsm"
         />
       </div>
 
+      {/* Finish Dropdown */}
       <div className="form-group">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Finish Type:</label>
-        <input
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Finish:</label>
+        <select
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="text"
-          value={product.fields.finishType || ""}
-          onChange={(e) => updateProduct('finishType', e.target.value)}
-          placeholder="Finish Type"
-        />
+          value={product.fields.finish || ""}
+          onChange={(e) => updateProduct('finish', e.target.value)}
+        >
+          <option value="">Select Finish</option>
+          {[
+            'Matte Lamination',
+            'Gloss Lamination',
+            'Matte Varnish',
+            'Gloss Varnish',
+            'Soft Touch'
+          ].map((finish) => (
+            <option key={finish} value={finish}>
+              {finish}
+            </option>
+          ))}
+        </select>
       </div>
 
+      {/* Special Effects Dropdown */}
       <div className="form-group">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Finish Option:</label>
-        <input
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Special Effects:</label>
+        <select
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="text"
-          value={product.fields.finishOption || ""}
-          onChange={(e) => updateProduct('finishOption', e.target.value)}
-          placeholder="Finish Option"
-        />
+          value={product.fields.specialEffects || ""}
+          onChange={(e) => updateProduct('specialEffects', e.target.value)}
+        >
+          <option value="">Select Special Effects</option>
+          {[
+            'Spot UV',
+            'Embossing',
+            'Metallics',
+            'Debossing',
+            'Hot Stamping / Foil',
+            'Raised Varnish',
+            'Hologram',
+            'Window'
+          ].map((effect) => (
+            <option key={effect} value={effect}>
+              {effect}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Insert Dropdown */}
+      <div className="form-group">
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Insert:</label>
+        <select
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          value={product.fields.insert || ""}
+          onChange={(e) => updateProduct('insert', e.target.value)}
+        >
+          <option value="">Select Insert</option>
+          {[
+            'None',
+            'White Cardboard',
+            'EVA',
+            'Foam'
+          ].map((insert) => (
+            <option key={insert} value={insert}>
+              {insert}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="form-group">
@@ -146,6 +225,17 @@ const Boxes = ({ product, updateProduct }) => {
       </div>
 
       <div className="form-group">
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Length: (in mm)</label>
+        <input
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          type="number"
+          value={product.fields.size?.lengthMM || ""}
+          onChange={(e) => handleSizeChange('lengthMM', e.target.value)}
+          placeholder="Length in mm"
+        />
+      </div>
+
+      <div className="form-group">
         <label className="block tracking-wide text-sm font-bold leading-6 text-red-500">Height: (in Inches)</label>
         <input
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
@@ -164,6 +254,17 @@ const Boxes = ({ product, updateProduct }) => {
           value={product.fields.size?.width || ""}
           readOnly
           placeholder="Width"
+        />
+      </div>
+
+      <div className="form-group">
+        <label className="block tracking-wide text-sm font-bold leading-6 text-red-500">Length: (in Inches)</label>
+        <input
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          type="number"
+          value={product.fields.size?.length || ""}
+          readOnly
+          placeholder="Length"
         />
       </div>
     </div>

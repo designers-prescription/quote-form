@@ -209,7 +209,7 @@ const ShippingDetails = () => {
       <div className="flex justify-between mt-4">
         <button
           type="button"
-          onClick={() => navigate('/shipping-requirements')}
+          onClick={() => navigate('/shipping-details')}
           className="px-4 py-2 border border-transparent text-sm font-medium rounded-md bg-black text-white bg-secondary hover:bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-light"
         >
           Previous
