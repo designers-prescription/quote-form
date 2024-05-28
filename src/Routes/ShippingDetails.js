@@ -112,25 +112,26 @@ const ShippingDetails = () => {
     <div className="p-6">
       <div >
        <div ref={printRef} className="p-6">
+
         <div className="text-lg font-semibold mb-4">Shipping Details - {realTimeQuote.product.type}</div>
-        <div className="mb-4 grid text-sm grid-cols-3">
-          <div>
-            <span className='tracking-wide font-bold leading-6 text-gray-900'>Customer Name: </span>
-            <p>{realTimeQuote.customerName}</p>
+          <div className="mb-4 grid text-sm grid-cols-3">
+            <div>
+              <span className='tracking-wide font-bold leading-6 text-gray-900'>Customer Name: </span>
+              <p>{realTimeQuote.customerName}</p>
+            </div>
+            <div>
+              <span className='tracking-wide font-bold leading-6 text-gray-900'>Sales Rep Name: </span>
+              <p>{realTimeQuote.salesRepName}</p>
+            </div>
+            <div>
+              <span className='tracking-wide font-bold leading-6 text-gray-900'>Project Name: </span>
+              <p>{realTimeQuote.projectName}</p>
+            </div>
+            <div>
+              <span className='tracking-wide font-bold leading-6 text-gray-900'>Project ID: </span>
+              <p>{realTimeQuote.projectId}</p>
+            </div>
           </div>
-          <div>
-            <span className='tracking-wide font-bold leading-6 text-gray-900'>Sales Rep Name: </span>
-            <p>{realTimeQuote.salesRepName}</p>
-          </div>
-          <div>
-            <span className='tracking-wide font-bold leading-6 text-gray-900'>Project Name: </span>
-            <p>{realTimeQuote.projectName}</p>
-          </div>
-          <div>
-            <span className='tracking-wide font-bold leading-6 text-gray-900'>Project ID: </span>
-            <p>{realTimeQuote.projectId}</p>
-          </div>
-        </div>
         <div className="form-group">
           <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Select Vendor:</label>
           <select
@@ -153,7 +154,33 @@ const ShippingDetails = () => {
         )}
 
         <div className="mt-4">
-          <h3 className="text-lg font-semibold mb-2">Shipping Quote</h3>
+          <h3 className="text-lg font-semibold mb-2">Shipping Quote (Quantity 1)</h3>
+          <div className="mb-4 grid text-sm grid-cols-2 gap-4">
+            {['expressAir', 'regularAir', 'regularSeaLimitedContainer', 'expressSeaLimitedContainer'].map((field) => (
+              <div key={field} className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">{formatFieldName(field)}: </label>
+                <br />
+                _______________
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <h3 className="text-lg font-semibold mb-2">Shipping Quote (Quantity 2)</h3>
+          <div className="mb-4 grid text-sm grid-cols-2 gap-4">
+            {['expressAir', 'regularAir', 'regularSeaLimitedContainer', 'expressSeaLimitedContainer'].map((field) => (
+              <div key={field} className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">{formatFieldName(field)}: </label>
+                <br />
+                _______________
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <h3 className="text-lg font-semibold mb-2">Shipping Quote (Quantity 3)</h3>
           <div className="mb-4 grid text-sm grid-cols-2 gap-4">
             {['expressAir', 'regularAir', 'regularSeaLimitedContainer', 'expressSeaLimitedContainer'].map((field) => (
               <div key={field} className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
