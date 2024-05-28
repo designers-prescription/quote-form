@@ -17,28 +17,6 @@ const ShippingDetails = () => {
   const navigate = useNavigate();
   const printRef = useRef();
 
-  const [additionalData ] = useState({
-    commodityType: '',
-    totalUnitsPerCommodity: '',
-    numberOfUnitsPerBox: '',
-    totalNumberOfBoxesPerCommodity: '',
-    shipBoxDimensions: { length: '', breadth: '', height: '' },
-    shipWeightPerBox: '',
-    totalQtyOfBoxesPerCommodity: '',
-    totalValuePerProductPerSize: '',
-    overallValueForTheShipment: '',
-    shippingVolumePerProduct: '',
-    totalVolumeForTheWholeOrder: '',
-    fromShippingAddress: '',
-    toShippingAddress: '',
-    splitShipping: '',
-    palletize: '',
-    // expressAir: '',
-    // regularAir: '',
-    // regularSeaLimitedContainer: '',
-    // expressSeaLimitedContainer: ''
-  });
-
   useEffect(() => {
     const fetchUserRole = async () => {
       const user = auth.currentUser;
@@ -80,12 +58,29 @@ const ShippingDetails = () => {
 
   const handleDownloadPNG = async () => {
     const input = printRef.current;
-    const canvas = await html2canvas(input, { scale: 2 });
+  
+    // Ensure all images are loaded
+    const images = input.querySelectorAll('img');
+    const promises = Array.from(images).map(img => {
+      if (img.complete) return Promise.resolve();
+      return new Promise(resolve => {
+        img.onload = img.onerror = resolve;
+      });
+    });
+  
+    await Promise.all(promises);
+  
+    const canvas = await html2canvas(input, {
+      scale: 2,
+      useCORS: true, // Enable cross-origin handling
+    });
     const link = document.createElement('a');
     link.href = canvas.toDataURL('image/png');
-    link.download = 'shipping-details.png';
+    link.download = `Final Quote - (${realTimeQuote.projectId}).png`;
     link.click();
   };
+    
+
 
   const handleVendorImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -115,7 +110,8 @@ const ShippingDetails = () => {
 
   return (
     <div className="p-6">
-      <div ref={printRef} className="p-6">
+      <div >
+       <div ref={printRef} className="p-6">
         <div className="text-lg font-semibold mb-4">Shipping Details - {realTimeQuote.product.type}</div>
         <div className="mb-4 grid text-sm grid-cols-3">
           <div>
@@ -155,18 +151,7 @@ const ShippingDetails = () => {
             <img src={vendorImage} alt="Vendor" className="max-w-full h-auto rounded-lg" style={{ border: '2px dashed red' }} />
           </div>
         )}
-        <div className="mt-4">
-          <h3 className="text-lg font-semibold mb-2">Additional Shipping Details</h3>
-          <div className="mb-4 grid text-sm grid-cols-2 gap-4">
-            {Object.entries(additionalData).map(([key, value]) => (
-              <div key={key} className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">{formatFieldName(key)}: </label>
-                <br />
-                _______________
-              </div>
-            ))}
-          </div>
-        </div>
+
         <div className="mt-4">
           <h3 className="text-lg font-semibold mb-2">Shipping Quote</h3>
           <div className="mb-4 grid text-sm grid-cols-2 gap-4">
@@ -179,6 +164,8 @@ const ShippingDetails = () => {
             ))}
           </div>
         </div>
+        </div>
+        
         <div className="mt-4">
           <h3 className="text-lg font-semibold mb-2">Vendor Details</h3>
           {shippingVendors.map((vendor, index) => (

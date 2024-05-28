@@ -5,7 +5,6 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useParams, useNavigate } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 
-
 const QuoteDetails = () => {
   const { id } = useParams();
   const [realTimeQuote, setRealTimeQuote] = useState(null);
@@ -24,7 +23,7 @@ const QuoteDetails = () => {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const userData = docSnap.data();
-          setUserRole(userData.role); // Set the user role
+          setUserRole(userData.role);
         }
       }
     };
@@ -48,10 +47,10 @@ const QuoteDetails = () => {
 
   const handleDownloadPNG = async () => {
     const input = printRef.current;
-    const canvas = await html2canvas(input, { scale: 2 });
+    const canvas = await html2canvas(input, { scale: 1.5 });
     const link = document.createElement('a');
     link.href = canvas.toDataURL('image/png');
-    link.download = 'quote-details.png';
+    link.download = `quote-details - (${realTimeQuote.projectId}).png`;
     link.click();
   };
 
@@ -84,128 +83,292 @@ const QuoteDetails = () => {
 
   return (
     <div className="p-6">
-      <div ref={printRef} className="p-6">
-        <div className="text-lg font-semibold mb-4">Quote Requirements - {realTimeQuote.product.type}</div>
-        {realTimeQuote.product.fields.artwork && (
-          <div className="mb-4">
-            <img
-              src={realTimeQuote.product.fields.artwork}
-              alt="Product Artwork"
-              className="max-w-full h-auto"
-              onLoad={() => console.log('Artwork image loaded')}
-            />
+      <div className="p-6">
+        <div ref={printRef} className="p-6">
+          <div className="text-lg font-semibold mb-4">Quote Requirements - {realTimeQuote.product.type}</div>
+          
+          {/* ----- PROJECT DETAILS STARTS ----- */}
+          
+          {realTimeQuote.product.fields.artwork && (
+            <div className="mb-4">
+              <img
+                src={realTimeQuote.product.fields.artwork}
+                alt="Product Artwork"
+                className="max-w-full h-auto"
+                onLoad={() => console.log('Artwork image loaded')}
+              />
+            </div>
+          )}
+          {realTimeQuote.product.fields.bottleImage && (
+            <div className="mb-4">
+              <img
+                src={realTimeQuote.product.fields.bottleImage}
+                alt="Bottle"
+                className="max-w-full h-auto"
+                onLoad={() => console.log('Bottle image loaded')}
+              />
+            </div>
+          )}
+          <div className="mb-4 grid text-sm grid-cols-3">
+            <div>
+              <span className='tracking-wide font-bold leading-6 text-gray-900'>Customer Name: </span>
+              <p>{realTimeQuote.customerName}</p>
+            </div>
+            <div>
+              <span className='tracking-wide font-bold leading-6 text-gray-900'>Sales Rep Name: </span>
+              <p>{realTimeQuote.salesRepName}</p>
+            </div>
+            <div>
+              <span className='tracking-wide font-bold leading-6 text-gray-900'>Project Name: </span>
+              <p>{realTimeQuote.projectName}</p>
+            </div>
+            <div>
+              <span className='tracking-wide font-bold leading-6 text-gray-900'>Project ID: </span>
+              <p>{realTimeQuote.projectId}</p>
+            </div>
           </div>
-        )}
-        {realTimeQuote.product.fields.bottleImage && (
-          <div className="mb-4">
-            <img
-              src={realTimeQuote.product.fields.bottleImage}
-              alt="Bottle"
-              className="max-w-full h-auto"
-              onLoad={() => console.log('Bottle image loaded')}
-            />
+
+          {/* ----- PROJECT REQUIREMENT STARTS ----- */}
+
+          <div className="mb-4 grid text-sm grid-cols-3">
+            {Object.entries(realTimeQuote.product.fields)
+              .filter(([key]) => key !== 'bottleImage' && key !== 'artwork')
+              .sort((a, b) => a[0].localeCompare(b[0]))
+              .map(([key, value]) => (
+                <p key={key} className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'>
+                  <span className='tracking-wide font-bold leading-6 text-gray-900'>{formatFieldName(key)}: </span>
+                  {typeof value === 'object' && value !== null
+                    ? `Width: ${value.width} x Height ${value.height} x Length ${value.length} x Gusset ${value.gusset}`
+                    : value}
+                </p>
+              ))}
           </div>
-        )}
-        <div className="mb-4 grid text-sm grid-cols-3">
-          <div>
-            <span className='tracking-wide font-bold leading-6 text-gray-900'>Customer Name: </span>
-            <p>{realTimeQuote.customerName}</p>
+
+          {/* ----- PACKAGING DETAIL STARTS ----- */}
+
+          <h3 className="text-lg font-semibold mb-2 mt-10">Packaging Details</h3>
+          <div className="mb-4 grid text-sm grid-cols-3 gap-4">
+            <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity One Price: </label>
+              <br />
+              _______________
+            </div>
+            <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity Two Price: </label>
+              <br />
+              _______________
+            </div>
+            <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity Three Price: </label>
+              <br />
+              _______________
+            </div>
+
+            <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quote Reference:(If Applicable) </label>
+              <br />
+              _______________
+            </div>
+            <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">One Time Charges: </label>
+              <br />
+              _______________
+            </div>
+            <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Final Price:(If Negotiated) </label>
+              <br />
+              _______________
+            </div>
           </div>
-          <div>
-            <span className='tracking-wide font-bold leading-6 text-gray-900'>Sales Rep Name: </span>
-            <p>{realTimeQuote.salesRepName}</p>
-          </div>
-          <div>
-            <span className='tracking-wide font-bold leading-6 text-gray-900'>Project Name: </span>
-            <p>{realTimeQuote.projectName}</p>
-          </div>
-          <div>
-            <span className='tracking-wide font-bold leading-6 text-gray-900'>Project ID: </span>
-            <p>{realTimeQuote.projectId}</p>
+
+          {/* ----- SHIPPING DETAIL STARTS ----- */}
+
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold mb-2">Shipping Details</h3>
+            <div className="mb-4 grid text-sm grid-cols-3 gap-4">
+              <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Commodity Type: </label>
+                <br />
+                _______________
+              </div>
+              <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">From Shipping Address: </label>
+                <br />
+                _______________
+              </div>
+              <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">To Shipping Address: </label>
+                <br />
+                _______________
+              </div>
+              <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Split Shipping With Breakdown: </label>
+                <br />
+                _______________
+              </div>
+              <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Palletize: </label>
+                <br />
+                _______________
+              </div>
+            </div>
+
+
+            {/* ----- QUANTITY 1 ----- */}
+
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold mb-2">Details For Shipping (Quantity 1: <span className='font-bold leading-6 text-red-500' > {realTimeQuote.product.fields.quantity01}</span>) </h3>
+              <div className="mb-4 grid text-sm grid-cols-5 gap-3">
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Units Per Commodity: </label>
+
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Number Of Units Per Box: </label>
+                  <br />
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Number Of Boxes Per Commodity: </label>
+                  <br />
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Ship Box Dimensions: </label>
+                  <br />
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Ship Weight Per Box: </label>
+                  <br />
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Qty Of Boxes Per Commodity: </label>
+                  <br />
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Shipping Volume Per Product: </label>
+                  <br />
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Volume For The Whole Order: </label>
+                  <br />
+                  _______________
+                </div>
+
+              </div>
+            </div>
+
+
+            {/* ----- QUANTITY 2 ----- */}
+
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold mb-2">Details For Shipping (Quantity 2: <span className='font-bold leading-6 text-red-500' > {realTimeQuote.product.fields.quantity02}</span>) </h3>
+              <div className="mb-4 grid text-sm grid-cols-5 gap-3">
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Units Per Commodity: </label>
+
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Number Of Units Per Box: </label>
+                  <br />
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Number Of Boxes Per Commodity: </label>
+                  <br />
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Ship Box Dimensions: </label>
+                  <br />
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Ship Weight Per Box: </label>
+                  <br />
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Qty Of Boxes Per Commodity: </label>
+                  <br />
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Shipping Volume Per Product: </label>
+                  <br />
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Volume For The Whole Order: </label>
+                  <br />
+                  _______________
+                </div>
+
+              </div>
+            </div>
+
+
+            {/* ----- QUANTITY 3 ----- */}
+
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold mb-2">Details For Shipping (Quantity 3: <span className='font-bold leading-6 text-red-500' > {realTimeQuote.product.fields.quantity03}</span>) </h3>
+              <div className="mb-4 grid text-sm grid-cols-5 gap-3">
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Units Per Commodity: </label>
+
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Number Of Units Per Box: </label>
+                  <br />
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Number Of Boxes Per Commodity: </label>
+                  <br />
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Ship Box Dimensions: </label>
+                  <br />
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Ship Weight Per Box: </label>
+                  <br />
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Qty Of Boxes Per Commodity: </label>
+                  <br />
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Shipping Volume Per Product: </label>
+                  <br />
+                  _______________
+                </div>
+                <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Volume For The Whole Order: </label>
+                  <br />
+                  _______________
+                </div>
+
+              </div>
+            </div>
           </div>
         </div>
-        <div className="mb-4 grid text-sm grid-cols-3">
-          {Object.entries(realTimeQuote.product.fields)
-            .filter(([key]) => key !== 'bottleImage' && key !== 'artwork')
-            .sort((a, b) => a[0].localeCompare(b[0]))
-            .map(([key, value]) => (
-              <p key={key} className='p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50'>
-                <span className='tracking-wide font-bold leading-6 text-gray-900'>{formatFieldName(key)}: </span>
-                {typeof value === 'object' && value !== null
-                  ? `Width: ${value.width} x Height ${value.height} x Length ${value.length} x Gusset ${value.gusset}`
-                  : value}
-              </p>
-            ))}
-        </div>
-        <div className="mb-4 grid text-sm grid-cols-2 gap-4">
-          <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
-            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity One Price: </label>
-            <br />
-            _______________
-          </div>
-          <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
-            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity Two Price: </label>
-            <br />
-            _______________
-          </div>
-          <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
-            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity Three Price: </label>
-            <br />
-            _______________
-          </div>
-          <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
-            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Invoice Number: </label>
-            <br />
-            _______________
-          </div>
-          <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
-            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quote Number: </label>
-            <br />
-            _______________
-          </div>
-          <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
-            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Approved: </label>
-            <br />
-            _______________
-          </div>
-          <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
-            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">One Time Charges: </label>
-            <br />
-            _______________
-          </div>
-          <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
-            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Price Negotiated: </label>
-            <br />
-            _______________
-          </div>
-          <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
-            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Units Per Box: </label>
-            <br />
-            _______________
-          </div>
-          <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
-            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Boxes: </label>
-            <br />
-            _______________
-          </div>
-          <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
-            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Box Dimensions (Length, Breadth, Height): </label>
-            <br />
-            _______________
-          </div>
-          <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
-            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Weight Per Box: </label>
-            <br />
-            _______________
-          </div>
-          <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
-            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Weight: </label>
-            <br />
-            _______________
-          </div>
-        </div>
+
+        {/* ----- END OF PRINTABLE AREA ----- */}
+
         {userRole === 'PackagingAdmin' && (
-          <div className="mb-4">
+          <div className="mb-4 mt-20">
             <h3 className="text-lg font-semibold mb-2">Updated Values from Vendor</h3>
             <div className="form-group">
               <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Vendor Name:</label>
@@ -243,7 +406,7 @@ const QuoteDetails = () => {
                 <span className='tracking-wide font-bold leading-6 text-gray-900'>Vendor Name: </span>
                 <p>{vendor.vendorName}</p>
                 <span className='tracking-wide font-bold leading-6 text-gray-900'>Image: </span>
-                <a href={vendor.imageUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">View Image</a>
+                <a href={vendor.imageUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">View Details from the Packaging Vendor</a>
               </div>
             ))}
           </div>

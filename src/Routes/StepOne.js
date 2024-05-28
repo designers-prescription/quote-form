@@ -357,10 +357,12 @@ const StepOne = () => {
                   placeholder="Number of SKU's"
                 />
 
+              <div className="grid mt-5 gap-2  grid-cols-3">
                 {renderSKUQuantityFields()}
+                </div>
               </div>
-
-              <div className="form-group">
+              <div className="grid mt-5 gap-2  grid-cols-3">
+              <div className="form-group ">
                 <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity 01:</label>
                 <input
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
@@ -391,6 +393,7 @@ const StepOne = () => {
                   readOnly
                   placeholder="Quantity 03"
                 />
+              </div>
               </div>
             </div>
 

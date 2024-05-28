@@ -45,7 +45,7 @@ const StepTwo = () => {
   }, [userRole, currentUserUid]);
 
   const handleEditClick = (quote) => {
-    navigate(`/quote-details/${quote.id}`);
+    navigate(`/packaging-details/${quote.id}`);
   };
 
   return (

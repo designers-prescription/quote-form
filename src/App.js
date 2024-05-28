@@ -19,11 +19,11 @@ const App = () => {
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/create-request" element={<PrivateRoute><StepOne /></PrivateRoute>} />
-        <Route path="/update-quote" element={<PrivateRoute><StepTwo /></PrivateRoute>} />
-        <Route path="/shipping-requirements" element={<PrivateRoute><StepThree /></PrivateRoute>} />
+        <Route path="/packaging-details" element={<PrivateRoute><StepTwo /></PrivateRoute>} />
+        <Route path="/shipping-details" element={<PrivateRoute><StepThree /></PrivateRoute>} />
         <Route path="/shipping-quote" element={<PrivateRoute><StepFour /></PrivateRoute>} />
         <Route path="/complete-profile" element={<PrivateRoute><CompleteProfile /></PrivateRoute>} />
-        <Route path="/quote-details/:id" element={<PrivateRoute><QuoteDetails /></PrivateRoute>} />
+        <Route path="/packaging-details/:id" element={<PrivateRoute><QuoteDetails /></PrivateRoute>} />
         <Route path="/shipping-details/:id" element={<PrivateRoute><ShippingDetails /></PrivateRoute>} />
       </Routes>
     </Router>
