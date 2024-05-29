@@ -32,7 +32,7 @@ const Bottles = ({ product, updateProduct }) => {
     <div className="product-form">
       <div className="form-group">
         <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Image Upload:</label>
-        <input type="file" onChange={handleImageUpload} />
+        <input type="file" onChange={handleImageUpload} className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5' />
         <small>Clear picture of the bottle must be attached</small>
       </div>
 
@@ -43,6 +43,7 @@ const Bottles = ({ product, updateProduct }) => {
           value={product.fields.volume || ''}
           onChange={(e) => updateProduct('volume', e.target.value)}
           placeholder="Volume"
+          className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
         />
       </div>
 
@@ -92,23 +93,30 @@ const Bottles = ({ product, updateProduct }) => {
         <input
           type="text"
           value={product.fields.color || ''}
+          className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
           onChange={(e) => updateProduct('color', e.target.value)}
           placeholder="Color"
         />
       </div>
 
       <div className="form-group">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Material:</label>
-        <input
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Material Type:</label>
+        <select
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="text"
-          value={product.fields.material || ""}
-          onChange={(e) => updateProduct('material', e.target.value)}
-          placeholder="Material"
-        />
+          value={product.fields.materialType || ""}
+          onChange={(e) => updateProduct('materialType', e.target.value)}
+        >
+          <option value="">Select Material Type</option>
+          <option value="PET">PET (glossy, shiny, good-looking, resistant to high temperatures up to 40°C)</option>
+          <option value="HDPE">HDPE (matte, heat-resistant, withstands temperatures up to 110°C, used for powder cans to avoid light)</option>
+          <option value="PP">PP (generally used for lids)</option>
+          <option value="Glass">Glass</option>
+          <option value="Acrylic">Acrylic</option>
+          <option value="ABS">ABS</option>
+        </select>
       </div>
 
-      <div className="form-group">
+      {/* <div className="form-group">
         <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Finish Type:</label>
         <input
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
@@ -128,7 +136,7 @@ const Bottles = ({ product, updateProduct }) => {
           onChange={(e) => updateProduct('finishOption', e.target.value)}
           placeholder="Finish Option"
         />
-      </div>
+      </div> */}
 
       <div className="form-group">
         <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Artwork:</label>

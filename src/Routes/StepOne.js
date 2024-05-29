@@ -13,6 +13,8 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase"; // Adjust the path to match your file structure
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ShrinkSleeves from "../components/ShrinkSleeves";
+import Labels from "../components/Labels";
 
 const StepOne = () => {
   const [user] = useAuthState(auth);
@@ -129,6 +131,13 @@ const StepOne = () => {
             updateProduct={updateProductFields}
           />
         );
+      case "Labels":
+        return (
+          <Labels
+            product={{ fields: productFields }}
+            updateProduct={updateProductFields}
+          />
+        );
       case "Bottles":
         return (
           <Bottles
@@ -146,6 +155,13 @@ const StepOne = () => {
       case "Blisters":
         return (
           <Blisters
+            product={{ fields: productFields }}
+            updateProduct={updateProductFields}
+          />
+        );
+      case "Shrink Sleeves":
+        return (
+          <ShrinkSleeves
             product={{ fields: productFields }}
             updateProduct={updateProductFields}
           />
@@ -333,6 +349,7 @@ const StepOne = () => {
                 required
               >
                 <option value="">Select Product Type</option>
+                <option value="Labels">Labels</option>
                 <option value="Stand Up Pouches">Stand Up Pouches</option>
                 <option value="Boxes">Boxes</option>
                 <option value="Bottles">Bottles and Jars</option>

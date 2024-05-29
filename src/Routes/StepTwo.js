@@ -29,7 +29,7 @@ const StepTwo = () => {
   useEffect(() => {
     const fetchQuotes = async () => {
       let q;
-      if (userRole === 'PackagingAdmin') {
+      if (userRole === 'PackagingAdmin'|| 'ShippingAdmin') {
         q = query(collection(db, 'QuoteRequirements'), orderBy('createdOn', 'desc'));
       } else {
         q = query(collection(db, 'QuoteRequirements'), where('createdBy', '==', currentUserUid), orderBy('createdOn', 'desc'));

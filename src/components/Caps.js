@@ -19,6 +19,7 @@ const Caps = ({ product, updateProduct }) => {
         <select
           value={product.fields.capType}
           onChange={(e) => updateProduct('capType', e.target.value)}
+          className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
         >
           <option value="">Select Cap Type</option>
           <option value="twistCap">Twist Cap</option>
@@ -78,41 +79,11 @@ const Caps = ({ product, updateProduct }) => {
           value={product.fields.colorForCaps || ''}
           onChange={(e) => updateProduct('colorForCaps', e.target.value)}
           placeholder="Color"
+          className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
         />
       </div>
 
-      <div className="form-group">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Material:</label>
-        <input
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="text"
-          value={product.fields.material || ""}
-          onChange={(e) => updateProduct('material', e.target.value)}
-          placeholder="Material"
-        />
-      </div>
-
-      <div className="form-group">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Finish Type:</label>
-        <input
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="text"
-          value={product.fields.finishType || ""}
-          onChange={(e) => updateProduct('finishType', e.target.value)}
-          placeholder="Finish Type"
-        />
-      </div>
-
-      <div className="form-group">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Finish Option:</label>
-        <input
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="text"
-          value={product.fields.finishOption || ""}
-          onChange={(e) => updateProduct('finishOption', e.target.value)}
-          placeholder="Finish Option"
-        />
-      </div>
+  
 
       <div className="form-group">
         <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Artwork:</label>
