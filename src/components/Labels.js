@@ -82,7 +82,7 @@ const Labels = ({ product, updateProduct }) => {
           type="number"
           value={product.fields.thickness || ""}
           onChange={(e) => updateProduct('thickness', e.target.value)}
-          placeholder="Thickness in GSM"
+          placeholder="Thickness"
         />
       </div>
 
