@@ -76,7 +76,7 @@ const Labels = ({ product, updateProduct }) => {
       </div>
 
       <div className="form-group col-span-2">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Thickness (in GSM):</label>
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Thickness:</label>
         <input
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
           type="number"
