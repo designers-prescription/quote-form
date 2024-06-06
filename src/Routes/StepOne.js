@@ -15,6 +15,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ShrinkSleeves from "../components/ShrinkSleeves";
 import Labels from "../components/Labels";
+import Bags from "../components/Bags";
 
 const StepOne = () => {
   const [user] = useAuthState(auth);
@@ -148,6 +149,13 @@ const StepOne = () => {
       case "Caps":
         return (
           <Caps
+            product={{ fields: productFields }}
+            updateProduct={updateProductFields}
+          />
+        );
+      case "Bags":
+        return (
+          <Bags
             product={{ fields: productFields }}
             updateProduct={updateProductFields}
           />
@@ -354,8 +362,9 @@ const StepOne = () => {
                 <option value="Boxes">Boxes</option>
                 <option value="Bottles">Bottles and Jars</option>
                 <option value="Caps">Caps</option>
-                <option value="Shrink Sleeves">Shrink Sleeves</option>
+                <option value="Bags">Bags</option>
                 <option value="Blisters">Blisters</option>
+                <option value="Shrink Sleeves">Shrink Sleeves</option>
               </select>
             </div>
             <div className="product-form">{renderProductForm()}</div>
