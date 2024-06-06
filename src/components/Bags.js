@@ -14,6 +14,21 @@ const Bags = ({ product, updateProduct }) => {
     updateProduct('size', size);
   };
 
+  const materialOptions = [
+    "None",
+    "PET / VMPET / PE (GLOSS)",
+    "MATTE OPP / VMPET / PE (MATTE)",
+    "PET / AL / PE",
+    "NY / PE",
+    "PET / NY / AL / PE",
+    "PET / NY / PE",
+    "KRAFT PAPER / PE",
+    "KRAFT PAPER / VMPET / PE",
+    "PET / KRAFT PAPER / PE",
+    "PE / PE (GLOSS)",
+    "PE / PE (MATTE)"
+  ];
+
   const renderCommonFields = () => (
     <>
       <div className="form-group">
@@ -43,33 +58,39 @@ const Bags = ({ product, updateProduct }) => {
     <>
       <div className="form-group">
         <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Material:</label>
-        <input
+        <select
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="text"
           value={product.fields.material || ""}
           onChange={(e) => updateProduct('material', e.target.value)}
-          placeholder="Material"
-        />
+        >
+          {materialOptions.map((option, index) => (
+            <option key={index} value={option}>{option}</option>
+          ))}
+        </select>
       </div>
       <div className="form-group">
         <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Front Material:</label>
-        <input
+        <select
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="text"
           value={product.fields.frontMaterial || ""}
           onChange={(e) => updateProduct('frontMaterial', e.target.value)}
-          placeholder="Front Material"
-        />
+        >
+          {materialOptions.map((option, index) => (
+            <option key={index} value={option}>{option}</option>
+          ))}
+        </select>
       </div>
       <div className="form-group">
         <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Back Material:</label>
-        <input
+        <select
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="text"
           value={product.fields.backMaterial || ""}
           onChange={(e) => updateProduct('backMaterial', e.target.value)}
-          placeholder="Back Material"
-        />
+        >
+          {materialOptions.map((option, index) => (
+            <option key={index} value={option}>{option}</option>
+          ))}
+        </select>
       </div>
       <div className="form-group">
         <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Thickness (Microns):</label>
