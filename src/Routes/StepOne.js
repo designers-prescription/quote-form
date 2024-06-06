@@ -180,67 +180,6 @@ const StepOne = () => {
     }
   };
 
-  // const renderSizeFields = () => {
-  //   return (
-  //     <div>
-  //       <div className="form-group">
-  //         <label className="block tracking-wide text-sm font-bold leading-6 text-red-500">Height: (in Inches)</label>
-  //         <input
-  //           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-  //           type="number"
-  //           value={productFields.size?.height || ""}
-  //           readOnly
-  //           placeholder="Height"
-  //         />
-  //       </div>
-
-  //       <div className="form-group">
-  //         <label className="block tracking-wide text-sm font-bold leading-6 text-red-500">Width: (in Inches)</label>
-  //         <input
-  //           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-  //           type="number"
-  //           value={productFields.size?.width || ""}
-  //           readOnly
-  //           placeholder="Width"
-  //         />
-  //       </div>
-
-  //       <div className="form-group">
-  //         <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Height: (in mm)</label>
-  //         <input
-  //           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-  //           type="number"
-  //           value={productFields.size?.heightMM || ""}
-  //           onChange={(e) =>
-  //             updateProductFields("size", {
-  //               ...productFields.size,
-  //               heightMM: e.target.value,
-  //               height: (e.target.value / 25.4).toFixed(2)
-  //             })
-  //           }
-  //           placeholder="Height in mm"
-  //         />
-  //       </div>
-
-  //       <div className="form-group">
-  //         <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Width: (in mm)</label>
-  //         <input
-  //           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-  //           type="number"
-  //           value={productFields.size?.widthMM || ""}
-  //           onChange={(e) =>
-  //             updateProductFields("size", {
-  //               ...productFields.size,
-  //               widthMM: e.target.value,
-  //               width: (e.target.value / 25.4).toFixed(2)
-  //             })
-  //           }
-  //           placeholder="Width in mm"
-  //         />
-  //       </div>
-  //     </div>
-  //   );
-  // };
 
   const renderSKUQuantityFields = () => {
     const numberOfSKUs = parseInt(productFields.numberOfSKUs, 10) || 0;

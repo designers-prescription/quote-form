@@ -16,10 +16,6 @@ const Bags = ({ product, updateProduct }) => {
 
   const renderCommonFields = () => (
     <>
-    <div className="form-group">
-        <img src="https://shipping-quote.labelslab.com/bags.png" alt="Placeholder" />
-      </div>
-
       <div className="form-group">
         <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Width (in mm):</label>
         <input
@@ -91,14 +87,16 @@ const Bags = ({ product, updateProduct }) => {
   const renderFinishingOptions = () => (
     <div className="form-group">
       <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Finishings:</label>
-      <div>
+      <div className="grid gap-2 grid-cols-2">
         {['Matte Lamination', 'Gloss Lamination', 'Soft Touch Lamination', 'Metallic White Support', 'Spot UV', 'Raised Varnish', 'Embossing', 'Hologram', 'Hot Foil Stamping', 'Foil Number'].map(option => (
-          <label key={option} className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
+          <label key={option} className="tracking-wide text-xs font-bold leading-6 text-gray-900 flex w-full flex-row" style={{ justifySelf: 'flex-start' }}>
             <input
               type="checkbox"
               name={option}
               checked={product.fields[option]}
               onChange={(e) => updateProduct(option, e.target.checked)}
+              className="mr-2 text-gray-900 dark:text-gray-300"
+              style={{ width: '15px', height: '15px' }}
             />
             {option}
           </label>
@@ -117,6 +115,7 @@ const Bags = ({ product, updateProduct }) => {
             <div className="form-group">
               <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Open Side:</label>
               <select
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 value={product.fields.openSide}
                 onChange={(e) => updateProduct('openSide', e.target.value)}
               >
@@ -127,14 +126,16 @@ const Bags = ({ product, updateProduct }) => {
             </div>
             <div className="form-group">
               <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Options:</label>
-              <div>
+              <div className="grid gap-2 grid-cols-2">
                 {['Tear Notches', 'Rounded Corners', 'Hang Hole', 'Sombrero Hole', 'Zipper', 'CR Zipper', 'Clear Window'].map(option => (
-                  <label key={option} className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
+                  <label key={option} className="tracking-wide text-xs font-bold leading-6 text-gray-900 flex w-full flex-row" style={{ justifySelf: 'flex-start' }}>
                     <input
                       type="checkbox"
                       name={option}
                       checked={product.fields[option]}
                       onChange={(e) => updateProduct(option, e.target.checked)}
+                      className="mr-2 text-gray-900 dark:text-gray-300"
+                      style={{ width: '15px', height: '15px' }}
                     />
                     {option}
                   </label>
@@ -163,6 +164,7 @@ const Bags = ({ product, updateProduct }) => {
             <div className="form-group">
               <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Gusset Type:</label>
               <select
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 value={product.fields.gussetType}
                 onChange={(e) => updateProduct('gussetType', e.target.value)}
               >
@@ -176,6 +178,7 @@ const Bags = ({ product, updateProduct }) => {
             <div className="form-group">
               <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Zipper Type:</label>
               <select
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 value={product.fields.zipperType}
                 onChange={(e) => updateProduct('zipperType', e.target.value)}
               >
@@ -187,14 +190,16 @@ const Bags = ({ product, updateProduct }) => {
             </div>
             <div className="form-group">
               <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Options:</label>
-              <div>
+              <div className="grid gap-2 grid-cols-2">
                 {['Tear Notches', 'Rounded Corners', 'White Support', 'Clear Window', 'Hologram', 'Spot UV', 'Raised Varnish', 'Foil Stamping', 'Embossing'].map(option => (
-                  <label key={option} className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
+                  <label key={option} className="tracking-wide text-xs font-bold leading-6 text-gray-900 flex w-full flex-row" style={{ justifySelf: 'flex-start' }}>
                     <input
                       type="checkbox"
                       name={option}
                       checked={product.fields[option]}
                       onChange={(e) => updateProduct(option, e.target.checked)}
+                      className="mr-2 text-gray-900 dark:text-gray-300"
+                      style={{ width: '15px', height: '15px' }}
                     />
                     {option}
                   </label>
@@ -247,14 +252,16 @@ const Bags = ({ product, updateProduct }) => {
             {renderFinishingOptions()}
             <div className="form-group">
               <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Options:</label>
-              <div>
+              <div className="grid gap-2 grid-cols-2">
                 {['Valve', 'Peel Stick', 'Tear Tab', 'White Support', 'Clear Window', 'Hologram', 'Spot UV', 'Raised Varnish', 'Foil Stamping', 'Embossing'].map(option => (
-                  <label key={option} className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>
+                  <label key={option} className="tracking-wide text-xs font-bold leading-6 text-gray-900 flex w-full flex-row" style={{ justifySelf: 'flex-start' }}>
                     <input
                       type="checkbox"
                       name={option}
                       checked={product.fields[option]}
                       onChange={(e) => updateProduct(option, e.target.checked)}
+                      className="mr-2 text-gray-900 dark:text-gray-300"
+                      style={{ width: '15px', height: '15px' }}
                     />
                     {option}
                   </label>
@@ -271,8 +278,12 @@ const Bags = ({ product, updateProduct }) => {
   return (
     <div className="product-form">
       <div className="form-group">
+        <img src="https://shipping-quote.labelslab.com/bags.png" alt="Placeholder" />
+      </div>
+      <div className="form-group">
         <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Select Bag Type:</label>
         <select
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
           value={bagType}
           onChange={(e) => setBagType(e.target.value)}
         >
