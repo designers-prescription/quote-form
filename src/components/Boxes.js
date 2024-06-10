@@ -36,6 +36,21 @@ const Boxes = ({ product, updateProduct }) => {
     'COATED PAPER AND RIGID MATERIAL'
   ];
 
+  const materialOptionsTwo = [
+    'WHITE CARDBOARD',
+    'SILVER CARDBOARD',
+    'KRAFT PAPER'
+  ];
+
+  const materialOptionsThree = [
+    'WHITE CARDBOARD',
+    'SILVER CARDBOARD'
+  ];
+
+  const materialOptionsFour = [
+    'COATED PAPER AND RIGID MATERIAL'
+  ];
+
   const thicknessOptions = [
     '300g',
     '350g',
@@ -119,6 +134,54 @@ const Boxes = ({ product, updateProduct }) => {
     </div>
   );
 
+
+  const renderMaterialFieldTwo = () => (
+    <div className="form-group">
+      <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Material:</label>
+      <select
+        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+        value={product.fields.material || ""}
+        onChange={(e) => updateProduct('material', e.target.value)}
+      >
+        {materialOptionsTwo.map((material, index) => (
+          <option key={index} value={material}>{material}</option>
+        ))}
+      </select>
+    </div>
+  );
+
+
+  const renderMaterialFieldThree = () => (
+    <div className="form-group">
+      <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Material:</label>
+      <select
+        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+        value={product.fields.material || ""}
+        onChange={(e) => updateProduct('material', e.target.value)}
+      >
+        {materialOptionsThree.map((material, index) => (
+          <option key={index} value={material}>{material}</option>
+        ))}
+      </select>
+    </div>
+  );
+
+  const renderMaterialFieldFour = () => (
+    <div className="form-group">
+      <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Material:</label>
+      <select
+        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+        value={product.fields.material || ""}
+        onChange={(e) => updateProduct('material', e.target.value)}
+      >
+        {materialOptionsFour.map((material, index) => (
+          <option key={index} value={material}>{material}</option>
+        ))}
+      </select>
+    </div>
+  );
+
+
   const renderThicknessField = () => (
     <div className="form-group">
       <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Thickness:</label>
@@ -191,7 +254,7 @@ const Boxes = ({ product, updateProduct }) => {
         return (
           <>
             {renderCommonFields()}
-            {renderMaterialField()}
+            {renderMaterialFieldTwo()}            
             {renderThicknessField()}
             {renderFinishField()}
             {renderSpecialEffectsField()}
@@ -212,7 +275,7 @@ const Boxes = ({ product, updateProduct }) => {
                 placeholder="Hang Flap Size in mm"
               />
             </div>
-            {renderMaterialField()}
+            {renderMaterialFieldTwo()}
             {renderThicknessField()}
             {renderFinishField()}
             {renderSpecialEffectsField()}
@@ -292,7 +355,7 @@ const Boxes = ({ product, updateProduct }) => {
         return (
           <>
             {renderCommonFields()}
-            {renderMaterialField()}
+            {renderMaterialFieldTwo()}
             {renderThicknessField()}
             {renderFinishField()}
             {renderSpecialEffectsField()}
@@ -375,7 +438,7 @@ const Boxes = ({ product, updateProduct }) => {
                 </label>
               </div>
             </div>
-            {renderMaterialField()}
+            {renderMaterialFieldThree()}
             {renderThicknessField()}
             {renderFinishField()}
             {renderSpecialEffectsField()}
@@ -408,7 +471,7 @@ const Boxes = ({ product, updateProduct }) => {
         return (
           <>
             {renderCommonFields()}
-            {renderMaterialField()}
+            {renderMaterialFieldTwo()}
             {renderThicknessField()}
             {renderFinishField()}
             {renderSpecialEffectsField()}
@@ -443,7 +506,7 @@ const Boxes = ({ product, updateProduct }) => {
         return (
           <>
             {renderCommonFields()}
-            {renderMaterialField()}
+            {renderMaterialFieldFour()}
             {renderFinishField()}
             {renderSpecialEffectsField()}
             {renderInsertField()}

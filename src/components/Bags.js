@@ -57,18 +57,6 @@ const Bags = ({ product, updateProduct }) => {
   const renderMaterialFields = () => (
     <>
       <div className="form-group">
-        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Material:</label>
-        <select
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          value={product.fields.material || ""}
-          onChange={(e) => updateProduct('material', e.target.value)}
-        >
-          {materialOptions.map((option, index) => (
-            <option key={index} value={option}>{option}</option>
-          ))}
-        </select>
-      </div>
-      <div className="form-group">
         <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Front Material:</label>
         <select
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
@@ -129,6 +117,70 @@ const Bags = ({ product, updateProduct }) => {
   const renderBagOptions = () => {
     switch (bagType) {
       case '1':
+        return (
+          <>
+            {renderCommonFields()}
+            <div className="form-group">
+              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Open Side:</label>
+              <select
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                value={product.fields.openSide}
+                onChange={(e) => updateProduct('openSide', e.target.value)}
+              >
+                <option value="">Select Side</option>
+                <option value="top">Top</option>
+                <option value="bottom">Bottom</option>
+              </select>
+            </div>
+            
+            {renderMaterialFields()}
+            {renderFinishingOptions()}
+          </>
+        );
+        case '2':
+          return (
+            <>
+              {renderCommonFields()}
+              <div className="form-group">
+                <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Total Gusset (in mm):</label>
+                <input
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  type="number"
+                  value={product.fields.size?.totalGusset || ""}
+                  onChange={(e) => handleSizeChange('totalGusset', e.target.value)}
+                  placeholder="Total Gusset in mm"
+                />
+              </div>
+              <div className="form-group">
+                <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Gusset Type:</label>
+                <select
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  value={product.fields.gussetType}
+                  onChange={(e) => updateProduct('gussetType', e.target.value)}
+                >
+                  <option value="">Select Gusset Type</option>
+                  <option value="doyen">Doyen Gusset</option>
+                  <option value="k-seal">K Seal Gusset</option>
+                </select>
+              </div>
+              {renderMaterialFields()}
+              {renderFinishingOptions()}
+              <div className="form-group">
+                <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Zipper Type:</label>
+                <select
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  value={product.fields.zipperType}
+                  onChange={(e) => updateProduct('zipperType', e.target.value)}
+                >
+                  <option value="">Select Zipper Type</option>
+                  {/* <option value="no-zipper">No Zipper</option> */}
+                  <option value="regular-zipper">Regular Zipper</option>
+                  <option value="cr-zipper">CR Zipper</option>
+                </select>
+              </div>
+              
+            </>
+          );
       case '3':
         return (
           <>
@@ -167,7 +219,6 @@ const Bags = ({ product, updateProduct }) => {
             {renderFinishingOptions()}
           </>
         );
-      case '2':
       case '4':
         return (
           <>
@@ -204,7 +255,7 @@ const Bags = ({ product, updateProduct }) => {
                 onChange={(e) => updateProduct('zipperType', e.target.value)}
               >
                 <option value="">Select Zipper Type</option>
-                <option value="no-zipper">No Zipper</option>
+                {/* <option value="no-zipper">No Zipper</option> */}
                 <option value="regular-zipper">Regular Zipper</option>
                 <option value="cr-zipper">CR Zipper</option>
               </select>
