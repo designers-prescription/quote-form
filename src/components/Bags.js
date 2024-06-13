@@ -102,7 +102,7 @@ const Bags = ({ product, updateProduct }) => {
             <input
               type="checkbox"
               name={option}
-              checked={product.fields[option]}
+              checked={product.fields[option] || false}
               onChange={(e) => updateProduct(option, e.target.checked)}
               className="mr-2 text-gray-900 dark:text-gray-300"
               style={{ width: '15px', height: '15px' }}
@@ -124,7 +124,7 @@ const Bags = ({ product, updateProduct }) => {
               <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Open Side:</label>
               <select
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                value={product.fields.openSide}
+                value={product.fields.openSide || ""}
                 onChange={(e) => updateProduct('openSide', e.target.value)}
               >
                 <option value="">Select Side</option>
@@ -132,56 +132,42 @@ const Bags = ({ product, updateProduct }) => {
                 <option value="bottom">Bottom</option>
               </select>
             </div>
-            
             {renderMaterialFields()}
             {renderFinishingOptions()}
           </>
         );
-        case '2':
-          return (
-            <>
-              {renderCommonFields()}
-              <div className="form-group">
-                <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Total Gusset (in mm):</label>
-                <input
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  type="number"
-                  value={product.fields.size?.totalGusset || ""}
-                  onChange={(e) => handleSizeChange('totalGusset', e.target.value)}
-                  placeholder="Total Gusset in mm"
-                />
-              </div>
-              <div className="form-group">
-                <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Gusset Type:</label>
-                <select
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  value={product.fields.gussetType}
-                  onChange={(e) => updateProduct('gussetType', e.target.value)}
-                >
-                  <option value="">Select Gusset Type</option>
-                  <option value="doyen">Doyen Gusset</option>
-                  <option value="k-seal">K Seal Gusset</option>
-                </select>
-              </div>
-              {renderMaterialFields()}
-              {renderFinishingOptions()}
-              <div className="form-group">
-                <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Zipper Type:</label>
-                <select
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  value={product.fields.zipperType}
-                  onChange={(e) => updateProduct('zipperType', e.target.value)}
-                >
-                  <option value="">Select Zipper Type</option>
-                  {/* <option value="no-zipper">No Zipper</option> */}
-                  <option value="regular-zipper">Regular Zipper</option>
-                  <option value="cr-zipper">CR Zipper</option>
-                </select>
-              </div>
-              
-            </>
-          );
+      case '2':
+        return (
+          <>
+            {renderCommonFields()}
+            <div className="form-group">
+              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Total Gusset (in mm):</label>
+              <input
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                type="number"
+                value={product.fields.size?.totalGusset || ""}
+                onChange={(e) => handleSizeChange('totalGusset', e.target.value)}
+                placeholder="Total Gusset in mm"
+              />
+            </div>
+            <div className="form-group">
+              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Gusset Type:</label>
+              <select
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                value={product.fields.gussetType || ""}
+                onChange={(e) => updateProduct('gussetType', e.target.value)}
+              >
+                <option value="">Select Gusset Type</option>
+                <option value="doyen">Doyen Gusset</option>
+                <option value="k-seal">K Seal Gusset</option>
+              </select>
+            </div>
+            {renderMaterialFields()}
+            {renderFinishingOptions()}
+          </>
+        );
       case '3':
+      case '8':
         return (
           <>
             {renderCommonFields()}
@@ -189,7 +175,7 @@ const Bags = ({ product, updateProduct }) => {
               <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Open Side:</label>
               <select
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                value={product.fields.openSide}
+                value={product.fields.openSide || ""}
                 onChange={(e) => updateProduct('openSide', e.target.value)}
               >
                 <option value="">Select Side</option>
@@ -205,7 +191,7 @@ const Bags = ({ product, updateProduct }) => {
                     <input
                       type="checkbox"
                       name={option}
-                      checked={product.fields[option]}
+                      checked={product.fields[option] || false}
                       onChange={(e) => updateProduct(option, e.target.checked)}
                       className="mr-2 text-gray-900 dark:text-gray-300"
                       style={{ width: '15px', height: '15px' }}
@@ -237,7 +223,7 @@ const Bags = ({ product, updateProduct }) => {
               <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Gusset Type:</label>
               <select
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                value={product.fields.gussetType}
+                value={product.fields.gussetType || ""}
                 onChange={(e) => updateProduct('gussetType', e.target.value)}
               >
                 <option value="">Select Gusset Type</option>
@@ -251,11 +237,10 @@ const Bags = ({ product, updateProduct }) => {
               <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Zipper Type:</label>
               <select
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                value={product.fields.zipperType}
+                value={product.fields.zipperType || ""}
                 onChange={(e) => updateProduct('zipperType', e.target.value)}
               >
                 <option value="">Select Zipper Type</option>
-                {/* <option value="no-zipper">No Zipper</option> */}
                 <option value="regular-zipper">Regular Zipper</option>
                 <option value="cr-zipper">CR Zipper</option>
               </select>
@@ -263,12 +248,12 @@ const Bags = ({ product, updateProduct }) => {
             <div className="form-group">
               <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Options:</label>
               <div className="grid gap-2 grid-cols-2">
-                {['Tear Notches', 'Rounded Corners', 'White Support', 'Clear Window', 'Hologram', 'Spot UV', 'Raised Varnish', 'Foil Stamping', 'Embossing'].map(option => (
+                {['Tear Notches', 'Rounded Corners', 'Hang Hole', 'Sombrero Hole', 'Clear Window'].map(option => (
                   <label key={option} className="tracking-wide text-xs font-bold leading-6 text-gray-900 flex w-full flex-row" style={{ justifySelf: 'flex-start' }}>
                     <input
                       type="checkbox"
                       name={option}
-                      checked={product.fields[option]}
+                      checked={product.fields[option] || false}
                       onChange={(e) => updateProduct(option, e.target.checked)}
                       className="mr-2 text-gray-900 dark:text-gray-300"
                       style={{ width: '15px', height: '15px' }}
@@ -330,7 +315,7 @@ const Bags = ({ product, updateProduct }) => {
                     <input
                       type="checkbox"
                       name={option}
-                      checked={product.fields[option]}
+                      checked={product.fields[option] || false}
                       onChange={(e) => updateProduct(option, e.target.checked)}
                       className="mr-2 text-gray-900 dark:text-gray-300"
                       style={{ width: '15px', height: '15px' }}
@@ -340,6 +325,75 @@ const Bags = ({ product, updateProduct }) => {
                 ))}
               </div>
             </div>
+          </>
+        );
+      case '9':
+        return (
+          <>
+            {renderCommonFields()}
+            <div className="form-group">
+              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Thickness (in mm):</label>
+              <input
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                type="number"
+                value={product.fields.thicknessMM || ""}
+                onChange={(e) => handleSizeChange('thicknessMM', e.target.value)}
+                placeholder="Thickness in mm"
+              />
+            </div>
+            <div className="form-group">
+              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Material:</label>
+              <input
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                type="text"
+                value={product.fields.material || ""}
+                onChange={(e) => updateProduct('material', e.target.value)}
+                placeholder="Material"
+              />
+            </div>
+            {renderFinishingOptions()}
+          </>
+        );
+      case '10':
+        return (
+          <>
+            {renderCommonFields()}
+            <div className="form-group">
+              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Total Gusset (in mm):</label>
+              <input
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                type="number"
+                value={product.fields.size?.totalGusset || ""}
+                onChange={(e) => handleSizeChange('totalGusset', e.target.value)}
+                placeholder="Total Gusset in mm"
+              />
+            </div>
+            <div className="form-group">
+              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Gusset Type:</label>
+              <select
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                value={product.fields.gussetType || ""}
+                onChange={(e) => updateProduct('gussetType', e.target.value)}
+              >
+                <option value="">Select Gusset Type</option>
+                <option value="doyen">Doyen Gusset</option>
+                <option value="k-seal">K Seal Gusset</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Spout:</label>
+              <select
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                value={product.fields.spout || ""}
+                onChange={(e) => updateProduct('spout', e.target.value)}
+              >
+                <option value="">Select Spout</option>
+                <option value="Standard Cap">Standard Cap</option>
+                <option value="Baby Safe Cap">Baby Safe Cap</option>
+              </select>
+            </div>
+            {renderMaterialFields()}
+            {renderFinishingOptions()}
           </>
         );
       default:

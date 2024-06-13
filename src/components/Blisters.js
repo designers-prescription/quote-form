@@ -12,185 +12,10 @@ const Blisters = ({ product, updateProduct }) => {
     updateProduct('size', size);
   };
 
-  const handleSpecialEffectsChange = (effect) => {
-    let effects = product.fields.specialEffects ? product.fields.specialEffects.split(',') : [];
-    if (effects.includes(effect)) {
-      effects = effects.filter(e => e !== effect);
-    } else {
-      effects.push(effect);
-    }
-    updateProduct('specialEffects', effects.join(','));
-  };
-
-  return (
-    <div className="product-form grid gap-2 grid-cols-2">
+  const renderCommonFields = () => (
+    <>
       <div className="form-group col-span-2">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Clamshell:(restricted materials apply)</label>
-        <div className="radio-group">
-          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-            <input
-              type="radio"
-              name="clamshell"
-              checked={product.fields.clamshell === 'yes'}
-              onChange={() => updateProduct('clamshell', 'yes')}
-              className="mr-2"
-            />
-            Yes
-          </label>
-          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-            <input
-              type="radio"
-              name="clamshell"
-              checked={product.fields.clamshell === 'no'}
-              onChange={() => updateProduct('clamshell', 'no')}
-              className="mr-2"
-            />
-            No
-          </label>
-        </div>
-      </div>
-
-      <div className="form-group col-span-2">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">3M Adhesive:</label>
-        <div className="radio-group">
-          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-            <input
-              type="radio"
-              name="adhesive3M"
-              checked={product.fields.adhesive3M === 'yes'}
-              onChange={() => updateProduct('adhesive3M', 'yes')}
-              className="mr-2"
-            />
-            Yes
-          </label>
-          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-            <input
-              type="radio"
-              name="adhesive3M"
-              checked={product.fields.adhesive3M === 'no'}
-              onChange={() => updateProduct('adhesive3M', 'no')}
-              className="mr-2"
-            />
-            No
-          </label>
-        </div>
-      </div>
-
-      <div className="form-group col-span-2">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Material:</label>
-        <select
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          value={product.fields.material || ""}
-          onChange={(e) => updateProduct('material', e.target.value)}
-        >
-          <option value="">Select Material</option>
-          <option value="CLEAR CLAM SHELL (BLISTER)">CLEAR CLAM SHELL (BLISTER)</option>
-        </select>
-      </div>
-
-      <div className="form-group col-span-2">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Thickness (in gsm):</label>
-        <input
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="number"
-          value={product.fields.thickness || ""}
-          onChange={(e) => updateProduct('thickness', e.target.value)}
-          placeholder="Thickness in gsm"
-        />
-      </div>
-
-      <div className="form-group col-span-2">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Finish:</label>
-        <select
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          value={product.fields.finish || ""}
-          onChange={(e) => updateProduct('finish', e.target.value)}
-        >
-          <option value="">Select Finish</option>
-          {[
-            'Matte Lamination',
-            'Gloss Lamination',
-            'Matte Varnish',
-            'Gloss Varnish',
-            'Soft Touch'
-          ].map((finish) => (
-            <option key={finish} value={finish}>
-              {finish}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className=" col-span-2 mb-2">
-        <label className="block tracking-wide text-sm font-bold leading-6 mb-5 text-gray-900">Special Effects:</label>
-        <div className="grid gap-2 grid-cols-2">
-          {[
-            'Spot UV',
-            'Embossing',
-            'Metallics',
-            'Debossing',
-            'Hot Stamping / Foil',
-            'Raised Varnish',
-            'Hologram',
-            'Window'
-          ].map((effect) => (
-            <label key={effect} className="tracking-wide text-xs font-bold leading-6 text-gray-900 flex w-full flex-row" style={{ justifySelf: 'flex-start' }}>
-              <input
-                type="checkbox"
-                checked={product.fields.specialEffects?.split(',').includes(effect) || false}
-                onChange={() => handleSpecialEffectsChange(effect)}
-                className="mr-2 text-gray-900 dark:text-gray-300"
-                style={{ width: '15px', height: '15px' }}
-              />
-              {effect}
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <div className="form-group col-span-2">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Insert:</label>
-        <select
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          value={product.fields.insert || ""}
-          onChange={(e) => updateProduct('insert', e.target.value)}
-        >
-          <option value="">Select Insert</option>
-          {[
-            'None',
-            'White Cardboard',
-            'EVA',
-            'Foam'
-          ].map((insert) => (
-            <option key={insert} value={insert}>
-              {insert}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="form-group col-span-2">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Artwork:</label>
-        <input
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="file"
-          onChange={(e) => updateProduct('artwork', e.target.files[0])}
-        />
-      </div>
-
-      <div className="form-group">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Height: (in mm)</label>
-        <input
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="number"
-          value={product.fields.size?.heightMM || ""}
-          onChange={(e) => handleSizeChange('heightMM', e.target.value)}
-          placeholder="Height in mm"
-        />
-      </div>
-
-      <div className="form-group">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Width: (in mm)</label>
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Width (in mm):</label>
         <input
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
           type="number"
@@ -199,28 +24,181 @@ const Blisters = ({ product, updateProduct }) => {
           placeholder="Width in mm"
         />
       </div>
-
-      <div className="form-group">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-red-500">Height: (in Inches)</label>
+      <div className="form-group col-span-2">
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Height (in mm):</label>
         <input
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
           type="number"
-          value={product.fields.size?.height || ""}
-          readOnly
-          placeholder="Height"
+          value={product.fields.size?.heightMM || ""}
+          onChange={(e) => handleSizeChange('heightMM', e.target.value)}
+          placeholder="Height in mm"
         />
       </div>
+    </>
+  );
 
-      <div className="form-group">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-red-500">Width: (in Inches)</label>
-        <input
+  const renderFinishings = () => (
+    <>
+      <div className="form-group col-span-2">
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Finishings:</label>
+        <div className="grid gap-2 grid-cols-2">
+          {['Matte Lamination', 'Gloss Lamination', 'Soft Touch Lamination', 'Spot UV', 'Hot Stamping'].map(option => (
+            <label key={option} className="tracking-wide text-xs font-bold leading-6 text-gray-900 flex w-full flex-row" style={{ justifySelf: 'flex-start' }}>
+              <input
+                type="checkbox"
+                name={option}
+                checked={product.fields[option] || false}
+                onChange={(e) => updateProduct(option, e.target.checked)}
+                className="mr-2 text-gray-900 dark:text-gray-300"
+                style={{ width: '15px', height: '15px' }}
+              />
+              {option}
+            </label>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+
+  const renderHangingHoles = () => (
+    <>
+      <div className="form-group col-span-2">
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Hanging Hole Options:</label>
+        <select
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="number"
-          value={product.fields.size?.width || ""}
-          readOnly
-          placeholder="Width"
+          value={product.fields.hangingHole || ""}
+          onChange={(e) => updateProduct('hangingHole', e.target.value)}
+        >
+          <option value="">Select Hanging Hole</option>
+          <option value="hang-hole">Hang Hole</option>
+          <option value="sombrero-hole">Sombrero Hole</option>
+          <option value="delta-hole">Delta Hole</option>
+        </select>
+      </div>
+    </>
+  );
+
+  const renderNotes = () => (
+    <>
+      <div className="form-group col-span-2">
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Notes:</label>
+        <textarea
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          value={product.fields.notes || ""}
+          onChange={(e) => updateProduct('notes', e.target.value)}
+          placeholder="Additional notes"
         />
       </div>
+    </>
+  );
+
+  const renderBlisterOptions = () => {
+    switch (product.fields.blisterType) {
+      case '1':
+        return (
+          <>
+            {renderCommonFields()}
+            <div className="form-group col-span-2">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Material:</label>
+              <select
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                value={product.fields.material || ""}
+                onChange={(e) => updateProduct('material', e.target.value)}
+              >
+                <option value="">Select Material</option>
+                <option value="350g white cardboard">350g White Cardboard</option>
+                <option value="400g white cardboard">400g White Cardboard</option>
+                <option value="350g silver cardboard">350g Silver Cardboard</option>
+                <option value="400g silver cardboard">400g Silver Cardboard</option>
+              </select>
+            </div>
+            <div className="form-group col-span-2">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Plastic Shell:</label>
+              <input
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                type="text"
+                value={product.fields.plasticShell || ""}
+                onChange={(e) => updateProduct('plasticShell', e.target.value)}
+                placeholder="Plastic Shell"
+              />
+            </div>
+            <div className="form-group col-span-2">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">3M Tape:</label>
+              <input
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                type="text"
+                value={product.fields.tape3M || ""}
+                onChange={(e) => updateProduct('tape3M', e.target.value)}
+                placeholder="3M Tape"
+              />
+            </div>
+            {renderFinishings()}
+            {renderHangingHoles()}
+            {renderNotes()}
+          </>
+        );
+      case '2':
+        return (
+          <>
+            {renderCommonFields()}
+            <div className="form-group col-span-2">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Material:</label>
+              <select
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                value={product.fields.material || ""}
+                onChange={(e) => updateProduct('material', e.target.value)}
+              >
+                <option value="">Select Material</option>
+                <option value="300g white cardboard">300g White Cardboard</option>
+                <option value="350g white cardboard">350g White Cardboard</option>
+                <option value="300g silver cardboard">300g Silver Cardboard</option>
+                <option value="350g silver cardboard">350g Silver Cardboard</option>
+              </select>
+            </div>
+            <div className="form-group col-span-2">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Internal Cardboard Size (W x H):</label>
+              <div className="grid gap-2 grid-cols-2">
+                <input
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  type="number"
+                  value={product.fields.internalCardboardWidth || ""}
+                  onChange={(e) => updateProduct('internalCardboardWidth', e.target.value)}
+                  placeholder="Width in mm"
+                />
+                <input
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  type="number"
+                  value={product.fields.internalCardboardHeight || ""}
+                  onChange={(e) => updateProduct('internalCardboardHeight', e.target.value)}
+                  placeholder="Height in mm"
+                />
+              </div>
+            </div>
+            {renderFinishings()}
+            {renderHangingHoles()}
+            {renderNotes()}
+          </>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="product-form grid gap-2 grid-cols-2">
+      <div className="form-group col-span-2">
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Select Blister Type:</label>
+        <select
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          value={product.fields.blisterType || ""}
+          onChange={(e) => updateProduct('blisterType', e.target.value)}
+        >
+          <option value="">Select Blister Type</option>
+          <option value="1">Trapped Cardboard Blister</option>
+          <option value="2">Plastic Shell Blister</option>
+        </select>
+      </div>
+      {renderBlisterOptions()}
     </div>
   );
 };

@@ -44,7 +44,8 @@ const Boxes = ({ product, updateProduct }) => {
 
   const materialOptionsThree = [
     'WHITE CARDBOARD',
-    'SILVER CARDBOARD'
+    'SILVER CARDBOARD',
+    'COATED PAPER'
   ];
 
   const materialOptionsFour = [
@@ -56,6 +57,10 @@ const Boxes = ({ product, updateProduct }) => {
     '350g',
     '400g',
     '450g'
+  ];
+
+  const thicknessOptionsTwo = [
+    '157g'
   ];
 
   const finishOptions = [
@@ -76,6 +81,15 @@ const Boxes = ({ product, updateProduct }) => {
   ];
 
   const insertOptions = [
+    'None',
+    'Cardboard',
+    'EVA',
+    'Plastic Shell',
+    'Foam',
+    'Rigid'
+  ];
+
+  const insertOptionsTwo = [
     'None',
     'Cardboard',
     'EVA',
@@ -119,7 +133,7 @@ const Boxes = ({ product, updateProduct }) => {
     </>
   );
 
-  const renderMaterialField = () => (
+  const renderMaterialField = (options) => (
     <div className="form-group">
       <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Material:</label>
       <select
@@ -127,62 +141,14 @@ const Boxes = ({ product, updateProduct }) => {
         value={product.fields.material || ""}
         onChange={(e) => updateProduct('material', e.target.value)}
       >
-        {materialOptions.map((material, index) => (
+        {options.map((material, index) => (
           <option key={index} value={material}>{material}</option>
         ))}
       </select>
     </div>
   );
 
-
-  const renderMaterialFieldTwo = () => (
-    <div className="form-group">
-      <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Material:</label>
-      <select
-        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-        value={product.fields.material || ""}
-        onChange={(e) => updateProduct('material', e.target.value)}
-      >
-        {materialOptionsTwo.map((material, index) => (
-          <option key={index} value={material}>{material}</option>
-        ))}
-      </select>
-    </div>
-  );
-
-
-  const renderMaterialFieldThree = () => (
-    <div className="form-group">
-      <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Material:</label>
-      <select
-        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-        value={product.fields.material || ""}
-        onChange={(e) => updateProduct('material', e.target.value)}
-      >
-        {materialOptionsThree.map((material, index) => (
-          <option key={index} value={material}>{material}</option>
-        ))}
-      </select>
-    </div>
-  );
-
-  const renderMaterialFieldFour = () => (
-    <div className="form-group">
-      <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Material:</label>
-      <select
-        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-        value={product.fields.material || ""}
-        onChange={(e) => updateProduct('material', e.target.value)}
-      >
-        {materialOptionsFour.map((material, index) => (
-          <option key={index} value={material}>{material}</option>
-        ))}
-      </select>
-    </div>
-  );
-
-
-  const renderThicknessField = () => (
+  const renderThicknessField = (options) => (
     <div className="form-group">
       <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Thickness:</label>
       <select
@@ -190,7 +156,7 @@ const Boxes = ({ product, updateProduct }) => {
         value={product.fields.thickness || ""}
         onChange={(e) => updateProduct('thickness', e.target.value)}
       >
-        {thicknessOptions.map((thickness, index) => (
+        {options.map((thickness, index) => (
           <option key={index} value={thickness}>{thickness}</option>
         ))}
       </select>
@@ -232,7 +198,7 @@ const Boxes = ({ product, updateProduct }) => {
     </div>
   );
 
-  const renderInsertField = () => (
+  const renderInsertField = (options) => (
     <div className="form-group">
       <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Insert:</label>
       <select
@@ -240,7 +206,7 @@ const Boxes = ({ product, updateProduct }) => {
         value={product.fields.insert || ""}
         onChange={(e) => updateProduct('insert', e.target.value)}
       >
-        {insertOptions.map((insert, index) => (
+        {options.map((insert, index) => (
           <option key={index} value={insert}>{insert}</option>
         ))}
       </select>
@@ -254,11 +220,11 @@ const Boxes = ({ product, updateProduct }) => {
         return (
           <>
             {renderCommonFields()}
-            {renderMaterialFieldTwo()}            
-            {renderThicknessField()}
+            {renderMaterialField(materialOptionsTwo)}
+            {renderThicknessField(thicknessOptions)}
             {renderFinishField()}
             {renderSpecialEffectsField()}
-            {renderInsertField()}
+            {renderInsertField(insertOptionsTwo)}
           </>
         );
       case '3':
@@ -275,11 +241,11 @@ const Boxes = ({ product, updateProduct }) => {
                 placeholder="Hang Flap Size in mm"
               />
             </div>
-            {renderMaterialFieldTwo()}
-            {renderThicknessField()}
+            {renderMaterialField(materialOptionsTwo)}
+            {renderThicknessField(thicknessOptions)}
             {renderFinishField()}
             {renderSpecialEffectsField()}
-            {renderInsertField()}
+            {renderInsertField(insertOptionsTwo)}
             <div className="form-group">
               <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Hanging Hole:</label>
               <div className="radio-group">
@@ -355,11 +321,11 @@ const Boxes = ({ product, updateProduct }) => {
         return (
           <>
             {renderCommonFields()}
-            {renderMaterialFieldTwo()}
-            {renderThicknessField()}
+            {renderMaterialField(materialOptionsTwo)}
+            {renderThicknessField(thicknessOptions)}
             {renderFinishField()}
             {renderSpecialEffectsField()}
-            {renderInsertField()}
+            {renderInsertField(insertOptionsTwo)}
           </>
         );
       case '5':
@@ -416,6 +382,18 @@ const Boxes = ({ product, updateProduct }) => {
               />
             </div>
             <div className="form-group">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Thickness:</label>
+              <select
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                value={product.fields.thickness || ""}
+                onChange={(e) => updateProduct('thickness', e.target.value)}
+              >
+                <option value="">Select Thickness</option>
+                <option value="1-2-3 Envelope bottom closure">1-2-3 Envelope bottom closure</option>
+                <option value="Autolock Glue Bottom">Autolock Glue Bottom</option>
+              </select>
+            </div>
+            <div className="form-group">
               <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">EVA Insert:</label>
               <div className="radio-group">
                 <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
@@ -438,8 +416,8 @@ const Boxes = ({ product, updateProduct }) => {
                 </label>
               </div>
             </div>
-            {renderMaterialFieldThree()}
-            {renderThicknessField()}
+            {renderMaterialField(materialOptionsThree)}
+            {renderThicknessField(thicknessOptionsTwo)}
             {renderFinishField()}
             {renderSpecialEffectsField()}
           </>
@@ -449,11 +427,11 @@ const Boxes = ({ product, updateProduct }) => {
         return (
           <>
             {renderCommonFields()}
-            {renderMaterialField()}
-            {renderThicknessField()}
+            {renderMaterialField(materialOptions)}
+            {renderThicknessField(thicknessOptions)}
             {renderFinishField()}
             {renderSpecialEffectsField()}
-            {renderInsertField()}
+            {renderInsertField(insertOptionsTwo)}
           </>
         );
       case '8':
@@ -461,32 +439,32 @@ const Boxes = ({ product, updateProduct }) => {
         return (
           <>
             {renderCommonFields()}
-            {renderMaterialField()}
+            {renderMaterialField(materialOptions)}
             {renderFinishField()}
             {renderSpecialEffectsField()}
-            {renderInsertField()}
+            {renderInsertField(insertOptionsTwo)}
           </>
         );
       case '10':
         return (
           <>
             {renderCommonFields()}
-            {renderMaterialFieldTwo()}
-            {renderThicknessField()}
+            {renderMaterialField(materialOptionsTwo)}
+            {renderThicknessField(thicknessOptions)}
             {renderFinishField()}
             {renderSpecialEffectsField()}
-            {renderInsertField()}
+            {renderInsertField(insertOptionsTwo)}
           </>
         );
       case '11':
         return (
           <>
             {renderCommonFields()}
-            {renderMaterialField()}
-            {renderThicknessField()}
+            {renderMaterialField(materialOptions)}
+            {renderThicknessField(thicknessOptions)}
             {renderFinishField()}
             {renderSpecialEffectsField()}
-            {renderInsertField()}
+            {renderInsertField(insertOptionsTwo)}
           </>
         );
       case '12':
@@ -494,11 +472,11 @@ const Boxes = ({ product, updateProduct }) => {
         return (
           <>
             {renderCommonFields()}
-            {renderMaterialField()}
-            {renderThicknessField()}
+            {renderMaterialField(materialOptions)}
+            {renderThicknessField(thicknessOptions)}
             {renderFinishField()}
             {renderSpecialEffectsField()}
-            {renderInsertField()}
+            {renderInsertField(insertOptionsTwo)}
           </>
         );
       case '14':
@@ -506,10 +484,10 @@ const Boxes = ({ product, updateProduct }) => {
         return (
           <>
             {renderCommonFields()}
-            {renderMaterialFieldFour()}
+            {renderMaterialField(materialOptionsFour)}
             {renderFinishField()}
             {renderSpecialEffectsField()}
-            {renderInsertField()}
+            {renderInsertField(insertOptions)}
             <div className="form-group">
               <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Magnetic Closure:</label>
               <div className="radio-group">
@@ -545,12 +523,11 @@ const Boxes = ({ product, updateProduct }) => {
       <div className="form-group">
         <img src="https://shipping-quote.labelslab.com/boxes.jpg" alt="Placeholder" />
       </div>
-
       <div className="form-group">
         <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Design Type:</label>
         <select
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          value={product.fields.designType}
+          value={product.fields.designType || ""}
           onChange={(e) => updateProduct('designType', e.target.value)}
         >
           <option value="">Select Design Type</option>
@@ -567,4 +544,3 @@ const Boxes = ({ product, updateProduct }) => {
 };
 
 export default Boxes;
-
