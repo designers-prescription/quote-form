@@ -5,7 +5,7 @@ import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import StandUpPouches from "../components/StandUpPouches";
 import Boxes from "../components/Boxes";
-import Bottles from "../components/Bottles";
+import Bottles from "../components/NewBottles";
 import Caps from "../components/Caps";
 import Blisters from "../components/Blisters";
 import Header from "../components/Header";

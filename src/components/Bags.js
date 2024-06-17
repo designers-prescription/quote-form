@@ -14,6 +14,10 @@ const Bags = ({ product, updateProduct }) => {
     updateProduct('size', size);
   };
 
+  const handleFoilNumberChange = (e) => {
+    updateProduct('foilNumber', e.target.value);
+  };
+
   const materialOptions = [
     "None",
     "PET / VMPET / PE (GLOSS)",
@@ -31,6 +35,16 @@ const Bags = ({ product, updateProduct }) => {
 
   const renderCommonFields = () => (
     <>
+      <div className="form-group">
+        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Foil Number:</label>
+        <input
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          type="number"
+          value={product.fields.foilNumber || ""}
+          onChange={handleFoilNumberChange}
+          placeholder="Foil Number"
+        />
+      </div>
       <div className="form-group">
         <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Width (in mm):</label>
         <input
@@ -97,7 +111,7 @@ const Bags = ({ product, updateProduct }) => {
     <div className="form-group">
       <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Finishings:</label>
       <div className="grid gap-2 grid-cols-2">
-        {['Matte Lamination', 'Gloss Lamination', 'Soft Touch Lamination', 'Metallic White Support', 'Spot UV', 'Raised Varnish', 'Embossing', 'Hologram', 'Hot Foil Stamping', 'Foil Number'].map(option => (
+        {['Matte Lamination', 'Gloss Lamination', 'Soft Touch Lamination', 'Metallic White Support', 'Spot UV', 'Raised Varnish', 'Embossing', 'Hologram', 'Hot Foil Stamping'].map(option => (
           <label key={option} className="tracking-wide text-xs font-bold leading-6 text-gray-900 flex w-full flex-row" style={{ justifySelf: 'flex-start' }}>
             <input
               type="checkbox"
@@ -310,7 +324,7 @@ const Bags = ({ product, updateProduct }) => {
             <div className="form-group">
               <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Options:</label>
               <div className="grid gap-2 grid-cols-2">
-                {['Valve', 'Peel Stick', 'Tear Tab', 'White Support', 'Clear Window', 'Hologram', 'Spot UV', 'Raised Varnish', 'Foil Stamping', 'Embossing'].map(option => (
+                {['Valve', 'Peel Stick', 'Tear Tab', 'Clear Window'].map(option => (
                   <label key={option} className="tracking-wide text-xs font-bold leading-6 text-gray-900 flex w-full flex-row" style={{ justifySelf: 'flex-start' }}>
                     <input
                       type="checkbox"

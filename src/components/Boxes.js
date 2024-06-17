@@ -33,7 +33,7 @@ const Boxes = ({ product, updateProduct }) => {
     'SILVER CARDBOARD',
     'KRAFT PAPER',
     'CORRUGATED',
-    'COATED PAPER AND RIGID MATERIAL'
+    'COATED PAPER'
   ];
 
   const materialOptionsTwo = [
@@ -49,7 +49,7 @@ const Boxes = ({ product, updateProduct }) => {
   ];
 
   const materialOptionsFour = [
-    'COATED PAPER AND RIGID MATERIAL'
+    'COATED PAPER'
   ];
 
   const thicknessOptions = [
@@ -76,8 +76,7 @@ const Boxes = ({ product, updateProduct }) => {
     'Raised Varnish',
     'Hologram',
     'Embossing',
-    'Debossing',
-    'Window'
+    'Debossing'
   ];
 
   const insertOptions = [
@@ -94,8 +93,7 @@ const Boxes = ({ product, updateProduct }) => {
     'Cardboard',
     'EVA',
     'Plastic Shell',
-    'Foam',
-    'Rigid'
+    'Foam'
   ];
 
   const renderCommonFields = () => (
@@ -216,10 +214,42 @@ const Boxes = ({ product, updateProduct }) => {
   const renderBoxOptions = () => {
     switch (product.fields.designType) {
       case '1':
+        return (
+          <>
+            {renderCommonFields()}
+            {renderMaterialField(materialOptionsThree)}
+            {renderThicknessField(thicknessOptions)}
+            {renderFinishField()}
+            {renderSpecialEffectsField()}
+            {renderInsertField(insertOptionsTwo)}
+          </>
+        );
       case '2':
         return (
           <>
             {renderCommonFields()}
+            <div className="form-group">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Belot Width (in mm):</label>
+              <input
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                type="number"
+                value={product.fields.size?.belotWidth || ""}
+                onChange={(e) => handleSizeChange('belotWidth', e.target.value)}
+                placeholder="Belot Width in mm"
+              />
+            </div>
+            <div className="form-group">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Bottom:</label>
+              <select
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                value={product.fields.bottom || ""}
+                onChange={(e) => updateProduct('bottom', e.target.value)}
+              >
+                <option value="">Select Bottom</option>
+                <option value="1-2-3 Envelope closure">1-2-3 Envelope closure</option>
+                <option value="Auto lock">Auto lock</option>
+              </select>
+            </div>
             {renderMaterialField(materialOptionsTwo)}
             {renderThicknessField(thicknessOptions)}
             {renderFinishField()}
@@ -231,90 +261,11 @@ const Boxes = ({ product, updateProduct }) => {
         return (
           <>
             {renderCommonFields()}
-            <div className="form-group">
-              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Hang Flap Size (in mm):</label>
-              <input
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                type="number"
-                value={product.fields.size?.hangFlapSize || ""}
-                onChange={(e) => handleSizeChange('hangFlapSize', e.target.value)}
-                placeholder="Hang Flap Size in mm"
-              />
-            </div>
-            {renderMaterialField(materialOptionsTwo)}
+            {renderMaterialField(materialOptionsThree)}
             {renderThicknessField(thicknessOptions)}
             {renderFinishField()}
             {renderSpecialEffectsField()}
             {renderInsertField(insertOptionsTwo)}
-            <div className="form-group">
-              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Hanging Hole:</label>
-              <div className="radio-group">
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                  <input
-                    type="radio"
-                    name="hangingHole"
-                    checked={product.fields.hangingHole === 'yes'}
-                    onChange={() => updateProduct('hangingHole', 'yes')}
-                  />
-                  Yes
-                </label>
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                  <input
-                    type="radio"
-                    name="hangingHole"
-                    checked={product.fields.hangingHole === 'no'}
-                    onChange={() => updateProduct('hangingHole', 'no')}
-                  />
-                  No
-                </label>
-              </div>
-            </div>
-            <div className="form-group">
-              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Sombrero Hole:</label>
-              <div className="radio-group">
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                  <input
-                    type="radio"
-                    name="sombreroHole"
-                    checked={product.fields.sombreroHole === 'yes'}
-                    onChange={() => updateProduct('sombreroHole', 'yes')}
-                  />
-                  Yes
-                </label>
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                  <input
-                    type="radio"
-                    name="sombreroHole"
-                    checked={product.fields.sombreroHole === 'no'}
-                    onChange={() => updateProduct('sombreroHole', 'no')}
-                  />
-                  No
-                </label>
-              </div>
-            </div>
-            <div className="form-group">
-              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Delta Hole:</label>
-              <div className="radio-group">
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                  <input
-                    type="radio"
-                    name="deltaHole"
-                    checked={product.fields.deltaHole === 'yes'}
-                    onChange={() => updateProduct('deltaHole', 'yes')}
-                  />
-                  Yes
-                </label>
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">
-                  <input
-                    type="radio"
-                    name="deltaHole"
-                    checked={product.fields.deltaHole === 'no'}
-                    onChange={() => updateProduct('deltaHole', 'no')}
-                  />
-                  No
-                </label>
-              </div>
-            </div>
           </>
         );
       case '4':
@@ -325,7 +276,7 @@ const Boxes = ({ product, updateProduct }) => {
             {renderThicknessField(thicknessOptions)}
             {renderFinishField()}
             {renderSpecialEffectsField()}
-            {renderInsertField(insertOptionsTwo)}
+            {renderInsertField(insertOptions)}
           </>
         );
       case '5':
@@ -424,49 +375,8 @@ const Boxes = ({ product, updateProduct }) => {
         );
       case '6':
       case '7':
-        return (
-          <>
-            {renderCommonFields()}
-            {renderMaterialField(materialOptions)}
-            {renderThicknessField(thicknessOptions)}
-            {renderFinishField()}
-            {renderSpecialEffectsField()}
-            {renderInsertField(insertOptionsTwo)}
-          </>
-        );
       case '8':
-      case '9':
-        return (
-          <>
-            {renderCommonFields()}
-            {renderMaterialField(materialOptions)}
-            {renderFinishField()}
-            {renderSpecialEffectsField()}
-            {renderInsertField(insertOptionsTwo)}
-          </>
-        );
       case '10':
-        return (
-          <>
-            {renderCommonFields()}
-            {renderMaterialField(materialOptionsTwo)}
-            {renderThicknessField(thicknessOptions)}
-            {renderFinishField()}
-            {renderSpecialEffectsField()}
-            {renderInsertField(insertOptionsTwo)}
-          </>
-        );
-      case '11':
-        return (
-          <>
-            {renderCommonFields()}
-            {renderMaterialField(materialOptions)}
-            {renderThicknessField(thicknessOptions)}
-            {renderFinishField()}
-            {renderSpecialEffectsField()}
-            {renderInsertField(insertOptionsTwo)}
-          </>
-        );
       case '12':
       case '13':
         return (
@@ -479,7 +389,37 @@ const Boxes = ({ product, updateProduct }) => {
             {renderInsertField(insertOptionsTwo)}
           </>
         );
+      case '9':
+        return (
+          <>
+            {renderCommonFields()}
+            {renderMaterialField(materialOptions)}
+            {renderFinishField()}
+            {renderSpecialEffectsField()}
+            {renderInsertField(insertOptions)}
+          </>
+        );
+      case '11':
+        return (
+          <>
+            {renderCommonFields()}
+            {renderMaterialField(materialOptions)}
+            {renderThicknessField(thicknessOptions)}
+            {renderFinishField()}
+            {renderSpecialEffectsField()}
+            {renderInsertField(insertOptions)}
+          </>
+        );
       case '14':
+        return (
+          <>
+            {renderCommonFields()}
+            {renderMaterialField(materialOptionsFour)}
+            {renderFinishField()}
+            {renderSpecialEffectsField()}
+            {renderInsertField(insertOptions)}
+          </>
+        );
       case '15':
         return (
           <>
