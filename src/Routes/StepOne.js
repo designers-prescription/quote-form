@@ -299,7 +299,7 @@ const StepOne = () => {
                 <option value="Labels">Labels</option>
                 {/* <option value="Stand Up Pouches">Stand Up Pouches</option> */}
                 <option value="Boxes">Boxes</option>
-                <option value="Bottles">Bottles and Jars</option>
+                <option value="Bottles">Bottles</option>
                 <option value="Caps">Caps</option>
                 <option value="Bags">Bags</option>
                 <option value="Blisters">Blisters</option>
