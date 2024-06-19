@@ -75,16 +75,6 @@ const Labels = ({ product, updateProduct }) => {
         </select>
       </div>
 
-      <div className="form-group col-span-2">
-        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Thickness:</label>
-        <input
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="number"
-          value={product.fields.thickness || ""}
-          onChange={(e) => updateProduct('thickness', e.target.value)}
-          placeholder="Thickness"
-        />
-      </div>
 
       <div className="form-group col-span-2">
         <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Finish:</label>
@@ -95,15 +85,12 @@ const Labels = ({ product, updateProduct }) => {
         >
           <option value="">Select Finish</option>
           {[
-            'Lamination',
-            'Matte',
             'Matte Lamination',
-            'Matte Varnish',
-            'Gloss',
             'Gloss Lamination',
+            'Hologram Lamintaion',
+            'Matte Varnish',
             'Gloss Varnish',
-            'Varnish',
-            'Clear Stamping'
+            'Semi Gloss Varnish'
           ].map((finish) => (
             <option key={finish} value={finish}>
               {finish}
@@ -122,6 +109,8 @@ const Labels = ({ product, updateProduct }) => {
             'Thermal Varnish',
             'Foil Stamping',
             'UV Ink',
+            'Clear Stamping',
+            'Hologram Stamping',
             'Raised Varnish'
           ].map((effect) => (
             <label key={effect} className="tracking-wide text-xs font-bold leading-6 text-gray-900 flex w-full flex-row" style={{ justifySelf: 'flex-start' }}>
@@ -146,6 +135,8 @@ const Labels = ({ product, updateProduct }) => {
             'Scratch-off',
             'Variable Data',
             'Easy removable adhesive',
+            'Permanent adhesive',
+            'Selective adhesive',
             'Refrigerated adhesive'
           ].map((note) => (
             <label key={note} className="tracking-wide text-xs font-bold leading-6 text-gray-900 flex w-full flex-row" style={{ justifySelf: 'flex-start' }}>

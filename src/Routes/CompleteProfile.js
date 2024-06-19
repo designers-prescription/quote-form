@@ -27,7 +27,7 @@ const CompleteProfile = () => {
     };
 
     return (
-        <div className="bg-gray-100 mx-auto max-w-6xl bg-white py-20 px-12 lg:px-24 shadow-xl mb-24 mt-10">
+        <div className="mx-auto max-w-6xl bg-white py-20 px-12 lg:px-24 shadow-xl mb-24 mt-10">
             <h2 className="text-center text-2xl font-bold mb-6">Complete Your Profile</h2>
             <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col">
                 <div className="-mx-3 md:flex mb-6">

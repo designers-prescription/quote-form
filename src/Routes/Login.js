@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, googleProvider, db } from '../firebase';
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
-import { Link } from 'react-router-dom';
+import { signInWithPopup } from 'firebase/auth';
+// import { Link } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 
 const LoginComponent = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  // const [email, setEmail] = useState('');
+  // const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError(''); // Clear any previous error
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate('/step-one');
-    } catch (error) {
-      setError(error.message);
-    }
-  };
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //   setError(''); // Clear any previous error
+  //   try {
+  //     await signInWithEmailAndPassword(auth, email, password);
+  //     navigate('/step-one');
+  //   } catch (error) {
+  //     setError(error.message);
+  //   }
+  // };
 
 
 
@@ -54,7 +54,7 @@ const LoginComponent = () => {
       <div className="bg-white w-full md:max-w-md lg:max-w-full md:mx-auto md:w-1/2 xl:w-1/3 h-screen px-6 lg:px-16 xl:px-12 flex items-center justify-center">
         <div className="w-full">
           <h1 className="text-xl md:text-2xl font-bold leading-tight mt-12">Log in to your account to access the portal for Shipping and Packaging Quotes</h1>
-          <form className="mt-6 w-full " onSubmit={handleLogin}>
+          {/* <form className="mt-6 w-full " onSubmit={handleLogin}>
             <div>
               <label className="uppercase tracking-wide text-black text-xs font-bold mb-2">Email Address</label>
               <input
@@ -85,7 +85,7 @@ const LoginComponent = () => {
               Log In
             </button>
           </form>
-          {error && <div className="text-red-500 mt-2">{error}</div>}
+          {error && <div className="text-red-500 mt-2">{error}</div>} */}
           <button
             type="button"
             onClick={handleGoogleSignIn}
@@ -117,12 +117,12 @@ const LoginComponent = () => {
 
             </div>
           </button>
-          <div className="mt-8">
+          {/* <div className="mt-8">
             Don't have an account?{' '}
             <Link to="/signup" className="text-blue-500 hover:text-blue-700 font-semibold">
               Sign up
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>

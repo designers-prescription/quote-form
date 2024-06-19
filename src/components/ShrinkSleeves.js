@@ -47,6 +47,7 @@ const ShrinkSleeves = ({ product, updateProduct }) => {
           <option value="">Select Finish</option>
           <option value="Matte">Matte</option>
           <option value="Gloss">Gloss</option>
+          <option value="SoftTouch">Soft Touch (China)</option>
         </select>
       </div>
 
@@ -54,10 +55,11 @@ const ShrinkSleeves = ({ product, updateProduct }) => {
         <label className="block tracking-wide text-sm font-bold leading-6 mb-5 text-gray-900">Special Effects:</label>
         <div className="grid gap-2 grid-cols-2">
           {[
-            'Spot UV',
+            'Spot UV (China)',
             'Metallics',
             'Cold Stamping',
-            'Raised Varnish',
+            'Raised Varnish (China)',
+            'Pre-cut',
             'Hand applied'
           ].map((effect) => (
             <label key={effect} className="tracking-wide text-xs font-bold leading-6 text-gray-900 flex w-full flex-row" style={{ justifySelf: 'flex-start' }}>

@@ -18,7 +18,7 @@ const Header = () => {
                 <ul className="space-y-2 min-h-50 h-full font-medium flex flex-col  ">
                     <div className='mb-2'>
                         {/* <img src="logo.png" alt="Logo" style={{ width: '50px' }} /> */}
-                        <h1 className='text-xl text-blue-700'> Labels Lab x Ship and Transfer</h1>
+                        <h1 className='text-xl text-blue-700'> Quote Generator</h1>
                     </div>
 
 
