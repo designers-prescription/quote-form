@@ -20,17 +20,20 @@ const Bags = ({ product, updateProduct }) => {
 
   const materialOptions = [
     "None",
-    "PET / VMPET / PE (GLOSS)",
-    "MATTE OPP / VMPET / PE (MATTE)",
-    "PET / AL / PE",
-    "NY / PE",
-    "PET / NY / AL / PE",
-    "PET / NY / PE",
-    "KRAFT PAPER / PE",
-    "KRAFT PAPER / VMPET / PE",
-    "PET / KRAFT PAPER / PE",
-    "PE / PE (GLOSS)",
-    "PE / PE (MATTE)"
+    "PET / VMPET / PE (METALLIC GLOSS) Non Metallic as an option",
+    "PET / PE (WHITE GLOSS 2 Layer) ",
+    "MATTE OPP / VMPET / PE (MATTE) Silver Matt 3 Layers, Non Silver as an option",
+    "PET / AL / PE 3 Layer Metallic/Non-Metallic as an Option Thicker Barrier than VMPET",
+    "PET / LDPE - Smellproof, Metallic, Thicker Material Non Metallic is an option",
+    "ALOX (Smellproof, Microwaveble, Air Proof) stronger than PET / LDPE",
+    // "PET / NY / AL / PE",
+    // "PET / NY / PE",
+    "KRAFT PAPER / PE 2 Layer (No Metallic Options)",
+    "KRAFT PAPER / VMPET / PE 3 Layer (No Metallic Options)",
+    // "PET / KRAFT PAPER / PE",
+    "PE / PE (Recyclable)",
+    "KRAFT PAPER / PLA (Compostable / Biodegradable) No Metallic Options",
+    // "PE / PE (MATTE)"
   ];
 
   const renderCommonFields = () => (
@@ -94,7 +97,7 @@ const Bags = ({ product, updateProduct }) => {
           ))}
         </select>
       </div>
-      <div className="form-group">
+      {/* <div className="form-group">
         <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Thickness (Microns):</label>
         <input
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
@@ -103,7 +106,7 @@ const Bags = ({ product, updateProduct }) => {
           onChange={(e) => updateProduct('thickness', e.target.value)}
           placeholder="Thickness (Microns)"
         />
-      </div>
+      </div> */}
     </>
   );
 

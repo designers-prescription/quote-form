@@ -76,7 +76,8 @@ const Boxes = ({ product, updateProduct }) => {
     'Raised Varnish',
     'Hologram',
     'Embossing',
-    'Debossing'
+    'Debossing',
+    'Double Sided Printing'
   ];
 
   const insertOptions = [
@@ -228,7 +229,7 @@ const Boxes = ({ product, updateProduct }) => {
         return (
           <>
             {renderCommonFields()}
-            <div className="form-group">
+            {/* <div className="form-group">
               <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Belot Width (in mm):</label>
               <input
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
@@ -237,7 +238,7 @@ const Boxes = ({ product, updateProduct }) => {
                 onChange={(e) => handleSizeChange('belotWidth', e.target.value)}
                 placeholder="Belot Width in mm"
               />
-            </div>
+            </div> */}
             <div className="form-group">
               <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Bottom:</label>
               <select
@@ -246,8 +247,8 @@ const Boxes = ({ product, updateProduct }) => {
                 onChange={(e) => updateProduct('bottom', e.target.value)}
               >
                 <option value="">Select Bottom</option>
-                <option value="1-2-3 Envelope closure">1-2-3 Envelope closure</option>
                 <option value="Auto lock">Auto lock</option>
+                <option value="1-2-3 Envelope closure">1-2-3 Envelope closure</option>
               </select>
             </div>
             {renderMaterialField(materialOptionsTwo)}
