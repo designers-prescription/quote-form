@@ -8,7 +8,7 @@ import { doc, getDoc } from 'firebase/firestore';
 const LoginComponent = () => {
   // const [email, setEmail] = useState('');
   // const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [setError] = useState('');
   const navigate = useNavigate();
 
   // const handleLogin = async (e) => {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { auth, db, storage } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, setDoc, getDoc, serverTimestamp, query, collection, getDocs } from "firebase/firestore";
-import { v4 as uuidv4 } from "uuid";
+// import { v4 as uuidv4 } from "uuid";
 import StandUpPouches from "../components/StandUpPouches";
 import Boxes from "../components/Boxes";
 import Bottles from "../components/NewBottles";
@@ -15,6 +15,8 @@ import "react-toastify/dist/ReactToastify.css";
 import ShrinkSleeves from "../components/ShrinkSleeves";
 import Labels from "../components/Labels";
 import Bags from "../components/Bags";
+import Sachets from "../components/Sachets";
+
 
 const StepOne = () => {
   const [user] = useAuthState(auth);
@@ -28,6 +30,8 @@ const StepOne = () => {
   const [totalQty01, setTotalQty01] = useState("");
   const [totalQty02, setTotalQty02] = useState("");
   const [totalQty03, setTotalQty03] = useState("");
+
+
 
   useEffect(() => {
     if (user) {
@@ -205,6 +209,13 @@ const StepOne = () => {
             updateProduct={updateProductFields}
           />
         );
+      case "Sachets":
+        return (
+          <Sachets
+            product={{ fields: productFields }}
+            updateProduct={updateProductFields}
+          />
+        );
       case "Bottles":
         return (
           <Bottles
@@ -363,13 +374,14 @@ const StepOne = () => {
               >
                 <option value="">Select Product Type</option>
                 <option value="Labels">Labels</option>
+                <option value="Shrink Sleeves">Shrink Sleeves</option>
+                <option value="Sachets">Sachets</option>
                 <option value="Stand Up Pouches">Stand Up Pouches</option>
                 <option value="Boxes">Boxes</option>
                 <option value="Bottles">Bottles</option>
                 <option value="Caps">Caps</option>
                 <option value="Bags">Bags</option>
                 <option value="Blisters">Blisters</option>
-                <option value="Shrink Sleeves">Shrink Sleeves</option>
               </select>
             </div>
             <div className="product-form">{renderProductForm()}</div>
