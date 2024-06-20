@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { auth, db, storage } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, setDoc, getDoc, serverTimestamp, query, collection, getDocs } from "firebase/firestore";
-// import { v4 as uuidv4 } from "uuid";
 import StandUpPouches from "../components/StandUpPouches";
 import Boxes from "../components/Boxes";
 import Bottles from "../components/NewBottles";
@@ -17,7 +16,6 @@ import Labels from "../components/Labels";
 import Bags from "../components/Bags";
 import Sachets from "../components/Sachets";
 
-
 const StepOne = () => {
   const [user] = useAuthState(auth);
   const [productType, setProductType] = useState("");
@@ -26,12 +24,10 @@ const StepOne = () => {
   const [salesRepName, setSalesRepName] = useState("");
   const [projectName, setProjectName] = useState("");
   const [projectId, setProjectId] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // New state for loading
+  const [isLoading, setIsLoading] = useState(false);
   const [totalQty01, setTotalQty01] = useState("");
   const [totalQty02, setTotalQty02] = useState("");
   const [totalQty03, setTotalQty03] = useState("");
-
-
 
   useEffect(() => {
     if (user) {
@@ -105,6 +101,23 @@ const StepOne = () => {
     return newProjectId;
   };
 
+  const notifyMaria = async (quoteId) => {
+    try {
+      await fetch('https://ghft6mowc4.execute-api.us-east-2.amazonaws.com/default/QuoteForm-EmailSender', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          recipientEmail: 'maria@labelslab.com',
+          quoteId: quoteId
+        })
+      });
+    } catch (error) {
+      console.error('Error notifying Maria:', error);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -113,7 +126,7 @@ const StepOne = () => {
       return;
     }
 
-    setIsLoading(true); // Set loading to true
+    setIsLoading(true);
 
     let uniqueProjectId = projectId;
     let isUnique = false;
@@ -131,7 +144,6 @@ const StepOne = () => {
 
     let artworkURL = null;
     if (productFields.artwork) {
-      // Upload the artwork file to Firebase Storage
       const storageRef = ref(storage, `artwork/${productFields.artwork.name}`);
       const snapshot = await uploadBytes(storageRef, productFields.artwork);
       artworkURL = await getDownloadURL(snapshot.ref);
@@ -148,7 +160,7 @@ const StepOne = () => {
         type: productType,
         fields: {
           ...productFields,
-          artwork: artworkURL, // Store the URL of the uploaded artwork
+          artwork: artworkURL,
           quantity01: totalQty01,
           quantity02: totalQty02,
           quantity03: totalQty03,
@@ -158,8 +170,8 @@ const StepOne = () => {
 
     try {
       await setDoc(doc(db, "QuoteRequirements", uniqueProjectId), quoteData);
-      toast.success("Form submitted successfully!"); // Display success toast
-      // Reset form and reload page after a short delay
+      toast.success("Form submitted successfully!");
+      await notifyMaria(uniqueProjectId); // Notify Maria
       setTimeout(() => {
         setCustomerName("");
         setSalesRepName("");
@@ -167,13 +179,12 @@ const StepOne = () => {
         setProductFields({});
         setProjectName("");
         setProjectId("");
-        setIsLoading(false); // Set loading to false
-        // window.location.reload();
+        setIsLoading(false);
       }, 2000);
     } catch (error) {
       console.error(error.message);
-      toast.error("Failed to submit the form."); // Display error toast
-      setIsLoading(false); // Set loading to false
+      toast.error("Failed to submit the form.");
+      setIsLoading(false);
     }
   };
 
@@ -251,7 +262,6 @@ const StepOne = () => {
             updateProduct={updateProductFields}
           />
         );
-      // Add cases for other product types
       default:
         return null;
     }
