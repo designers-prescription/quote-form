@@ -18,16 +18,12 @@ import Sachets from "../components/Sachets";
 
 const StepOne = () => {
   const [user] = useAuthState(auth);
-  const [productType, setProductType] = useState("");
-  const [productFields, setProductFields] = useState({});
+  const [products, setProducts] = useState([{ productType: '', SKU: 1, quantities: { Q1: {}, Q2: {}, Q3: {} }, fields: {} }]);
   const [customerName, setCustomerName] = useState("");
   const [salesRepName, setSalesRepName] = useState("");
   const [projectName, setProjectName] = useState("");
   const [projectId, setProjectId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [totalQty01, setTotalQty01] = useState("");
-  const [totalQty02, setTotalQty02] = useState("");
-  const [totalQty03, setTotalQty03] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -47,40 +43,56 @@ const StepOne = () => {
     }
   }, [user]);
 
-  useEffect(() => {
-    let totalSkuQuantity01 = 0;
-    let totalSkuQuantity02 = 0;
-    let totalSkuQuantity03 = 0;
+  const handleProductChange = (index, field, value) => {
+    const newProducts = [...products];
+    newProducts[index][field] = value;
 
-    for (let i = 1; i <= parseInt(productFields.numberOfSKUs, 10); i++) {
-      totalSkuQuantity01 += parseInt(productFields[`sku${i}Quantity01`], 10) || 0;
-      totalSkuQuantity02 += parseInt(productFields[`sku${i}Quantity02`], 10) || 0;
-      totalSkuQuantity03 += parseInt(productFields[`sku${i}Quantity03`], 10) || 0;
+    if (field === 'SKU') {
+      const newQuantities = { Q1: {}, Q2: {}, Q3: {} };
+      for (let i = 0; i < value; i++) {
+        newQuantities.Q1[i] = newProducts[index].quantities.Q1[i] || 0;
+        newQuantities.Q2[i] = newProducts[index].quantities.Q2[i] || 0;
+        newQuantities.Q3[i] = newProducts[index].quantities.Q3[i] || 0;
+      }
+      newProducts[index].quantities = newQuantities;
     }
 
-    setTotalQty01(totalSkuQuantity01);
-    setTotalQty02(totalSkuQuantity02);
-    setTotalQty03(totalSkuQuantity03);
-  }, [productFields]);
-
-  const updateProductFields = (field, value) => {
-    if (field === "size" && value.heightMM) {
-      value.height = (value.heightMM / 25.4).toFixed(2);
-    }
-    if (field === "size" && value.widthMM) {
-      value.width = (value.widthMM / 25.4).toFixed(2);
-    }
-    setProductFields({ ...productFields, [field]: value });
+    setProducts(newProducts);
   };
 
-  const updateSkuQuantity = (skuIndex, qty01) => {
-    const updatedFields = {
-      ...productFields,
-      [`sku${skuIndex}Quantity01`]: qty01,
-      [`sku${skuIndex}Quantity02`]: qty01 * 2,
-      [`sku${skuIndex}Quantity03`]: qty01 * 3
-    };
-    setProductFields(updatedFields);
+  const handleQuantityChange = (index, qKey, skuIndex, value) => {
+    const newProducts = [...products];
+    if (!newProducts[index].quantities[qKey]) {
+      newProducts[index].quantities[qKey] = {};
+    }
+    newProducts[index].quantities[qKey][skuIndex] = value;
+    setProducts(newProducts);
+  };
+
+  const handleFieldChange = (index, field, value) => {
+    const newProducts = [...products];
+    if (!newProducts[index].fields) {
+      newProducts[index].fields = {};
+    }
+    newProducts[index].fields[field] = value;
+    setProducts(newProducts);
+  };
+
+  const handleFileChange = async (e, index, field) => {
+    const file = e.target.files[0];
+    const storageRef = ref(storage, `quotes/${projectId}/${file.name}`);
+    await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(storageRef);
+    handleFieldChange(index, field, downloadURL);
+  };
+
+  const addProduct = () => {
+    setProducts([...products, { productType: '', SKU: 1, quantities: { Q1: {}, Q2: {}, Q3: {} }, fields: {} }]);
+  };
+
+  const removeProduct = (index) => {
+    const newProducts = products.filter((_, i) => i !== index);
+    setProducts(newProducts);
   };
 
   const generateUniqueProjectId = async () => {
@@ -121,7 +133,7 @@ const StepOne = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!customerName || !salesRepName || !productType) {
+    if (!customerName || !salesRepName || !products[0].productType) {
       toast.error("Please fill in all required fields.");
       return;
     }
@@ -142,13 +154,6 @@ const StepOne = () => {
       }
     }
 
-    let artworkURL = null;
-    if (productFields.artwork) {
-      const storageRef = ref(storage, `artwork/${productFields.artwork.name}`);
-      const snapshot = await uploadBytes(storageRef, productFields.artwork);
-      artworkURL = await getDownloadURL(snapshot.ref);
-    }
-
     const quoteData = {
       createdBy: user.uid,
       createdOn: serverTimestamp(),
@@ -156,16 +161,7 @@ const StepOne = () => {
       salesRepName,
       projectName,
       projectId: uniqueProjectId,
-      product: {
-        type: productType,
-        fields: {
-          ...productFields,
-          artwork: artworkURL,
-          quantity01: totalQty01,
-          quantity02: totalQty02,
-          quantity03: totalQty03,
-        },
-      },
+      products,
     };
 
     try {
@@ -175,8 +171,7 @@ const StepOne = () => {
       setTimeout(() => {
         setCustomerName("");
         setSalesRepName("");
-        setProductType("");
-        setProductFields({});
+        setProducts([{ productType: '', SKU: 1, quantities: { Q1: {}, Q2: {}, Q3: {} }, fields: {} }]);
         setProjectName("");
         setProjectId("");
         setIsLoading(false);
@@ -197,161 +192,39 @@ const StepOne = () => {
     initializeProjectId();
   }, []);
 
-  const renderProductForm = () => {
-    switch (productType) {
-      case "Stand Up Pouches":
-        return (
-          <StandUpPouches
-            product={{ fields: productFields }}
-            updateProduct={updateProductFields}
-          />
-        );
-      case "Boxes":
-        return (
-          <Boxes
-            product={{ fields: productFields }}
-            updateProduct={updateProductFields}
-          />
-        );
-      case "Labels":
-        return (
-          <Labels
-            product={{ fields: productFields }}
-            updateProduct={updateProductFields}
-          />
-        );
-      case "Sachets":
-        return (
-          <Sachets
-            product={{ fields: productFields }}
-            updateProduct={updateProductFields}
-          />
-        );
-      case "Bottles":
-        return (
-          <Bottles
-            product={{ fields: productFields }}
-            updateProduct={updateProductFields}
-          />
-        );
-      case "Caps":
-        return (
-          <Caps
-            product={{ fields: productFields }}
-            updateProduct={updateProductFields}
-          />
-        );
-      case "Bags":
-        return (
-          <Bags
-            product={{ fields: productFields }}
-            updateProduct={updateProductFields}
-          />
-        );
-      case "Blisters":
-        return (
-          <Blisters
-            product={{ fields: productFields }}
-            updateProduct={updateProductFields}
-          />
-        );
-      case "Shrink Sleeves":
-        return (
-          <ShrinkSleeves
-            product={{ fields: productFields }}
-            updateProduct={updateProductFields}
-          />
-        );
-      default:
-        return null;
-    }
+  const productComponents = {
+    StandUpPouches,
+    Boxes,
+    Bottles,
+    Caps,
+    Blisters,
+    ShrinkSleeves,
+    Labels,
+    Bags,
+    Sachets,
   };
 
-  const renderSKUQuantityFields = () => {
-    const numberOfSKUs = parseInt(productFields.numberOfSKUs, 10) || 0;
-    const skuQuantityFields = [];
-    for (let i = 1; i <= numberOfSKUs; i++) {
-      skuQuantityFields.push(
-        <div key={`sku${i}`} className="form-group">
-          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">SKU {i} Quantity 01:</label>
-          <input
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            type="number"
-            value={productFields[`sku${i}Quantity01`] || ""}
-            onChange={(e) =>
-              updateSkuQuantity(i, e.target.value)
-            }
-            placeholder={`SKU ${i} Quantity 01`}
-          />
-        </div>
-      );
-
-      skuQuantityFields.push(
-        <div key={`sku${i}`} className="form-group">
-          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">SKU {i} Quantity 02:</label>
-          <input
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            type="number"
-            value={productFields[`sku${i}Quantity02`] || ""}
-            onChange={(e) =>
-              updateProductFields(`sku${i}Quantity02`, e.target.value)
-            }
-            placeholder={`SKU ${i} Quantity 02`}
-          />
-        </div>
-      );
-
-      skuQuantityFields.push(
-        <div key={`sku${i}`} className="form-group">
-          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">SKU {i} Quantity 03:</label>
-          <input
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            type="number"
-            value={productFields[`sku${i}Quantity03`] || ""}
-            onChange={(e) =>
-              updateProductFields(`sku${i}Quantity03`, e.target.value)
-            }
-            placeholder={`SKU ${i} Quantity 03`}
-          />
-        </div>
-      );
-    }
-    return skuQuantityFields;
+  const calculateProductTotals = (quantities) => {
+    let totals = { Q1: 0, Q2: 0, Q3: 0 };
+    Object.keys(quantities).forEach((qKey) => {
+      Object.values(quantities[qKey]).forEach(value => {
+        totals[qKey] += parseInt(value, 10) || 0;
+      });
+    });
+    return totals;
   };
 
   return (
     <>
       <Header />
       <div className="parent-container pt-5 h-100 pb-10 p-4 sm:ml-64">
-        <h2 className="text-3xl p-10 mb-6" style={{ textAlign: "center" }}>
-          Step One: Quote Requirements
-        </h2>
-        <form className="grid grid-cols-2 gap-4" onSubmit={handleSubmit}>
-          <div>
-            <div className="form-group">
-              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Project Name</label>
-              <input
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                type="text"
-                value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-                placeholder="Project Name"
-              />
-            </div>
-            <div className="form-group">
-              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Project ID</label>
-              <input
-                className="bg-gray-50 border border-gray-300 text-gray-500 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                type="text"
-                value={projectId}
-                readOnly
-                placeholder="Project ID"
-              />
-              <small className="text-gray-500 text-xs">Project ID is auto-generated and cannot be changed.</small>
-            </div>
-
-            <div className="form-group">
-              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Customer Name<span className="text-red-500">*</span></label>
+        <div className="container mx-auto px-4 py-8">
+          <h2 className="text-3xl p-10 mb-6" style={{ textAlign: "center" }}>
+            Step One: Quote Requirements
+          </h2>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Customer Name:</label>
               <input
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 type="text"
@@ -361,92 +234,194 @@ const StepOne = () => {
                 required
               />
             </div>
-
-            <div className="form-group">
-              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Sales Rep Name<span className="text-red-500">*</span></label>
+            <div className="mb-4">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Sales Rep Name:</label>
               <input
-                className="bg-gray-50 border border-gray-300 text-gray-500 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 type="text"
                 value={salesRepName}
+                onChange={(e) => setSalesRepName(e.target.value)}
                 placeholder="Sales Rep Name"
+                required
                 readOnly
               />
-              <small className="text-gray-500 text-xs">Sales Rep name cannot be changed.</small>
             </div>
-
-            <div className="form-group">
-              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Select Product Type<span className="text-red-500">*</span></label>
-              <select
+            <div className="mb-4">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Project Name:</label>
+              <input
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                value={productType}
-                onChange={(e) => setProductType(e.target.value)}
+                type="text"
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+                placeholder="Project Name"
                 required
-              >
-                <option value="">Select Product Type</option>
-                <option value="Labels">Labels</option>
-                <option value="Shrink Sleeves">Shrink Sleeves</option>
-                <option value="Sachets">Sachets</option>
-                <option value="Stand Up Pouches">Stand Up Pouches</option>
-                <option value="Boxes">Boxes</option>
-                <option value="Bottles">Bottles</option>
-                <option value="Caps">Caps</option>
-                <option value="Bags">Bags</option>
-                <option value="Blisters">Blisters</option>
-              </select>
+              />
             </div>
-            <div className="product-form">{renderProductForm()}</div>
-          </div>
-          <div>
-            <div className="product-form">
-              <div className="form-group">
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Number of SKU's:</label>
-                <input
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  type="number"
-                  value={productFields.numberOfSKUs || ""}
-                  onChange={(e) =>
-                    updateProductFields("numberOfSKUs", e.target.value)
-                  }
-                  placeholder="Number of SKU's"
-                />
-                <div className="grid mt-5 gap-2  grid-cols-3">
-                  {renderSKUQuantityFields()}
-                </div>
-              </div>
-              <div className="grid mt-5 gap-2  grid-cols-3">
-                <div className="form-group ">
-                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity 01:</label>
-                  <input
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                    type="number"
-                    value={totalQty01 || ""}
-                    readOnly
-                    placeholder="Quantity 01"
-                  />
+            <div className="mb-4">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Project ID:</label>
+              <input
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                type="text"
+                value={projectId}
+                readOnly
+                placeholder="Project ID"
+              />
+              <small className="text-gray-500 text-xs">Project ID is auto-generated and cannot be changed.</small>
+            </div>
+
+            {products.map((product, index) => (
+              <div key={index} className="mb-6 border p-4 rounded-lg">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">Product {index + 1}</h3>
+                  <button
+                    type="button"
+                    className="text-red-500 hover:text-red-700"
+                    onClick={() => removeProduct(index)}
+                  >
+                    Remove
+                  </button>
                 </div>
 
-                <div className="form-group">
-                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity 02:</label>
-                  <input
+                <div className="mb-4">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Product Type:</label>
+                  <select
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                    type="number"
-                    value={totalQty02 || ""}
-                    readOnly
-                    placeholder="Quantity 02"
-                  />
+                    name="productType"
+                    value={product.productType}
+                    onChange={(e) => handleProductChange(index, "productType", e.target.value)}
+                    required
+                  >
+                    <option value="">Select Product Type</option>
+                    <option value="StandUpPouches">Stand Up Pouches</option>
+                    <option value="Boxes">Boxes</option>
+                    <option value="Bottles">Bottles</option>
+                    <option value="Caps">Caps</option>
+                    <option value="Blisters">Blisters</option>
+                    <option value="ShrinkSleeves">Shrink Sleeves</option>
+                    <option value="Labels">Labels</option>
+                    <option value="Bags">Bags</option>
+                    <option value="Sachets">Sachets</option>
+                  </select>
                 </div>
 
-                <div className="form-group">
-                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity 03:</label>
-                  <input
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                    type="number"
-                    value={totalQty03 || ""}
-                    readOnly
-                    placeholder="Quantity 03"
-                  />
-                </div>
+
+                <div className="mb-4">
+                    <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">SKU Count:</label>
+                    <input
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                      type="number"
+                      name="SKU"
+                      value={product.SKU}
+                      onChange={(e) => handleProductChange(index, "SKU", Math.max(0, e.target.value))}
+                      placeholder="Number of SKUs"
+                      required
+                    />
               </div>
+
+
+                <div className="grid mt-2 gap-2">
+                  {[...Array(parseInt(product.SKU))].map((_, skuIndex) => (
+                    <div key={skuIndex} className="mb-2">
+                      <h4 className="text-md font-semibold">SKU {skuIndex + 1}</h4>
+                      <div className="grid mt-1 gap-5 grid-cols-3">
+                        <div className="mb-2">
+                          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity 1:</label>
+                          <input
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            type="number"
+                            value={product.quantities.Q1[skuIndex] || ""}
+                            onChange={(e) => handleQuantityChange(index, "Q1", skuIndex, e.target.value)}
+                            placeholder="Quantity 1"
+                          />
+                        </div>
+
+                        <div className="mb-2">
+                          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity 2:</label>
+                          <input
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            type="number"
+                            value={product.quantities.Q2[skuIndex] || ""}
+                            onChange={(e) => handleQuantityChange(index, "Q2", skuIndex, e.target.value)}
+                            placeholder="Quantity 2"
+                          />
+                        </div>
+
+                        <div className="mb-2">
+                          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity 3:</label>
+                          <input
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            type="number"
+                            value={product.quantities.Q3[skuIndex] || ""}
+                            onChange={(e) => handleQuantityChange(index, "Q3", skuIndex, e.target.value)}
+                            placeholder="Quantity 3"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4">
+                  <h4 className="text-md font-semibold mb-2">Product Total Quantities:</h4>
+                  <div className="grid gap-5 grid-cols-3">
+                    <div className="form-group">
+                      <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Quantity 1:</label>
+                      <input
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        type="number"
+                        value={calculateProductTotals(product.quantities).Q1}
+                        readOnly
+                        placeholder="Total Quantity 1"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Quantity 2:</label>
+                      <input
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        type="number"
+                        value={calculateProductTotals(product.quantities).Q2}
+                        readOnly
+                        placeholder="Total Quantity 2"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Quantity 3:</label>
+                      <input
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        type="number"
+                        value={calculateProductTotals(product.quantities).Q3}
+                        readOnly
+                        placeholder="Total Quantity 3"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {product.productType && productComponents[product.productType] && (
+                  <div className="mb-4">
+                    <h4 className="text-md font-semibold mb-2">Custom Fields for {product.productType}</h4>
+                    {React.createElement(productComponents[product.productType], {
+                      product: product,
+                      updateProduct: (field, value) => handleFieldChange(index, field, value),
+                      handleFileChange: (e) => handleFileChange(e, index, e.target.name),
+                      handleInputChange: (e) => handleFieldChange(index, e.target.name, e.target.value),
+                    })}
+                  </div>
+                )}
+
+
+              </div>
+            ))}
+
+            <div className="mb-6">
+              <button
+                type="button"
+                className="px-4 py-2 border border-transparent text-sm font-medium rounded-md bg-green-500 text-white hover:bg-green-700"
+                onClick={addProduct}
+              >
+                Add Another Product
+              </button>
             </div>
 
             <button
@@ -456,9 +431,9 @@ const StepOne = () => {
             >
               {isLoading ? "Submitting..." : "Submit Quote"}
             </button>
-          </div>
-        </form>
-        <ToastContainer position="top-center" autoClose={9000} />
+          </form>
+          <ToastContainer position="top-center" autoClose={9000} />
+        </div>
       </div>
     </>
   );
