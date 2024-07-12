@@ -6,26 +6,12 @@ import { signInWithPopup } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 
 const LoginComponent = () => {
-  // const [email, setEmail] = useState('');
-  // const [password, setPassword] = useState('');
+  // eslint-disable-next-line no-unused-vars
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // const handleLogin = async (e) => {
-  //   e.preventDefault();
-  //   setError(''); // Clear any previous error
-  //   try {
-  //     await signInWithEmailAndPassword(auth, email, password);
-  //     navigate('/step-one');
-  //   } catch (error) {
-  //     setError(error.message);
-  //   }
-  // };
-
-
-
   const handleGoogleSignIn = async () => {
-    setError(''); // Clear any previous error
+    setError(''); 
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
@@ -33,9 +19,9 @@ const LoginComponent = () => {
       const userDocSnap = await getDoc(userDocRef);
   
       if (userDocSnap.exists()) {
-        navigate('/create-request'); // User exists, navigate to step one
+        navigate('/create-request'); 
       } else {
-        navigate('/complete-profile'); // User does not exist, navigate to complete profile
+        navigate('/complete-profile'); 
       }
     } catch (error) {
       setError(error.message);
@@ -54,38 +40,6 @@ const LoginComponent = () => {
       <div className="bg-white w-full md:max-w-md lg:max-w-full md:mx-auto md:w-1/2 xl:w-1/3 h-screen px-6 lg:px-16 xl:px-12 flex items-center justify-center">
         <div className="w-full">
           <h1 className="text-xl md:text-2xl font-bold leading-tight mt-12">Log in to your account to access the portal for Shipping and Packaging Quotes</h1>
-          {/* <form className="mt-6 w-full " onSubmit={handleLogin}>
-            <div>
-              <label className="uppercase tracking-wide text-black text-xs font-bold mb-2">Email Address</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter Email Address"
-                className="w-full bg-gray-200 text-black border border-gray-200 rounded py-3 px-4 mb-2"
-                required
-              />
-            </div>
-            <div className="mt-4">
-              <label className="uppercase tracking-wide text-black text-xs font-bold mb-2">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter Password"
-                minLength="6"
-                className="w-full bg-gray-200 text-black border border-gray-200 rounded py-3 px-4 mb-2"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full block bg-black hover:bg-blue-400 focus:bg-blue-400 text-white font-semibold rounded-lg px-4 py-3 mt-6 mb-2"
-            >
-              Log In
-            </button>
-          </form>
-          {error && <div className="text-red-500 mt-2">{error}</div>} */}
           <button
             type="button"
             onClick={handleGoogleSignIn}
@@ -117,12 +71,6 @@ const LoginComponent = () => {
 
             </div>
           </button>
-          {/* <div className="mt-8">
-            Don't have an account?{' '}
-            <Link to="/signup" className="text-blue-500 hover:text-blue-700 font-semibold">
-              Sign up
-            </Link>
-          </div> */}
         </div>
       </div>
     </section>
