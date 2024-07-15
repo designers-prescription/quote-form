@@ -145,7 +145,7 @@ const ShippingDetails = () => {
     <div className="p-6">
       <div ref={printRef} className="p-6">
         <div className="text-lg font-semibold mb-4">
-          Shipping Details - {realTimeQuote.product?.type || 'N/A'}
+          Shipping Details - {realTimeQuote.projectId || 'N/A'} - {realTimeQuote.projectName || 'N/A'}  - {realTimeQuote.salesRepName || 'N/A'}
         </div>
         <div className="mb-4 grid text-sm grid-cols-3">
           <div>
