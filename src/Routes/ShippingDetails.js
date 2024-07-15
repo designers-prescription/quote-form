@@ -14,6 +14,7 @@ const ShippingDetails = () => {
   const [newVendorName, setNewVendorName] = useState('');
   const [newVendorImage, setNewVendorImage] = useState(null);
   const [newVendorProductType, setNewVendorProductType] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
   const [userRole, setUserRole] = useState('');
   const [selectedTab, setSelectedTab] = useState('');
   const navigate = useNavigate();
@@ -91,6 +92,7 @@ const ShippingDetails = () => {
     const file = e.target.files[0];
     if (!file) return;
 
+    setIsUploading(true);
     const storageRef = ref(storage, `vendorImages/${file.name}`);
     try {
       const snapshot = await uploadBytes(storageRef, file);
@@ -98,6 +100,8 @@ const ShippingDetails = () => {
       setNewVendorImage(downloadURL);
     } catch (error) {
       console.error('Error uploading image:', error);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -105,13 +109,15 @@ const ShippingDetails = () => {
     if (newVendorName && newVendorImage && newVendorProductType) {
       const newVendor = { vendorName: newVendorName, imageUrl: newVendorImage, productType: newVendorProductType };
 
+      setIsUploading(true);
       await updateDoc(doc(db, 'QuoteRequirements', id), {
-        vendorDetails: arrayUnion(newVendor)
+        shippingVendorDetails: arrayUnion(newVendor)
       });
 
       setNewVendorName('');
       setNewVendorImage(null);
       setNewVendorProductType('');
+      setIsUploading(false);
     }
   };
 
@@ -120,6 +126,14 @@ const ShippingDetails = () => {
   }
 
   const groupedVendorDetails = realTimeQuote.vendorDetails?.reduce((acc, vendor) => {
+    if (!acc[vendor.productType]) {
+      acc[vendor.productType] = [];
+    }
+    acc[vendor.productType].push(vendor);
+    return acc;
+  }, {}) || {};
+
+  const groupedShippingVendorDetails = realTimeQuote.shippingVendorDetails?.reduce((acc, vendor) => {
     if (!acc[vendor.productType]) {
       acc[vendor.productType] = [];
     }
@@ -151,7 +165,7 @@ const ShippingDetails = () => {
             <p>{realTimeQuote.projectId}</p>
           </div>
         </div>
-        
+
         {Object.keys(groupedVendorDetails).map((productType, index) => (
           <div key={index}>
             <button
@@ -223,7 +237,7 @@ const ShippingDetails = () => {
         </div>
       </div>
       <div className="mt-4">
-        <h3 className="text-lg font-semibold mb-2">Vendor Details</h3>
+        {/* <h3 className="text-lg font-semibold mb-2">Vendor Details</h3>
         <div className="mb-4">
           {Object.keys(groupedVendorDetails).map((productType, index) => (
             <div key={index} className="mb-4">
@@ -238,7 +252,7 @@ const ShippingDetails = () => {
               ))}
             </div>
           ))}
-        </div>
+        </div> */}
         {userRole === 'ShippingAdmin' && (
           <>
             <div className="form-group mt-4">
@@ -283,8 +297,9 @@ const ShippingDetails = () => {
               type="button"
               className="mt-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md bg-black text-white bg-secondary hover:bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-light"
               onClick={addShippingVendor}
+              disabled={isUploading}
             >
-              Add Vendor
+              {isUploading ? "Uploading..." : "Add Vendor"}
             </button>
           </>
         )}
@@ -304,6 +319,24 @@ const ShippingDetails = () => {
         >
           Download as PNG
         </button>
+      </div>
+      <div className="mt-4">
+        <h3 className="text-lg font-semibold mb-2">Shipping Vendor Details</h3>
+        <div className="mb-4">
+          {Object.keys(groupedShippingVendorDetails).map((productType, index) => (
+            <div key={index} className="mb-4">
+              <h4 className="text-md font-bold leading-6 text-gray-900">{productType}</h4>
+              {groupedShippingVendorDetails[productType].map((vendor, idx) => (
+                <div key={idx} className="mb-2">
+                  <span className='tracking-wide font-bold leading-6 text-gray-900'>Vendor Name: </span>
+                  <p>{vendor.vendorName}</p>
+                  <span className='tracking-wide font-bold leading-6 text-gray-900'>Image: </span>
+                  <a href={vendor.imageUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">View Image</a>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
