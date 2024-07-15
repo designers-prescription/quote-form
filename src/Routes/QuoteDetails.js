@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { db, storage, auth } from '../firebase';
-import { doc, onSnapshot, updateDoc, arrayUnion, getDoc } from 'firebase/firestore';
+import { doc, onSnapshot, updateDoc, getDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useParams, useNavigate } from 'react-router-dom';
 import html2canvas from 'html2canvas';
@@ -10,6 +10,7 @@ const QuoteDetails = () => {
   const [realTimeQuote, setRealTimeQuote] = useState(null);
   const [vendorName, setVendorName] = useState('');
   const [vendorImage, setVendorImage] = useState(null);
+  const [productType, setProductType] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [userRole, setUserRole] = useState('');
   const [selectedTab, setSelectedTab] = useState('');
@@ -74,8 +75,8 @@ const QuoteDetails = () => {
   };
 
   const handleAddVendorDetails = async () => {
-    if (!vendorName || !vendorImage) {
-      alert("Please enter vendor name and upload an image.");
+    if (!vendorName || !vendorImage || !productType) {
+      alert("Please enter vendor name, select product type, and upload an image.");
       return;
     }
 
@@ -85,14 +86,17 @@ const QuoteDetails = () => {
     await uploadBytes(imageRef, vendorImage);
     const imageUrl = await getDownloadURL(imageRef);
 
-    const vendorDetails = { vendorName, imageUrl };
+    const vendorDetails = { vendorName, imageUrl, productType };
+
+    const updatedVendorDetails = realTimeQuote.vendorDetails ? [...realTimeQuote.vendorDetails, vendorDetails] : [vendorDetails];
 
     await updateDoc(doc(db, 'QuoteRequirements', id), {
-      vendorDetails: arrayUnion(vendorDetails)
+      vendorDetails: updatedVendorDetails
     });
 
     setVendorName('');
     setVendorImage(null);
+    setProductType('');
     setIsUploading(false);
   };
 
@@ -100,14 +104,16 @@ const QuoteDetails = () => {
     return <div>Loading...</div>;
   }
 
-  const groupedProducts = realTimeQuote.products.reduce((acc, product) => {
-    const { productType } = product;
-    if (!acc[productType]) {
-      acc[productType] = [];
-    }
-    acc[productType].push(product);
-    return acc;
-  }, {});
+  const groupedProducts = Array.isArray(realTimeQuote.products)
+    ? realTimeQuote.products.reduce((acc, product) => {
+        const { productType } = product;
+        if (!acc[productType]) {
+          acc[productType] = [];
+        }
+        acc[productType].push(product);
+        return acc;
+      }, {})
+    : {};
 
   return (
     <div className="p-6">
@@ -310,6 +316,26 @@ const QuoteDetails = () => {
               />
             </div>
             <div className="form-group">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Product Type:</label>
+              <select
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                value={productType}
+                onChange={(e) => setProductType(e.target.value)}
+                required
+              >
+                <option value="">Select Product Type</option>
+                <option value="StandUpPouches">Stand Up Pouches</option>
+                <option value="Boxes">Boxes</option>
+                <option value="Bottles">Bottles</option>
+                <option value="Caps">Caps</option>
+                <option value="Blisters">Blisters</option>
+                <option value="ShrinkSleeves">Shrink Sleeves</option>
+                <option value="Labels">Labels</option>
+                <option value="Bags">Bags</option>
+                <option value="Sachets">Sachets</option>
+              </select>
+            </div>
+            <div className="form-group">
               <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Upload Image:</label>
               <input
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
@@ -334,6 +360,8 @@ const QuoteDetails = () => {
               <div key={index} className="mb-2">
                 <span className='tracking-wide font-bold leading-6 text-gray-900'>Vendor Name: </span>
                 <p>{vendor.vendorName}</p>
+                <span className='tracking-wide font-bold leading-6 text-gray-900'>Product Type: </span>
+                <p>{vendor.productType}</p>
                 <span className='tracking-wide font-bold leading-6 text-gray-900'>Image: </span>
                 <a href={vendor.imageUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">View Details from the Packaging Vendor</a>
               </div>

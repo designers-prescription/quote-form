@@ -29,7 +29,7 @@ const StepThree = () => {
   useEffect(() => {
     const fetchQuotes = async () => {
       let q;
-      if (userRole === 'ShippingAdmin' || 'PackagingAdmin') {
+      if (userRole === 'ShippingAdmin' || userRole === 'PackagingAdmin') {
         q = query(collection(db, 'QuoteRequirements'), orderBy('createdOn', 'desc'));
       } else {
         q = query(collection(db, 'QuoteRequirements'), where('createdBy', '==', currentUserUid), orderBy('createdOn', 'desc'));
@@ -42,8 +42,10 @@ const StepThree = () => {
         ));
       setQuotes(quotesData);
     };
-  
-    fetchQuotes();
+
+    if (userRole) {
+      fetchQuotes();
+    }
   }, [userRole, currentUserUid]);
 
   const handleEditClick = (quote) => {
@@ -61,7 +63,7 @@ const StepThree = () => {
               <tr className='font-semibold text-[0.95rem] text-secondary-dark'>
                 <th className='pb-3 text-start min-w-[175px]'>Customer Name</th>
                 <th className='pb-3 text-end min-w-[100px]'>Sales Rep Name</th>
-                <th className='pb-3 text-end min-w-[100px]'>Product Type</th>
+                <th className='pb-3 text-end min-w-[100px]'>Product Types</th>
                 <th className='pb-3 pr-12 text-end min-w-[175px]'>Created On</th>
                 <th className='pb-3 text-end min-w-[50px]'>Action</th>
               </tr>
@@ -71,15 +73,18 @@ const StepThree = () => {
                 <tr key={quote.id} className='border-b border-dashed last:border-b-0'>
                   <td className='p-3 pl-0'>{quote.customerName}</td>
                   <td className='p-3 pr-0 text-end'>{quote.salesRepName}</td>
-                  <td className='p-3 pr-0 text-end'>{quote.product.type}</td>
+                  <td className='p-3 pr-0 text-end'>
+                    {quote.products?.map((product, index) => (
+                      <span key={index}>
+                        {product.productType}
+                        {index < quote.products.length - 1 && ', '}
+                      </span>
+                    ))}
+                  </td>
                   <td className='p-3 pr-12 text-end'>{quote.createdOn.toDate().toLocaleDateString()}</td>
                   <td className='p-3 pr-0 text-end'>
-                    <button
-                      className='ml-auto relative text-secondary-dark bg-light-dark hover:text-primary flex items-center h-[25px] w-[25px] text-base font-medium leading-normal text-center align-middle cursor-pointer rounded-2xl transition-colors duration-200 ease-in-out shadow-none border-0 justify-center'
-                      onClick={() => handleEditClick(quote)}
-                    >
-                      <span className='flex items-center justify-center p-0 m-0 leading-none shrink-0 '>
-                        {userRole === 'ShippingAdmin' ? 'Edit' : 'View'}
+                    <button className='ml-auto relative text-secondary-dark bg-light-dark hover:text-primary flex items-center h-[25px] w-[25px] text-base font-medium leading-normal text-center align-middle cursor-pointer rounded-2xl transition-colors duration-200 ease-in-out shadow-none border-0 justify-center' onClick={() => handleEditClick(quote)}>
+                      <span className='flex items-center justify-center p-0 m-0 leading-none shrink-0 '>{userRole === 'ShippingAdmin' ? 'Edit' : 'View'}
                         <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth='1.5' stroke='currentColor' className='w-4 h-4'>
                           <path strokeLinecap='round' strokeLinejoin='round' d='M8.25 4.5l7.5 7.5-7.5 7.5' />
                         </svg>
