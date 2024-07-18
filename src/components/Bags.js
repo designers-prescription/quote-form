@@ -18,6 +18,19 @@ const Bags = ({ product, updateProduct }) => {
     updateProduct('foilNumber', e.target.value);
   };
 
+    const bagTypes = [
+  { value: 1, label: '3 Sided Sealed' },
+  { value: 2, label: 'Stand Up with bottom gusset without zipper' },
+  { value: 3, label: '3 Side Sealed With Zipper' },
+  { value: 4, label: 'Stand Up with bottom Gusset and Zipper' },
+  { value: 5, label: 'Back Side Sealed' },
+  { value: 6, label: 'Side Gusset Pouch' },
+  { value: 7, label: 'Flat bottom with Zipper' },
+  { value: 8, label: 'Special Shape Bag' },
+  { value: 9, label: 'Roll Film' },
+  { value: 10, label: 'Spout Bag' }
+];
+
   const materialOptions = [
     "None",
     "PET / VMPET / PE (METALLIC GLOSS) Non Metallic as an option",
@@ -26,14 +39,10 @@ const Bags = ({ product, updateProduct }) => {
     "PET / AL / PE 3 Layer Metallic/Non-Metallic as an Option Thicker Barrier than VMPET",
     "PET / LDPE - Smellproof, Metallic, Thicker Material Non Metallic is an option",
     "ALOX (Smellproof, Microwaveble, Air Proof) stronger than PET / LDPE",
-    // "PET / NY / AL / PE",
-    // "PET / NY / PE",
     "KRAFT PAPER / PE 2 Layer (No Metallic Options)",
     "KRAFT PAPER / VMPET / PE 3 Layer (No Metallic Options)",
-    // "PET / KRAFT PAPER / PE",
     "PE / PE (Recyclable)",
     "KRAFT PAPER / PLA (Compostable / Biodegradable) No Metallic Options",
-    // "PE / PE (MATTE)"
   ];
 
   const renderCommonFields = () => (
@@ -97,16 +106,6 @@ const Bags = ({ product, updateProduct }) => {
           ))}
         </select>
       </div>
-      {/* <div className="form-group">
-        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Thickness (Microns):</label>
-        <input
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="text"
-          value={product.fields.thickness || ""}
-          onChange={(e) => updateProduct('thickness', e.target.value)}
-          placeholder="Thickness (Microns)"
-        />
-      </div> */}
     </>
   );
 
@@ -419,7 +418,7 @@ const Bags = ({ product, updateProduct }) => {
   };
 
   return (
-    <div className="product-form">
+<div className="product-form">
       <div className="form-group">
         <img src="https://shipping-quote.labelslab.com/bags.png" alt="Placeholder" />
       </div>
@@ -431,9 +430,9 @@ const Bags = ({ product, updateProduct }) => {
           onChange={(e) => setBagType(e.target.value)}
         >
           <option value="">Select Bag Type</option>
-          {[...Array(10).keys()].map((num) => (
-            <option key={num + 1} value={`${num + 1}`}>
-              Type {num + 1}
+          {bagTypes.map((type) => (
+            <option key={type.value} value={type.value}>
+               {`Type ${type.value} - ${type.label}`}
             </option>
           ))}
         </select>
