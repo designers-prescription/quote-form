@@ -18,11 +18,21 @@ import Sachets from "../components/Sachets";
 
 const StepOne = () => {
   const [user] = useAuthState(auth);
-  const [products, setProducts] = useState([{ productType: '', SKU: 1, quantities: { Q1: {}, Q2: {}, Q3: {} }, fields: {} }]);
+  const [products, setProducts] = useState([{
+    productType: '',
+    SKU: 1,
+    quantities: { Q1: {}, Q2: {}, Q3: {} },
+    fields: {},
+    address: '',
+    packagingInstructions: '',
+    shippingInstructions: '',
+    imageUrl: ''
+  }]);
   const [customerName, setCustomerName] = useState("");
   const [salesRepName, setSalesRepName] = useState("");
   const [projectName, setProjectName] = useState("");
   const [projectId, setProjectId] = useState("");
+  const [mainAddress, setMainAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -42,6 +52,11 @@ const StepOne = () => {
       fetchUserName();
     }
   }, [user]);
+
+  useEffect(() => {
+    setProducts(products.map(product => ({ ...product, address: mainAddress })));
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mainAddress]);
 
   const handleProductChange = (index, field, value) => {
     const newProducts = [...products];
@@ -86,8 +101,45 @@ const StepOne = () => {
     handleFieldChange(index, field, downloadURL);
   };
 
+  const handleAddressChange = (index, value) => {
+    const newProducts = [...products];
+    newProducts[index].address = value;
+    setProducts(newProducts);
+  };
+
+  const handlePackagingInstructionsChange = (index, value) => {
+    const newProducts = [...products];
+    newProducts[index].packagingInstructions = value;
+    setProducts(newProducts);
+  };
+
+  const handleShippingInstructionsChange = (index, value) => {
+    const newProducts = [...products];
+    newProducts[index].shippingInstructions = value;
+    setProducts(newProducts);
+  };
+
+  const handleImageChange = async (e, index) => {
+    const file = e.target.files[0];
+    const storageRef = ref(storage, `quotes/${projectId}/${file.name}`);
+    await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(storageRef);
+    const newProducts = [...products];
+    newProducts[index].imageUrl = downloadURL;
+    setProducts(newProducts);
+  };
+
   const addProduct = () => {
-    setProducts([...products, { productType: '', SKU: 1, quantities: { Q1: {}, Q2: {}, Q3: {} }, fields: {} }]);
+    setProducts([...products, {
+      productType: '',
+      SKU: 1,
+      quantities: { Q1: {}, Q2: {}, Q3: {} },
+      fields: {},
+      address: mainAddress,
+      packagingInstructions: '',
+      shippingInstructions: '',
+      imageUrl: ''
+    }]);
   };
 
   const removeProduct = (index) => {
@@ -171,9 +223,19 @@ const StepOne = () => {
       setTimeout(() => {
         setCustomerName("");
         setSalesRepName("");
-        setProducts([{ productType: '', SKU: 1, quantities: { Q1: {}, Q2: {}, Q3: {} }, fields: {} }]);
+        setProducts([{
+          productType: '',
+          SKU: 1,
+          quantities: { Q1: {}, Q2: {}, Q3: {} },
+          fields: {},
+          address: '',
+          packagingInstructions: '',
+          shippingInstructions: '',
+          imageUrl: ''
+        }]);
         setProjectName("");
         setProjectId("");
+        setMainAddress("");
         setIsLoading(false);
       }, 2000);
     } catch (error) {
@@ -268,6 +330,17 @@ const StepOne = () => {
               />
               <small className="text-gray-500 text-xs">Project ID is auto-generated and cannot be changed.</small>
             </div>
+            <div className="mb-4">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Address:</label>
+              <input
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                type="text"
+                value={mainAddress}
+                onChange={(e) => setMainAddress(e.target.value)}
+                placeholder="Address"
+                required
+              />
+            </div>
 
             {products.map((product, index) => (
               <div key={index} className="mb-6 border p-4 rounded-lg">
@@ -283,41 +356,61 @@ const StepOne = () => {
                 </div>
 
                 <div className="mb-4">
-                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Product Type:</label>
-                  <select
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Product Address:</label>
+                  <input
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                    name="productType"
-                    value={product.productType}
-                    onChange={(e) => handleProductChange(index, "productType", e.target.value)}
+                    type="text"
+                    value={product.address}
+                    onChange={(e) => handleAddressChange(index, e.target.value)}
+                    placeholder="Product Address"
                     required
-                  >
-                    <option value="">Select Product Type</option>
-                    <option value="StandUpPouches">Stand Up Pouches</option>
-                    <option value="Boxes">Boxes</option>
-                    <option value="Bottles">Bottles</option>
-                    <option value="Caps">Caps</option>
-                    <option value="Blisters">Blisters</option>
-                    <option value="ShrinkSleeves">Shrink Sleeves</option>
-                    <option value="Labels">Labels</option>
-                    <option value="Bags">Bags</option>
-                    <option value="Sachets">Sachets</option>
-                  </select>
+                  />
                 </div>
 
+                <div className="mb-4">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Packaging Instructions:</label>
+                  <textarea
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    value={product.packagingInstructions}
+                    onChange={(e) => handlePackagingInstructionsChange(index, e.target.value)}
+                    placeholder="Packaging Instructions"
+                  />
+                </div>
 
                 <div className="mb-4">
-                    <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">SKU Count:</label>
-                    <input
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                      type="number"
-                      name="SKU"
-                      value={product.SKU}
-                      onChange={(e) => handleProductChange(index, "SKU", Math.max(0, e.target.value))}
-                      placeholder="Number of SKUs"
-                      required
-                    />
-              </div>
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Shipping Instructions:</label>
+                  <textarea
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    value={product.shippingInstructions}
+                    onChange={(e) => handleShippingInstructionsChange(index, e.target.value)}
+                    placeholder="Shipping Instructions"
+                  />
+                </div>
 
+                <div className="mb-4">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Product Image:</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageChange(e, index)}
+                  />
+                  {product.imageUrl && (
+                    <img src={product.imageUrl} alt={`Product ${index + 1}`} className="mt-2 w-32 h-32 object-cover" />
+                  )}
+                </div>
+
+                <div className="mb-4">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">SKU Count:</label>
+                  <input
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    type="number"
+                    name="SKU"
+                    value={product.SKU}
+                    onChange={(e) => handleProductChange(index, "SKU", Math.max(0, e.target.value))}
+                    placeholder="Number of SKUs"
+                    required
+                  />
+                </div>
 
                 <div className="grid mt-2 gap-2">
                   {[...Array(parseInt(product.SKU))].map((_, skuIndex) => (
@@ -398,6 +491,27 @@ const StepOne = () => {
                   </div>
                 </div>
 
+                <div className="mb-4">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Product Type:</label>
+                  <select
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    name="productType"
+                    value={product.productType}
+                    onChange={(e) => handleProductChange(index, "productType", e.target.value)}
+                    required
+                  >
+                    <option value="">Select Product Type</option>
+                    <option value="Boxes">Boxes</option>
+                    <option value="Bottles">Bottles</option>
+                    <option value="Caps">Caps</option>
+                    <option value="Blisters">Blisters</option>
+                    <option value="ShrinkSleeves">Shrink Sleeves</option>
+                    <option value="Labels">Labels</option>
+                    <option value="Bags">Bags</option>
+                    <option value="Sachets">Sachets</option>
+                  </select>
+                </div>
+
                 {product.productType && productComponents[product.productType] && (
                   <div className="mb-4">
                     <h4 className="text-md font-semibold mb-2">Custom Fields for {product.productType}</h4>
@@ -409,8 +523,6 @@ const StepOne = () => {
                     })}
                   </div>
                 )}
-
-
               </div>
             ))}
 

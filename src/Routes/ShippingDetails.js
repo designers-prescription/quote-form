@@ -8,6 +8,7 @@ import html2canvas from 'html2canvas';
 const ShippingDetails = () => {
   const { id } = useParams();
   const [realTimeQuote, setRealTimeQuote] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [selectedVendor, setSelectedVendor] = useState('');
   const [selectedImage, setSelectedImage] = useState('');
   const [vendorImage, setVendorImage] = useState('');
@@ -205,9 +206,13 @@ const ShippingDetails = () => {
             {['expressAir', 'regularAir', 'regularSeaLimitedContainer', 'expressSeaLimitedContainer'].map((field) => (
               <div key={field} className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
                 <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">{formatFieldName(field)}: </label>
-                <br />
-                _______________
+              <br />
+                <div className="flex space-x-4">
+                  <p className="w-1/2">Quantity: </p>
+                  <p className="w-1/2">Price: </p>
+                </div>
               </div>
+
             ))}
           </div>
         </div>
@@ -217,8 +222,11 @@ const ShippingDetails = () => {
             {['expressAir', 'regularAir', 'regularSeaLimitedContainer', 'expressSeaLimitedContainer'].map((field) => (
               <div key={field} className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
                 <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">{formatFieldName(field)}: </label>
-                <br />
-                _______________
+              <br />
+                <div className="flex space-x-4">
+                  <p className="w-1/2">Quantity: </p>
+                  <p className="w-1/2">Price: </p>
+                </div>
               </div>
             ))}
           </div>
@@ -229,30 +237,17 @@ const ShippingDetails = () => {
             {['expressAir', 'regularAir', 'regularSeaLimitedContainer', 'expressSeaLimitedContainer'].map((field) => (
               <div key={field} className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
                 <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">{formatFieldName(field)}: </label>
-                <br />
-                _______________
+              <br />
+                <div className="flex space-x-4">
+                  <p className="w-1/2">Quantity: </p>
+                  <p className="w-1/2">Price: </p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </div>
       <div className="mt-4">
-        {/* <h3 className="text-lg font-semibold mb-2">Vendor Details</h3>
-        <div className="mb-4">
-          {Object.keys(groupedVendorDetails).map((productType, index) => (
-            <div key={index} className="mb-4">
-              <h4 className="text-md font-bold leading-6 text-gray-900">{productType}</h4>
-              {groupedVendorDetails[productType].map((vendor, idx) => (
-                <div key={idx} className="mb-2">
-                  <span className='tracking-wide font-bold leading-6 text-gray-900'>Vendor Name: </span>
-                  <p>{vendor.vendorName}</p>
-                  <span className='tracking-wide font-bold leading-6 text-gray-900'>Image: </span>
-                  <a href={vendor.imageUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">View Image</a>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div> */}
         {userRole === 'ShippingAdmin' && (
           <>
             <div className="form-group mt-4">
@@ -274,7 +269,6 @@ const ShippingDetails = () => {
                 required
               >
                 <option value="">Select Product Type</option>
-                <option value="StandUpPouches">Stand Up Pouches</option>
                 <option value="Boxes">Boxes</option>
                 <option value="Bottles">Bottles</option>
                 <option value="Caps">Caps</option>
