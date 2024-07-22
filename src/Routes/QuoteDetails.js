@@ -258,11 +258,11 @@ const QuoteDetails = () => {
                 <br />
                 _______________
               </div>
-              <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
+              {/* <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
                 <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">To Shipping Address: </label>
                 <br />
                 <p className='text-red-700'>{product.address}</p>
-              </div>
+              </div> */}
               <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
                 <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Split Shipping With Breakdown: </label>
                 <br />

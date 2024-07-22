@@ -330,7 +330,7 @@ const StepOne = () => {
               />
               <small className="text-gray-500 text-xs">Project ID is auto-generated and cannot be changed.</small>
             </div>
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Address:</label>
               <input
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
@@ -340,7 +340,7 @@ const StepOne = () => {
                 placeholder="Address"
                 required
               />
-            </div>
+            </div> */}
 
             {products.map((product, index) => (
               <div key={index} className="mb-6 border p-4 rounded-lg">
@@ -355,7 +355,7 @@ const StepOne = () => {
                   </button>
                 </div>
 
-                <div className="mb-4">
+                {/* <div className="mb-4">
                   <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Product Address:</label>
                   <input
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
@@ -365,7 +365,7 @@ const StepOne = () => {
                     placeholder="Product Address"
                     required
                   />
-                </div>
+                </div> */}
 
                 <div className="mb-4">
                   <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Packaging Instructions:</label>
