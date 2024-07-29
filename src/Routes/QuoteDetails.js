@@ -171,10 +171,10 @@ const QuoteDetails = () => {
                 <span className='tracking-wide font-bold leading-6 text-gray-900'>Project ID: </span>
                 <p>{realTimeQuote.projectId}</p>
               </div>
-              <div>
+              {/* <div>
                 <span className='tracking-wide font-bold leading-6 text-gray-900'>Project Address: </span>
                 <p>{product.address}</p>
-              </div>
+              </div> */}
             </div>
 
             <div className="mb-4">
