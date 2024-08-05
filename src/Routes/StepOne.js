@@ -55,7 +55,7 @@ const StepOne = () => {
 
   useEffect(() => {
     setProducts(products.map(product => ({ ...product, address: mainAddress })));
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainAddress]);
 
   const handleProductChange = (index, field, value) => {
@@ -165,7 +165,7 @@ const StepOne = () => {
     return newProjectId;
   };
 
-  const notifyMaria = async (quoteId) => {
+  const notifyMaria = async (quoteId, subject, textBody, htmlBody) => {
     try {
       await fetch('https://ghft6mowc4.execute-api.us-east-2.amazonaws.com/default/QuoteForm-EmailSender', {
         method: 'POST',
@@ -173,8 +173,10 @@ const StepOne = () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          recipientEmail: 'maria@labelslab.com',
-          quoteId: quoteId
+          recipientEmail: 'vaibhav@designersprescription.com',
+          subject: subject,
+          textBody: textBody,
+          htmlBody: htmlBody
         })
       });
     } catch (error) {
@@ -219,7 +221,26 @@ const StepOne = () => {
     try {
       await setDoc(doc(db, "QuoteRequirements", uniqueProjectId), quoteData);
       toast.success("Form submitted successfully!");
-      await notifyMaria(uniqueProjectId); // Notify Maria
+      
+      // Define your subject and body content for the new quote notification
+      const subject = 'New Quote Submitted';
+      const textBody = `A new quote has been submitted. View it at https://shipping-quote.labelslab.com/packaging-details/${uniqueProjectId}`;
+      const htmlBody = `
+        <div style="font-family: Arial, sans-serif; margin: 20px;">
+          <h2 style="color: #333;">New Quote Submitted</h2>
+          <p style="font-size: 16px; color: #555;">
+            A new quote has been submitted. Click the button below to view the details:
+          </p>
+          <a href="https://shipping-quote.labelslab.com/packaging-details/${uniqueProjectId}" style="display: inline-block; margin-top: 20px; padding: 10px 20px; color: white; background-color: #007BFF; text-decoration: none; border-radius: 5px;">
+            View the Quote
+          </a>
+          <p style="font-size: 14px; color: #999; margin-top: 20px;">
+            If you have any questions, please contact us at <a href="mailto:vaibhav@designersprescription.com" style="color: #007BFF;">vaibhav@designersprescription.com</a>.
+          </p>
+        </div>
+      `;
+
+      await notifyMaria(uniqueProjectId, subject, textBody, htmlBody); // Notify Maria
       setTimeout(() => {
         setCustomerName("");
         setSalesRepName("");
@@ -330,17 +351,6 @@ const StepOne = () => {
               />
               <small className="text-gray-500 text-xs">Project ID is auto-generated and cannot be changed.</small>
             </div>
-            {/* <div className="mb-4">
-              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Address:</label>
-              <input
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                type="text"
-                value={mainAddress}
-                onChange={(e) => setMainAddress(e.target.value)}
-                placeholder="Address"
-                required
-              />
-            </div> */}
 
             {products.map((product, index) => (
               <div key={index} className="mb-6 border p-4 rounded-lg">
@@ -355,18 +365,6 @@ const StepOne = () => {
                   </button>
                 </div>
 
-                {/* <div className="mb-4">
-                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Product Address:</label>
-                  <input
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                    type="text"
-                    value={product.address}
-                    onChange={(e) => handleAddressChange(index, e.target.value)}
-                    placeholder="Product Address"
-                    required
-                  />
-                </div> */}
-
                 <div className="mb-4">
                   <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Packaging Instructions:</label>
                   <textarea
@@ -378,12 +376,23 @@ const StepOne = () => {
                 </div>
 
                 <div className="mb-4">
-                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Shipping Instructions:</label>
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Shipping Instructions: (Please do not add address) </label>
                   <textarea
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     value={product.shippingInstructions}
                     onChange={(e) => handleShippingInstructionsChange(index, e.target.value)}
                     placeholder="Shipping Instructions"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">PMS QTY:</label>
+                  <input
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    type="number"
+                    value={product.fields.pmsQty || ""}
+                    onChange={(e) => handleFieldChange(index, "pmsQty", e.target.value)}
+                    placeholder="PMS QTY"
                   />
                 </div>
 

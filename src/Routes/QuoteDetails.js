@@ -1,19 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { db, storage, auth } from '../firebase';
+import { db, auth } from '../firebase';
 import { doc, onSnapshot, updateDoc, getDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useParams, useNavigate } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 
 const QuoteDetails = () => {
   const { id } = useParams();
   const [realTimeQuote, setRealTimeQuote] = useState(null);
-  const [vendorName, setVendorName] = useState('');
-  const [vendorImage, setVendorImage] = useState(null);
-  const [productType, setProductType] = useState('');
-  const [isUploading, setIsUploading] = useState(false);
-  const [userRole, setUserRole] = useState('');
+  const [currentUserUid, setCurrentUserUid] = useState('');
   const [selectedTab, setSelectedTab] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const navigate = useNavigate();
   const printRef = useRef();
 
@@ -21,12 +19,7 @@ const QuoteDetails = () => {
     const fetchUserRole = async () => {
       const user = auth.currentUser;
       if (user) {
-        const docRef = doc(db, 'users', user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const userData = docSnap.data();
-          setUserRole(userData.role);
-        }
+        setCurrentUserUid(user.uid);
       }
     };
     fetchUserRole();
@@ -43,6 +36,66 @@ const QuoteDetails = () => {
 
     return () => unsubscribe();
   }, [id]);
+
+  const handleQuantityChange = (e, index, key) => {
+    const newQuote = { ...realTimeQuote };
+    newQuote.products[0].quantities[key][index] = e.target.value;
+    setRealTimeQuote(newQuote);
+  };
+
+  const handleSaveQuantities = async () => {
+    setIsSaving(true);
+    if (realTimeQuote) {
+      const quoteRef = doc(db, 'QuoteRequirements', realTimeQuote.id);
+      await updateDoc(quoteRef, {
+        'products': realTimeQuote.products
+      });
+  
+      // Define your subject and body content for the update notification
+      const subject = 'Quote Updated';
+      const textBody = `The quote with ID ${realTimeQuote.id} has been updated.`;
+      const htmlBody = `
+        <div style="font-family: Arial, sans-serif; margin: 20px;">
+          <h2 style="color: #333;">Quote Updated</h2>
+          <p style="font-size: 16px; color: #555;">
+            The quote with ID ${realTimeQuote.id} has been updated. Click the button below to view the details:
+          </p>
+          <a href="https://shipping-quote.labelslab.com/packaging-details/${realTimeQuote.id}" style="display: inline-block; margin-top: 20px; padding: 10px 20px; color: white; background-color: #007BFF; text-decoration: none; border-radius: 5px;">
+            View the Quote
+          </a>
+          <p style="font-size: 14px; color: #999; margin-top: 20px;">
+            If you have any questions, please contact us at <a href="mailto:vaibhav@designersprescription.com" style="color: #007BFF;">vaibhav@designersprescription.com</a>.
+          </p>
+        </div>
+      `;
+  
+      // Notify Maria via AWS Lambda with the dynamic subject and body
+      await notifyMaria(realTimeQuote.id, subject, textBody, htmlBody);
+    }
+    setIsSaving(false);
+    setIsSaved(true);
+    setIsEditing(false);
+    setTimeout(() => setIsSaved(false), 3000); // Hide confirmation message after 3 seconds
+  };
+
+  const notifyMaria = async (quoteId, subject, textBody, htmlBody) => {
+    try {
+      await fetch('https://ghft6mowc4.execute-api.us-east-2.amazonaws.com/default/QuoteForm-EmailSender', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          recipientEmail: 'vaibhav@designersprescription.com',
+          subject: subject,
+          textBody: textBody,
+          htmlBody: htmlBody
+        })
+      });
+    } catch (error) {
+      console.error('Error notifying Maria:', error);
+    }
+  };
 
   const formatFieldName = (fieldName) => {
     return fieldName
@@ -72,32 +125,6 @@ const QuoteDetails = () => {
     link.href = canvas.toDataURL('image/png');
     link.download = `quote-details - (${realTimeQuote.projectId}).png`;
     link.click();
-  };
-
-  const handleAddVendorDetails = async () => {
-    if (!vendorName || !vendorImage || !productType) {
-      alert("Please enter vendor name, select product type, and upload an image.");
-      return;
-    }
-
-    setIsUploading(true);
-
-    const imageRef = ref(storage, `vendorImages/${vendorImage.name}`);
-    await uploadBytes(imageRef, vendorImage);
-    const imageUrl = await getDownloadURL(imageRef);
-
-    const vendorDetails = { vendorName, imageUrl, productType };
-
-    const updatedVendorDetails = realTimeQuote.vendorDetails ? [...realTimeQuote.vendorDetails, vendorDetails] : [vendorDetails];
-
-    await updateDoc(doc(db, 'QuoteRequirements', id), {
-      vendorDetails: updatedVendorDetails
-    });
-
-    setVendorName('');
-    setVendorImage(null);
-    setProductType('');
-    setIsUploading(false);
   };
 
   if (!realTimeQuote) {
@@ -171,10 +198,6 @@ const QuoteDetails = () => {
                 <span className='tracking-wide font-bold leading-6 text-gray-900'>Project ID: </span>
                 <p>{realTimeQuote.projectId}</p>
               </div>
-              {/* <div>
-                <span className='tracking-wide font-bold leading-6 text-gray-900'>Project Address: </span>
-                <p>{product.address}</p>
-              </div> */}
             </div>
 
             <div className="mb-4">
@@ -186,9 +209,6 @@ const QuoteDetails = () => {
               <span className='tracking-wide font-bold leading-6 text-red-700'>Shipping Instructions: </span>
               <p className='text-red-700'>{product.shippingInstructions}</p>
             </div>
-
-             
-
 
             <div className="mb-4 grid text-sm grid-cols-3">
               {Object.entries(product.fields)
@@ -219,9 +239,42 @@ const QuoteDetails = () => {
                   {Object.keys(product.quantities.Q1).map((skuIndex) => (
                     <tr key={skuIndex}>
                       <td className="border px-2 py-1 border-slate-900 text-center">{parseInt(skuIndex) + 1}</td>
-                      <td className="border px-2 py-1 border-slate-900 text-center">{product.quantities.Q1[skuIndex]}</td>
-                      <td className="border px-2 py-1 border-slate-900 text-center">{product.quantities.Q2[skuIndex]}</td>
-                      <td className="border px-2 py-1 border-slate-900 text-center">{product.quantities.Q3[skuIndex]}</td>
+                      <td className="border px-2 py-1 border-slate-900 text-center">
+                        {isEditing ? (
+                          <input
+                            type="number"
+                            value={product.quantities.Q1[skuIndex]}
+                            onChange={(e) => handleQuantityChange(e, skuIndex, 'Q1')}
+                            className="w-full text-center"
+                          />
+                        ) : (
+                          product.quantities.Q1[skuIndex]
+                        )}
+                      </td>
+                      <td className="border px-2 py-1 border-slate-900 text-center">
+                        {isEditing ? (
+                          <input
+                            type="number"
+                            value={product.quantities.Q2[skuIndex]}
+                            onChange={(e) => handleQuantityChange(e, skuIndex, 'Q2')}
+                            className="w-full text-center"
+                          />
+                        ) : (
+                          product.quantities.Q2[skuIndex]
+                        )}
+                      </td>
+                      <td className="border px-2 py-1 border-slate-900 text-center">
+                        {isEditing ? (
+                          <input
+                            type="number"
+                            value={product.quantities.Q3[skuIndex]}
+                            onChange={(e) => handleQuantityChange(e, skuIndex, 'Q3')}
+                            className="w-full text-center"
+                          />
+                        ) : (
+                          product.quantities.Q3[skuIndex]
+                        )}
+                      </td>
                     </tr>
                   ))}
                   <tr>
@@ -238,12 +291,31 @@ const QuoteDetails = () => {
                   </tr>
                 </tbody>
               </table>
-
-              {/* <div className="mb-4">
-              <span className='tracking-wide font-bold leading-6 text-gray-900'>Address: </span>
-              <p>{product.address}</p>
-            </div> */}
-            
+              {realTimeQuote.createdBy === currentUserUid && (
+                <>
+                  {isEditing ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={handleSaveQuantities}
+                        className="mt-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md bg-green-500 text-white hover:bg-green-700"
+                        disabled={isSaving}
+                      >
+                        {isSaving ? 'Saving...' : 'Save Quantities'}
+                      </button>
+                      {isSaved && <p className="text-green-500 mt-2">Quantities saved successfully!</p>}
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditing(true)}
+                      className="mt-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md bg-blue-500 text-white hover:bg-blue-700"
+                    >
+                      Edit Quantities
+                    </button>
+                  )}
+                </>
+              )}
             </div>
 
             <h3 className="text-lg font-semibold mb-2">Shipping Details</h3>
@@ -258,11 +330,6 @@ const QuoteDetails = () => {
                 <br />
                 _______________
               </div>
-              {/* <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
-                <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">To Shipping Address: </label>
-                <br />
-                <p className='text-red-700'>{product.address}</p>
-              </div> */}
               <div className="p-2 m-1 rounded-md border border-dashed border-slate-500 bg-slate-50">
                 <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Split Shipping With Breakdown: </label>
                 <br />
@@ -330,71 +397,6 @@ const QuoteDetails = () => {
         ))}
       </div>
 
-      {userRole === 'PackagingAdmin' && (
-        <div className="mb-4 mt-20">
-          <h3 className="text-lg font-semibold mb-2">Updated Values from Vendor</h3>
-          <div className="form-group">
-            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Vendor Name:</label>
-            <input
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              type="text"
-              value={vendorName}
-              onChange={(e) => setVendorName(e.target.value)}
-              placeholder="Vendor Name"
-            />
-          </div>
-          <div className="form-group">
-            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Product Type:</label>
-            <select
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              value={productType}
-              onChange={(e) => setProductType(e.target.value)}
-              required
-            >
-              <option value="">Select Product Type</option>
-              <option value="Boxes">Boxes</option>
-              <option value="Bottles">Bottles</option>
-              <option value="Caps">Caps</option>
-              <option value="Blisters">Blisters</option>
-              <option value="ShrinkSleeves">Shrink Sleeves</option>
-              <option value="Labels">Labels</option>
-              <option value="Bags">Bags</option>
-              <option value="Sachets">Sachets</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Upload Image:</label>
-            <input
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              type="file"
-              onChange={(e) => setVendorImage(e.target.files[0])}
-            />
-          </div>
-          <button
-            type="button"
-            onClick={handleAddVendorDetails}
-            className="mt-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md bg-black text-white bg-secondary hover:bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-light"
-            disabled={isUploading}
-          >
-            {isUploading ? "Uploading..." : "Add Vendor Details"}
-          </button>
-        </div>
-      )}
-      {realTimeQuote.vendorDetails && realTimeQuote.vendorDetails.length > 0 && (
-        <div className="mt-4">
-          <h3 className="text-lg font-semibold mb-2">Vendor Details</h3>
-          {realTimeQuote.vendorDetails.map((vendor, index) => (
-            <div key={index} className="mb-2">
-              <span className='tracking-wide font-bold leading-6 text-gray-900'>Vendor Name: </span>
-              <p>{vendor.vendorName}</p>
-              <span className='tracking-wide font-bold leading-6 text-gray-900'>Product Type: </span>
-              <p>{vendor.productType}</p>
-              <span className='tracking-wide font-bold leading-6 text-gray-900'>Image: </span>
-              <a href={vendor.imageUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">View Details from the Packaging Vendor</a>
-            </div>
-          ))}
-        </div>
-      )}
       <div className="flex justify-between mt-4">
         <button
           type="button"

@@ -3,18 +3,17 @@ import React from 'react';
 const Boxes = ({ product, updateProduct }) => {
   const handleSizeChange = (dimension, value) => {
     const size = { ...product.fields.size, [dimension]: value };
-    if (dimension === 'heightMM') {
-      size.height = (value / 25.4).toFixed(2);
+    const dimensionMapping = {
+      heightMM: 'height',
+      widthMM: 'width',
+      depthMM: 'depth',
+      lengthMM: 'length'
+    };
+
+    if (dimensionMapping[dimension]) {
+      size[dimensionMapping[dimension]] = (value / 25.4).toFixed(2);
     }
-    if (dimension === 'widthMM') {
-      size.width = (value / 25.4).toFixed(2);
-    }
-    if (dimension === 'depthMM') {
-      size.depth = (value / 25.4).toFixed(2);
-    }
-    if (dimension === 'lengthMM') {
-      size.length = (value / 25.4).toFixed(2);
-    }
+    
     updateProduct('size', size);
   };
 
@@ -45,7 +44,8 @@ const Boxes = ({ product, updateProduct }) => {
   const materialOptionsThree = [
     'WHITE CARDBOARD',
     'SILVER CARDBOARD',
-    'COATED PAPER'
+    'KRAFT PAPER',
+    'HOLOGRAM'
   ];
 
   const materialOptionsFour = [
@@ -229,16 +229,6 @@ const Boxes = ({ product, updateProduct }) => {
         return (
           <>
             {renderCommonFields()}
-            {/* <div className="form-group">
-              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Belot Width (in mm):</label>
-              <input
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                type="number"
-                value={product.fields.size?.belotWidth || ""}
-                onChange={(e) => handleSizeChange('belotWidth', e.target.value)}
-                placeholder="Belot Width in mm"
-              />
-            </div> */}
             <div className="form-group">
               <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Bottom:</label>
               <select
@@ -334,15 +324,25 @@ const Boxes = ({ product, updateProduct }) => {
               />
             </div>
             <div className="form-group">
-              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Thickness:</label>
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Inner Lid Height - Exposed (in mm):</label>
+              <input
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                type="number"
+                value={product.fields.size?.innerLidExposedHeight || ""}
+                onChange={(e) => handleSizeChange('innerLidExposedHeight', e.target.value)}
+                placeholder="Inner Lid Height - Exposed in mm"
+              />
+            </div>
+            <div className="form-group">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Edge Option:</label>
               <select
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                value={product.fields.thickness || ""}
-                onChange={(e) => updateProduct('thickness', e.target.value)}
+                value={product.fields.edgeOption || ""}
+                onChange={(e) => updateProduct('edgeOption', e.target.value)}
               >
-                <option value="">Select Thickness</option>
-                <option value="1-2-3 Envelope bottom closure">1-2-3 Envelope bottom closure</option>
-                <option value="Autolock Glue Bottom">Autolock Glue Bottom</option>
+                <option value="">Select Edge Option:</option>
+                <option value="Premium Edge">Premium Edge</option>
+                <option value="Regular Edge">Regular Edge</option>
               </select>
             </div>
             <div className="form-group">
@@ -369,7 +369,16 @@ const Boxes = ({ product, updateProduct }) => {
               </div>
             </div>
             {renderMaterialField(materialOptionsThree)}
-            {renderThicknessField(thicknessOptionsTwo)}
+            <div className="form-group">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Thickness:</label>
+              <input
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                type="number"
+                value={product.fields.size?.thickness || ""}
+                onChange={(e) => handleSizeChange('thickness', e.target.value)}
+                placeholder="Thickness"
+              />
+            </div>
             {renderFinishField()}
             {renderSpecialEffectsField()}
           </>

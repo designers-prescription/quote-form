@@ -123,14 +123,26 @@ const Blisters = ({ product, updateProduct }) => {
               />
             </div>
             <div className="form-group col-span-2">
-              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">3M Tape:</label>
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">3M Adhesive:</label>
               <input
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 type="text"
-                value={product.fields.tape3M || ""}
-                onChange={(e) => updateProduct('tape3M', e.target.value)}
-                placeholder="3M Tape"
+                value="3M Adhesive"
+                readOnly
+                placeholder="3M Adhesive"
               />
+            </div>
+            <div className="form-group col-span-2">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Embossing:</label>
+              <select
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                value={product.fields.embossing || ""}
+                onChange={(e) => updateProduct('embossing', e.target.value)}
+              >
+                <option value="">Select Embossing</option>
+                <option value="true">True</option>
+                <option value="false">False</option>
+              </select>
             </div>
             {renderFinishings()}
             {renderHangingHoles()}
@@ -173,6 +185,28 @@ const Blisters = ({ product, updateProduct }) => {
                   placeholder="Height in mm"
                 />
               </div>
+            </div>
+            <div className="form-group col-span-2">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">3M Adhesive:</label>
+              <input
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                type="text"
+                value="3M Adhesive"
+                readOnly
+                placeholder="3M Adhesive"
+              />
+            </div>
+            <div className="form-group col-span-2">
+              <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Embossing:</label>
+              <select
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                value={product.fields.embossing || ""}
+                onChange={(e) => updateProduct('embossing', e.target.value)}
+              >
+                <option value="">Select Embossing</option>
+                <option value="true">True</option>
+                <option value="false">False</option>
+              </select>
             </div>
             {renderFinishings()}
             {renderHangingHoles()}
