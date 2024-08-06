@@ -173,7 +173,7 @@ const StepOne = () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          recipientEmail: 'vaibhav@designersprescription.com',
+          recipientEmail: 'maria@labelslab.com',
           subject: subject,
           textBody: textBody,
           htmlBody: htmlBody
