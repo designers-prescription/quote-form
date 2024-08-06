@@ -155,7 +155,10 @@ const QuoteDetails = () => {
             pdf.addImage(img, 'PNG', x, y, width, height);
             resolve();
           };
-          img.onerror = (error) => reject(error);
+          img.onerror = (error) => {
+            console.error(`Error loading image ${imgSrc}:`, error);
+            reject(error);
+          };
         } else {
           resolve();
         }
@@ -193,7 +196,7 @@ const QuoteDetails = () => {
           startY: 120,
           head: [['Field', 'Value']],
           body: [
-            // ['Customer Name', realTimeQuote.customerName || ''],
+            ['Customer Name', realTimeQuote.customerName || ''],
             ['Sales Rep Name', realTimeQuote.salesRepName || ''],
             ['Project Name', realTimeQuote.projectName || ''],
             ['Project ID', realTimeQuote.projectId || ''],
@@ -210,13 +213,13 @@ const QuoteDetails = () => {
         pdf.text('Special Instructions:', 40, specialShippingY);
         pdf.setTextColor(0, 0, 0);
         pdf.setFont(undefined, 'normal');
-        pdf.text(product.packagingInstructions || '', 180, specialShippingY);
+        pdf.text(product.packagingInstructions || '', 150, specialShippingY);
         pdf.setFont(undefined, 'bold');
         pdf.setTextColor(255, 0, 0);
         pdf.text('Shipping Instructions:', 40, specialShippingY + 20);
         pdf.setTextColor(0, 0, 0);
         pdf.setFont(undefined, 'normal');
-        pdf.text(product.shippingInstructions || '', 180, specialShippingY + 20);
+        pdf.text(product.shippingInstructions || '', 150, specialShippingY + 20);
   
         // Add product fields in a table layout
         const fieldsTableYStart = specialShippingY + 60;
@@ -260,12 +263,6 @@ const QuoteDetails = () => {
           ]),
           theme: 'grid',
           styles: { fontSize: 10 },
-          columnStyles: {
-            0: { cellWidth: 0.25 * pageWidth - 20 },
-            1: { cellWidth: 0.25 * pageWidth - 20 },
-            2: { cellWidth: 0.25 * pageWidth - 20 },
-            3: { cellWidth: 0.25 * pageWidth - 20 }
-          }
         });
   
         // Add new table for prices
@@ -285,12 +282,6 @@ const QuoteDetails = () => {
           ]),
           theme: 'grid',
           styles: { fontSize: 10 },
-          columnStyles: {
-            0: { cellWidth: 0.25 * pageWidth - 20 },
-            1: { cellWidth: 0.25 * pageWidth - 20 },
-            2: { cellWidth: 0.25 * pageWidth - 20 },
-            3: { cellWidth: 0.25 * pageWidth - 20 }
-          }
         });
   
         // Add new table for shipping dimensions
@@ -310,12 +301,6 @@ const QuoteDetails = () => {
           ]),
           theme: 'grid',
           styles: { fontSize: 10 },
-          columnStyles: {
-            0: { cellWidth: 0.25 * pageWidth - 20 },
-            1: { cellWidth: 0.25 * pageWidth - 20 },
-            2: { cellWidth: 0.25 * pageWidth - 20 },
-            3: { cellWidth: 0.25 * pageWidth - 20 }
-          }
         });
   
         // Add shipping details in a 2-column layout
@@ -353,7 +338,7 @@ const QuoteDetails = () => {
           },
         });
   
-        // Add new table for Express and Regular Air/Sea quantities
+        // Add new table for Air/Sea quantities
         const airSeaQuantityTableYStart = pdf.lastAutoTable.finalY + 20;
         pdf.setFontSize(12);
         pdf.setFont(undefined, 'bold');
@@ -375,7 +360,7 @@ const QuoteDetails = () => {
           styles: { fontSize: 10 },
         });
   
-        // Add new table for Express and Regular Air/Sea prices
+        // Add new table for Air/Sea prices
         const airSeaPriceTableYStart = pdf.lastAutoTable.finalY + 20;
         pdf.setFontSize(12);
         pdf.setFont(undefined, 'bold');
@@ -412,6 +397,7 @@ const QuoteDetails = () => {
       console.error('Error generating PDF:', error);
     }
   };
+  
   
 
   const handleAddVendorDetails = async () => {
