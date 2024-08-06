@@ -122,7 +122,7 @@ const QuoteDetails = () => {
 
   const handleDownloadPDF = async () => {
     const input = printRef.current;
-    const logoUrl = 'https://shipping-quote.labelslab.com/labelslab.png'; // Replace with your logo URL
+    // const logoUrl = 'https://shipping-quote.labelslab.com/labelslab.png'; // Replace with your logo URL
   
     const pdf = new jsPDF('p', 'pt', 'a4');
     const pageHeight = pdf.internal.pageSize.height;
