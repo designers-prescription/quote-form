@@ -167,7 +167,7 @@ const QuoteDetails = () => {
   
     try {
       // Add logo
-      await addImageToPDF(pdf, logoUrl, 20, 20, 100, 50); // Adjust the position and size as needed
+      // await addImageToPDF(pdf, logoUrl, 20, 20, 100, 50); // Adjust the position and size as needed
   
       if (!realTimeQuote || !realTimeQuote.products) {
         console.error('Quote data is missing or incomplete');
