@@ -34,10 +34,12 @@ const ShrinkSleeves = ({ product, updateProduct }) => {
           <option value="">Select Material</option>
           <option value="PETG">PETG</option>
           <option value="PVC">PVC</option>
+          <option value="Soft Touch (China)">Soft Touch (China)</option>
+          <option value="Matte">Matte</option>
         </select>
       </div>
 
-      <div className="form-group col-span-2">
+      {/* <div className="form-group col-span-2">
         <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Finish:</label>
         <select
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
@@ -49,7 +51,7 @@ const ShrinkSleeves = ({ product, updateProduct }) => {
           <option value="Gloss">Gloss</option>
           <option value="SoftTouch">Soft Touch (China)</option>
         </select>
-      </div>
+      </div> */}
 
       <div className=" col-span-2 mb-2">
         <label className="block tracking-wide text-sm font-bold leading-6 mb-5 text-gray-900">Special Effects:</label>
