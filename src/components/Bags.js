@@ -1,7 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const Bags = ({ product, updateProduct }) => {
-  const [bagType, setBagType] = useState('');
+  // Initialize state for bagType from product.fields.bagType
+  const [bagType, setBagType] = useState(product.fields.bagType || '');
+
+  useEffect(() => {
+    // Update product.fields.bagType whenever bagType state changes
+    updateProduct('bagType', bagType);
+  }, [bagType, updateProduct]);
 
   const handleSizeChange = (dimension, value) => {
     const size = { ...product.fields.size, [dimension]: value };
@@ -18,18 +24,18 @@ const Bags = ({ product, updateProduct }) => {
     updateProduct('foilNumber', e.target.value);
   };
 
-    const bagTypes = [
-  { value: 1, label: '3 Sided Sealed' },
-  { value: 2, label: 'Stand Up with bottom gusset without zipper' },
-  { value: 3, label: '3 Side Sealed With Zipper' },
-  { value: 4, label: 'Stand Up with bottom Gusset and Zipper' },
-  { value: 5, label: 'Back Side Sealed' },
-  { value: 6, label: 'Side Gusset Pouch' },
-  { value: 7, label: 'Flat bottom with Zipper' },
-  { value: 8, label: 'Special Shape Bag' },
-  { value: 9, label: 'Roll Film' },
-  { value: 10, label: 'Spout Bag' }
-];
+  const bagTypes = [
+    { value: 1, label: '3 Sided Sealed' },
+    { value: 2, label: 'Stand Up with bottom gusset without zipper' },
+    { value: 3, label: '3 Side Sealed With Zipper' },
+    { value: 4, label: 'Stand Up with bottom Gusset and Zipper' },
+    { value: 5, label: 'Back Side Sealed' },
+    { value: 6, label: 'Side Gusset Pouch' },
+    { value: 7, label: 'Flat bottom with Zipper' },
+    { value: 8, label: 'Special Shape Bag' },
+    { value: 9, label: 'Roll Film' },
+    { value: 10, label: 'Spout Bag' }
+  ];
 
   const materialOptions = [
     "None",
@@ -47,16 +53,6 @@ const Bags = ({ product, updateProduct }) => {
 
   const renderCommonFields = () => (
     <>
-      {/* <div className="form-group">
-        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Foil Number:</label>
-        <input
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="number"
-          value={product.fields.foilNumber || ""}
-          onChange={handleFoilNumberChange}
-          placeholder="Foil Number"
-        />
-      </div> */}
       <div className="form-group">
         <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Width (in mm):</label>
         <input
@@ -418,7 +414,7 @@ const Bags = ({ product, updateProduct }) => {
   };
 
   return (
-<div className="product-form">
+    <div className="product-form">
       <div className="form-group">
         <img src="https://shipping-quote.labelslab.com/bags.png" alt="Placeholder" />
       </div>
@@ -432,7 +428,7 @@ const Bags = ({ product, updateProduct }) => {
           <option value="">Select Bag Type</option>
           {bagTypes.map((type) => (
             <option key={type.value} value={type.value}>
-               {`Type ${type.value} - ${type.label}`}
+              {`Type ${type.value} - ${type.label}`}
             </option>
           ))}
         </select>

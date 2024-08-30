@@ -514,6 +514,7 @@ const QuoteDetails = () => {
                       : value}
                   </p>
                 ))}
+                
             </div>
 
             <div className="mb-4">
