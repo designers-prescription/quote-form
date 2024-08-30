@@ -15,25 +15,30 @@ import ShrinkSleeves from "../components/ShrinkSleeves";
 import Labels from "../components/Labels";
 import Bags from "../components/Bags";
 import Sachets from "../components/Sachets";
+import ConfirmationModal from "../components/ConfirmationModal"; // Import the modal
 
 const StepOne = () => {
   const [user] = useAuthState(auth);
-  const [products, setProducts] = useState([{
-    productType: '',
-    SKU: 1,
-    quantities: { Q1: {}, Q2: {}, Q3: {} },
-    fields: {},
-    address: '',
-    packagingInstructions: '',
-    shippingInstructions: '',
-    imageUrl: ''
-  }]);
+  const [products, setProducts] = useState([
+    {
+      productType: '',
+      SKU: 1,
+      quantitiesCount: 1,
+      skuDetails: [],
+      fields: {},
+      address: '',
+      packagingInstructions: '',
+      shippingInstructions: '',
+      imageUrl: ''
+    }
+  ]);
   const [customerName, setCustomerName] = useState("");
   const [salesRepName, setSalesRepName] = useState("");
   const [projectName, setProjectName] = useState("");
   const [projectId, setProjectId] = useState("");
   const [mainAddress, setMainAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
 
   useEffect(() => {
     if (user) {
@@ -55,32 +60,31 @@ const StepOne = () => {
 
   useEffect(() => {
     setProducts(products.map(product => ({ ...product, address: mainAddress })));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainAddress]);
 
   const handleProductChange = (index, field, value) => {
     const newProducts = [...products];
     newProducts[index][field] = value;
 
-    if (field === 'SKU') {
-      const newQuantities = { Q1: {}, Q2: {}, Q3: {} };
-      for (let i = 0; i < value; i++) {
-        newQuantities.Q1[i] = newProducts[index].quantities.Q1[i] || 0;
-        newQuantities.Q2[i] = newProducts[index].quantities.Q2[i] || 0;
-        newQuantities.Q3[i] = newProducts[index].quantities.Q3[i] || 0;
-      }
-      newProducts[index].quantities = newQuantities;
+    if (field === 'SKU' || field === 'quantitiesCount') {
+      const skus = newProducts[index].SKU;
+      const quantities = newProducts[index].quantitiesCount;
+
+      newProducts[index].skuDetails = Array.from({ length: skus }, (_, skuIndex) => ({
+        sku: skuIndex + 1,
+        quantities: Array.from({ length: quantities }, (_, qtyIndex) => ({
+          quantity: qtyIndex + 1,
+          value: newProducts[index].skuDetails?.[skuIndex]?.quantities?.[qtyIndex]?.value || 0
+        }))
+      }));
     }
 
     setProducts(newProducts);
   };
 
-  const handleQuantityChange = (index, qKey, skuIndex, value) => {
+  const handleSKUQuantityChange = (index, skuIndex, qtyIndex, value) => {
     const newProducts = [...products];
-    if (!newProducts[index].quantities[qKey]) {
-      newProducts[index].quantities[qKey] = {};
-    }
-    newProducts[index].quantities[qKey][skuIndex] = value;
+    newProducts[index].skuDetails[skuIndex].quantities[qtyIndex].value = parseInt(value) || 0;
     setProducts(newProducts);
   };
 
@@ -89,7 +93,14 @@ const StepOne = () => {
     if (!newProducts[index].fields) {
       newProducts[index].fields = {};
     }
-    newProducts[index].fields[field] = value;
+    
+    // Update field directly for packaging and shipping instructions
+    if (field === "packagingInstructions" || field === "shippingInstructions") {
+      newProducts[index][field] = value;
+    } else {
+      newProducts[index].fields[field] = value;
+    }
+
     setProducts(newProducts);
   };
 
@@ -99,24 +110,6 @@ const StepOne = () => {
     await uploadBytes(storageRef, file);
     const downloadURL = await getDownloadURL(storageRef);
     handleFieldChange(index, field, downloadURL);
-  };
-
-  const handleAddressChange = (index, value) => {
-    const newProducts = [...products];
-    newProducts[index].address = value;
-    setProducts(newProducts);
-  };
-
-  const handlePackagingInstructionsChange = (index, value) => {
-    const newProducts = [...products];
-    newProducts[index].packagingInstructions = value;
-    setProducts(newProducts);
-  };
-
-  const handleShippingInstructionsChange = (index, value) => {
-    const newProducts = [...products];
-    newProducts[index].shippingInstructions = value;
-    setProducts(newProducts);
   };
 
   const handleImageChange = async (e, index) => {
@@ -133,7 +126,8 @@ const StepOne = () => {
     setProducts([...products, {
       productType: '',
       SKU: 1,
-      quantities: { Q1: {}, Q2: {}, Q3: {} },
+      quantitiesCount: 1,
+      skuDetails: [],
       fields: {},
       address: mainAddress,
       packagingInstructions: '',
@@ -221,8 +215,7 @@ const StepOne = () => {
     try {
       await setDoc(doc(db, "QuoteRequirements", uniqueProjectId), quoteData);
       toast.success("Form submitted successfully!");
-      
-      // Define your subject and body content for the new quote notification
+
       const subject = 'New Quote Submitted';
       const textBody = `A new quote has been submitted. View it at https://shipping-quote.labelslab.com/packaging-details/${uniqueProjectId}`;
       const htmlBody = `
@@ -247,7 +240,8 @@ const StepOne = () => {
         setProducts([{
           productType: '',
           SKU: 1,
-          quantities: { Q1: {}, Q2: {}, Q3: {} },
+          quantitiesCount: 1,
+          skuDetails: [],
           fields: {},
           address: '',
           packagingInstructions: '',
@@ -287,16 +281,6 @@ const StepOne = () => {
     Sachets,
   };
 
-  const calculateProductTotals = (quantities) => {
-    let totals = { Q1: 0, Q2: 0, Q3: 0 };
-    Object.keys(quantities).forEach((qKey) => {
-      Object.values(quantities[qKey]).forEach(value => {
-        totals[qKey] += parseInt(value, 10) || 0;
-      });
-    });
-    return totals;
-  };
-
   return (
     <>
       <Header />
@@ -305,7 +289,8 @@ const StepOne = () => {
           <h2 className="text-3xl p-10 mb-6" style={{ textAlign: "center" }}>
             Step One: Quote Requirements
           </h2>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={(e) => e.preventDefault()}>
+            {/* Customer Details Section */}
             <div className="mb-4">
               <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Customer Name:</label>
               <input
@@ -317,6 +302,7 @@ const StepOne = () => {
                 required
               />
             </div>
+            {/* Sales Rep Name */}
             <div className="mb-4">
               <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Sales Rep Name:</label>
               <input
@@ -329,6 +315,7 @@ const StepOne = () => {
                 readOnly
               />
             </div>
+            {/* Project Details */}
             <div className="mb-4">
               <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Project Name:</label>
               <input
@@ -352,6 +339,7 @@ const StepOne = () => {
               <small className="text-gray-500 text-xs">Project ID is auto-generated and cannot be changed.</small>
             </div>
 
+            {/* Products Section */}
             {products.map((product, index) => (
               <div key={index} className="mb-6 border p-4 rounded-lg">
                 <div className="flex justify-between items-center mb-4">
@@ -365,26 +353,29 @@ const StepOne = () => {
                   </button>
                 </div>
 
+                {/* Packaging Instructions */}
                 <div className="mb-4">
                   <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Packaging Instructions:</label>
                   <textarea
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     value={product.packagingInstructions}
-                    onChange={(e) => handlePackagingInstructionsChange(index, e.target.value)}
+                    onChange={(e) => handleFieldChange(index, "packagingInstructions", e.target.value)}
                     placeholder="Packaging Instructions"
                   />
                 </div>
 
+                {/* Shipping Instructions */}
                 <div className="mb-4">
                   <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Shipping Instructions: (Please do not add address) </label>
                   <textarea
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     value={product.shippingInstructions}
-                    onChange={(e) => handleShippingInstructionsChange(index, e.target.value)}
+                    onChange={(e) => handleFieldChange(index, "shippingInstructions", e.target.value)}
                     placeholder="Shipping Instructions"
                   />
                 </div>
 
+                {/* Additional Product Fields */}
                 <div className="mb-4">
                   <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">PMS QTY:</label>
                   <input
@@ -396,6 +387,7 @@ const StepOne = () => {
                   />
                 </div>
 
+                {/* Product Image Upload */}
                 <div className="mb-4">
                   <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Product Image:</label>
                   <input
@@ -408,6 +400,7 @@ const StepOne = () => {
                   )}
                 </div>
 
+                {/* SKU and Quantities Configuration */}
                 <div className="mb-4">
                   <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">SKU Count:</label>
                   <input
@@ -415,91 +408,49 @@ const StepOne = () => {
                     type="number"
                     name="SKU"
                     value={product.SKU}
-                    onChange={(e) => handleProductChange(index, "SKU", Math.max(0, e.target.value))}
+                    onChange={(e) => handleProductChange(index, "SKU", Math.max(1, e.target.value))}
                     placeholder="Number of SKUs"
                     required
                   />
                 </div>
 
+                <div className="mb-4">
+                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantities Count:</label>
+                  <input
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    type="number"
+                    name="quantitiesCount"
+                    value={product.quantitiesCount}
+                    onChange={(e) => handleProductChange(index, "quantitiesCount", Math.max(1, e.target.value))}
+                    placeholder="Number of Quantities"
+                    required
+                  />
+                </div>
+
+                {/* SKU Details Configuration */}
                 <div className="grid mt-2 gap-2">
-                  {[...Array(parseInt(product.SKU))].map((_, skuIndex) => (
+                  {product.skuDetails?.map((sku, skuIndex) => (
                     <div key={skuIndex} className="mb-2">
-                      <h4 className="text-md font-semibold">SKU {skuIndex + 1}</h4>
+                      <h4 className="text-md font-semibold">SKU {sku.sku}</h4>
                       <div className="grid mt-1 gap-5 grid-cols-3">
-                        <div className="mb-2">
-                          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity 1:</label>
-                          <input
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                            type="number"
-                            value={product.quantities.Q1[skuIndex] || ""}
-                            onChange={(e) => handleQuantityChange(index, "Q1", skuIndex, e.target.value)}
-                            placeholder="Quantity 1"
-                          />
-                        </div>
-
-                        <div className="mb-2">
-                          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity 2:</label>
-                          <input
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                            type="number"
-                            value={product.quantities.Q2[skuIndex] || ""}
-                            onChange={(e) => handleQuantityChange(index, "Q2", skuIndex, e.target.value)}
-                            placeholder="Quantity 2"
-                          />
-                        </div>
-
-                        <div className="mb-2">
-                          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity 3:</label>
-                          <input
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                            type="number"
-                            value={product.quantities.Q3[skuIndex] || ""}
-                            onChange={(e) => handleQuantityChange(index, "Q3", skuIndex, e.target.value)}
-                            placeholder="Quantity 3"
-                          />
-                        </div>
+                        {sku.quantities.map((quantity, qtyIndex) => (
+                          <div key={qtyIndex} className="mb-2">
+                            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Quantity {quantity.quantity}:</label>
+                            <input
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                              type="number"
+                              value={quantity.value}
+                              onChange={(e) => handleSKUQuantityChange(index, skuIndex, qtyIndex, e.target.value)}
+                              placeholder={`Quantity ${quantity.quantity}`}
+                            />
+                          </div>
+                        ))}
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="mt-4">
-                  <h4 className="text-md font-semibold mb-2">Product Total Quantities:</h4>
-                  <div className="grid gap-5 grid-cols-3">
-                    <div className="form-group">
-                      <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Quantity 1:</label>
-                      <input
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                        type="number"
-                        value={calculateProductTotals(product.quantities).Q1}
-                        readOnly
-                        placeholder="Total Quantity 1"
-                      />
-                    </div>
 
-                    <div className="form-group">
-                      <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Quantity 2:</label>
-                      <input
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                        type="number"
-                        value={calculateProductTotals(product.quantities).Q2}
-                        readOnly
-                        placeholder="Total Quantity 2"
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Total Quantity 3:</label>
-                      <input
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                        type="number"
-                        value={calculateProductTotals(product.quantities).Q3}
-                        readOnly
-                        placeholder="Total Quantity 3"
-                      />
-                    </div>
-                  </div>
-                </div>
-
+                {/* Product Type Selector */}
                 <div className="mb-4">
                   <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Product Type:</label>
                   <select
@@ -521,6 +472,7 @@ const StepOne = () => {
                   </select>
                 </div>
 
+                {/* Dynamic Product Component Rendering */}
                 {product.productType && productComponents[product.productType] && (
                   <div className="mb-4">
                     <h4 className="text-md font-semibold mb-2">Custom Fields for {product.productType}</h4>
@@ -535,6 +487,7 @@ const StepOne = () => {
               </div>
             ))}
 
+            {/* Add Product Button */}
             <div className="mb-6">
               <button
                 type="button"
@@ -545,9 +498,19 @@ const StepOne = () => {
               </button>
             </div>
 
+            {/* Preview and Submit Buttons */}
+            <button
+              type="button"
+              className="px-4 py-2 border border-transparent text-sm font-medium rounded-md bg-yellow-500 text-white hover:bg-yellow-600 mr-2"
+              onClick={() => setIsModalOpen(true)}
+            >
+              Preview Quote
+            </button>
+
             <button
               className="mt-1 px-4 py-2 border border-transparent text-sm font-medium rounded-md bg-black text-white bg-secondary hover:bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-light"
-              type="submit"
+              type="button"
+              onClick={handleSubmit}
               disabled={isLoading}
             >
               {isLoading ? "Submitting..." : "Submit Quote"}
@@ -556,6 +519,14 @@ const StepOne = () => {
           <ToastContainer position="top-center" autoClose={9000} />
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleSubmit}
+        quoteData={{ customerName, salesRepName, projectName, projectId, products }}
+      />
     </>
   );
 };
