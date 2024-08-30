@@ -66,6 +66,7 @@ const StepTwo = () => {
               <thead className='align-bottom'>
                 <tr className='font-semibold text-[0.95rem] text-secondary-dark'>
                   <th className='pb-3 text-start min-w-[175px]'>Customer Name</th>
+                  <th className='pb-3 text-start min-w-[175px]'>Project Name </th>
                   <th className='pb-3 text-end min-w-[100px]'>Sales Rep Name</th>
                   <th className='pb-3 text-end min-w-[100px]'>Product Types</th>
                   <th className='pb-3 pr-12 text-end min-w-[175px]'>Created On</th>
@@ -76,6 +77,7 @@ const StepTwo = () => {
                 {quotes.map((quote) => (
                   <tr key={quote.id} className='border-b border-dashed last:border-b-0'>
                     <td className='p-3 pl-0 overflow-x-auto max-w-[175px]'>{quote.customerName}</td>
+                    <td className='p-3 pl-0 overflow-x-auto max-w-[175px]'>{quote.projectName}</td>
                     <td className='p-3 pr-0 text-end overflow-x-auto max-w-[100px]'>{quote.salesRepName}</td>
                     <td className='p-3 pr-0 text-end overflow-x-auto max-w-[100px]'>
                       {quote.products?.map((product, index) => (
