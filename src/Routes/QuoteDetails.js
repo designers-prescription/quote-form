@@ -53,9 +53,9 @@ const QuoteDetails = () => {
     return () => unsubscribe();
   }, [id]);
 
-  const handleQuantityChange = (e, index, key) => {
+  const handleQuantityChange = (e, productIndex, skuIndex, quantityIndex) => {
     const newQuote = { ...realTimeQuote };
-    newQuote.products[0].quantities[key][index] = e.target.value;
+    newQuote.products[productIndex].skuDetails[skuIndex].quantities[quantityIndex].value = e.target.value;
     setRealTimeQuote(newQuote);
   };
 
@@ -67,7 +67,6 @@ const QuoteDetails = () => {
         'products': realTimeQuote.products
       });
 
-      // Define your subject and body content for the update notification
       const subject = 'Quote Updated';
       const textBody = `The quote with ID ${realTimeQuote.id} has been updated.`;
       const htmlBody = `
@@ -85,13 +84,12 @@ const QuoteDetails = () => {
         </div>
       `;
 
-      // Notify Maria via AWS Lambda with the dynamic subject and body
       await notifyMaria(realTimeQuote.id, subject, textBody, htmlBody);
     }
     setIsSaving(false);
     setIsSaved(true);
     setIsEditing(false);
-    setTimeout(() => setIsSaved(false), 3000); // Hide confirmation message after 3 seconds
+    setTimeout(() => setIsSaved(false), 3000);
   };
 
   const notifyMaria = async (quoteId, subject, textBody, htmlBody) => {
@@ -121,288 +119,269 @@ const QuoteDetails = () => {
   };
 
   const handleDownloadPDF = async () => {
-    const input = printRef.current;
-    // const logoUrl = 'https://shipping-quote.labelslab.com/labelslab.png'; // Replace with your logo URL
-  
     const pdf = new jsPDF('p', 'pt', 'a4');
     const pageHeight = pdf.internal.pageSize.height;
     const pageWidth = pdf.internal.pageSize.width;
-  
+
     const addImageToPDF = async (pdf, imgSrc, x, y, maxWidth, maxHeight) => {
-      return new Promise((resolve, reject) => {
-        if (imgSrc) {
-          const img = new Image();
-          img.crossOrigin = 'Anonymous';
-          img.src = imgSrc;
-          img.onload = () => {
-            let width = img.width;
-            let height = img.height;
-  
-            // Calculate the aspect ratio
-            const aspectRatio = width / height;
-  
-            // Adjust width and height to fit within the specified max dimensions
-            if (height > maxHeight) {
-              height = maxHeight;
-              width = height * aspectRatio;
+        return new Promise((resolve, reject) => {
+            if (imgSrc) {
+                const img = new Image();
+                img.crossOrigin = 'Anonymous';
+                img.src = imgSrc;
+                img.onload = () => {
+                    let width = img.width;
+                    let height = img.height;
+
+                    const aspectRatio = width / height;
+
+                    if (height > maxHeight) {
+                        height = maxHeight;
+                        width = height * aspectRatio;
+                    }
+
+                    if (width > maxWidth) {
+                        width = maxWidth;
+                        height = width / aspectRatio;
+                    }
+
+                    pdf.addImage(img, 'PNG', x, y, width, height);
+                    resolve();
+                };
+                img.onerror = (error) => {
+                    console.error(`Error loading image ${imgSrc}:`, error);
+                    reject(error);
+                };
+            } else {
+                resolve();
             }
-  
-            if (width > maxWidth) {
-              width = maxWidth;
-              height = width / aspectRatio;
-            }
-  
-            pdf.addImage(img, 'PNG', x, y, width, height);
-            resolve();
-          };
-          img.onerror = (error) => {
-            console.error(`Error loading image ${imgSrc}:`, error);
-            reject(error);
-          };
-        } else {
-          resolve();
-        }
-      });
+        });
     };
-  
+
     try {
-      // Add logo
-      // await addImageToPDF(pdf, logoUrl, 20, 20, 100, 50); // Adjust the position and size as needed
-  
-      if (!realTimeQuote || !realTimeQuote.products) {
-        console.error('Quote data is missing or incomplete');
-        return;
-      }
-  
-      // Filter products based on the selected tab
-      const filteredProducts = realTimeQuote.products.filter(product => product.productType === selectedTab);
-  
-      // Iterate over each filtered product and create a new page for each
-      for (let productIndex = 0; productIndex < filteredProducts.length; productIndex++) {
-        const product = filteredProducts[productIndex];
-  
-        if (productIndex > 0) {
-          pdf.addPage();
+        if (!realTimeQuote || !realTimeQuote.products) {
+            console.error('Quote data is missing or incomplete');
+            return;
         }
-  
-        // Add general information about the quote
-        pdf.setFontSize(20);
-        pdf.setFont(undefined, 'bold');
-        pdf.text(`Product ${productIndex + 1}: ${product.productType || ''}`, 40, 100);
-  
-        pdf.setFontSize(12);
-        pdf.setFont(undefined, 'normal');
-        pdf.autoTable({
-          startY: 120,
-          head: [['Field', 'Value']],
-          body: [
-            ['Customer Name', realTimeQuote.customerName || ''],
-            ['Sales Rep Name', realTimeQuote.salesRepName || ''],
-            ['Project Name', realTimeQuote.projectName || ''],
-            ['Project ID', realTimeQuote.projectId || ''],
-          ],
-          theme: 'grid',
-          styles: { fontSize: 10 },
-        });
-  
-        // Add special and shipping instructions
-        const specialShippingY = pdf.lastAutoTable.finalY + 25; // Adjusted position
-        pdf.setFontSize(12);
-        pdf.setFont(undefined, 'bold');
-        pdf.setTextColor(255, 0, 0);
-        pdf.text('Special Instructions:', 40, specialShippingY);
-        pdf.setTextColor(0, 0, 0);
-        pdf.setFont(undefined, 'normal');
-        pdf.text(product.packagingInstructions || '', 150, specialShippingY);
-        pdf.setFont(undefined, 'bold');
-        pdf.setTextColor(255, 0, 0);
-        pdf.text('Shipping Instructions:', 40, specialShippingY + 20);
-        pdf.setTextColor(0, 0, 0);
-        pdf.setFont(undefined, 'normal');
-        pdf.text(product.shippingInstructions || '', 150, specialShippingY + 20);
-  
-        // Add product fields in a table layout
-        const fieldsTableYStart = specialShippingY + 60;
-        const productFields = Object.entries(product.fields || {})
-          .filter(([key]) => key !== 'bottleImage' && key !== 'artwork')
-          .sort((a, b) => a[0].localeCompare(b[0]))
-          .map(([key, value]) => {
-            const formattedName = formatFieldName(key);
-            const displayValue = typeof value === 'object' && value !== null
-              ? `Width: ${value.width} x Height ${value.height} x Length ${value.length} x Gusset ${value.gusset} x Depth ${value.depth}`
-              : value;
-            return [formattedName, displayValue || ''];
-          });
-  
-        pdf.setFontSize(12);
-        pdf.setFont(undefined, 'bold');
-        pdf.text('Product Fields', 40, fieldsTableYStart - 10);
-        pdf.setFont(undefined, 'normal');
-        pdf.autoTable({
-          startY: fieldsTableYStart,
-          head: [['Field', 'Value']],
-          body: productFields,
-          theme: 'grid',
-          styles: { fontSize: 10 },
-        });
-  
-        // Add quantities table
-        const quantitiesTableYStart = pdf.lastAutoTable.finalY + 20;
-        pdf.setFontSize(12);
-        pdf.setFont(undefined, 'bold');
-        pdf.text('Quantities', 40, quantitiesTableYStart);
-        pdf.setFont(undefined, 'normal');
-        pdf.autoTable({
-          startY: quantitiesTableYStart + 10,
-          head: [['SKU', 'Q1', 'Q2', 'Q3']],
-          body: Object.keys(product.quantities.Q1 || {}).map((skuIndex) => [
-            parseInt(skuIndex) + 1,
-            product.quantities.Q1[skuIndex] || '',
-            product.quantities.Q2[skuIndex] || '',
-            product.quantities.Q3[skuIndex] || ''
-          ]),
-          theme: 'grid',
-          styles: { fontSize: 10 },
-        });
-  
-        // Add new table for prices
-        const priceTableYStart = pdf.lastAutoTable.finalY + 20;
-        pdf.setFontSize(12);
-        pdf.setFont(undefined, 'bold');
-        pdf.text('Prices', 40, priceTableYStart);
-        pdf.setFont(undefined, 'normal');
-        pdf.autoTable({
-          startY: priceTableYStart + 10,
-          head: [['SKU', 'Q1 Price', 'Q2 Price', 'Q3 Price']],
-          body: Object.keys(product.quantities.Q1 || {}).map((skuIndex) => [
-            parseInt(skuIndex) + 1,
-            '', // Q1 Price
-            '', // Q2 Price
-            '', // Q3 Price
-          ]),
-          theme: 'grid',
-          styles: { fontSize: 10 },
-        });
-  
-        // Add new table for shipping dimensions
-        const dimensionsTableYStart = pdf.lastAutoTable.finalY + 20;
-        pdf.setFontSize(12);
-        pdf.setFont(undefined, 'bold');
-        pdf.text('Shipping Dimensions', 40, dimensionsTableYStart);
-        pdf.setFont(undefined, 'normal');
-        pdf.autoTable({
-          startY: dimensionsTableYStart + 10,
-          head: [['SKU', 'Q1 Shipping Dimensions', 'Q2 Shipping Dimensions', 'Q3 Shipping Dimensions']],
-          body: Object.keys(product.quantities.Q1 || {}).map((skuIndex) => [
-            parseInt(skuIndex) + 1,
-            '', // Q1 Shipping Dimensions
-            '', // Q2 Shipping Dimensions
-            '', // Q3 Shipping Dimensions
-          ]),
-          theme: 'grid',
-          styles: { fontSize: 10 },
-        });
-  
-        // Add shipping details in a 2-column layout
-        const shippingDetailsYStart = pdf.lastAutoTable.finalY + 40;
-        const shippingDetails = [
-          { label: 'Commodity Type', value: '' },
-          { label: 'From Shipping Address', value: '' },
-          { label: 'Split Shipping With Breakdown', value: '' },
-          { label: 'Palletize', value: '' },
-          { label: 'Special Notes', value: product.shippingInstructions || '' },
-          { label: 'Total Units Per Commodity', value: '' },
-          { label: 'Number Of Units Per Box', value: '' },
-          { label: 'Total Number Of Boxes Per Commodity', value: '' },
-          { label: 'Ship Box Dimensions', value: '' },
-          { label: 'Ship Weight Per Box', value: '' },
-          { label: 'Total Qty Of Boxes Per Commodity', value: '' },
-          { label: 'Shipping Volume Per Product', value: '' },
-          { label: 'Total Volume For The Whole Order', value: '' }
-        ];
-  
-        const shippingDetailsBody = shippingDetails.map(detail => [detail.label, detail.value]);
-        pdf.setFontSize(12);
-        pdf.setFont(undefined, 'bold');
-        pdf.text('Shipping Details', 40, shippingDetailsYStart);
-        pdf.setFont(undefined, 'normal');
-        pdf.autoTable({
-          startY: shippingDetailsYStart + 10,
-          head: [['Field', 'Value']],
-          body: shippingDetailsBody,
-          theme: 'grid',
-          styles: { fontSize: 10 },
-          columnStyles: {
-            0: { cellWidth: 0.5 * pageWidth - 40 },
-            1: { cellWidth: 0.5 * pageWidth - 40 }
-          },
-        });
-  
-        // Add new table for Air/Sea quantities
-        const airSeaQuantityTableYStart = pdf.lastAutoTable.finalY + 20;
-        pdf.setFontSize(12);
-        pdf.setFont(undefined, 'bold');
-        pdf.text('Air/Sea Shipping Quantities', 40, airSeaQuantityTableYStart);
-        pdf.setFont(undefined, 'normal');
-        pdf.autoTable({
-          startY: airSeaQuantityTableYStart + 10,
-          head: [
-            ['SKU', 'Express Air Qty', 'Regular Air Qty', 'Regular Sea Container Qty', 'Express Sea Container Qty']
-          ],
-          body: Object.keys(product.quantities.Q1 || {}).map((skuIndex) => [
-            parseInt(skuIndex) + 1,
-            '', // Express Air Quantity
-            '', // Regular Air Quantity
-            '', // Regular Sea Container Quantity
-            '', // Express Sea Container Quantity
-          ]),
-          theme: 'grid',
-          styles: { fontSize: 10 },
-        });
-  
-        // Add new table for Air/Sea prices
-        const airSeaPriceTableYStart = pdf.lastAutoTable.finalY + 20;
-        pdf.setFontSize(12);
-        pdf.setFont(undefined, 'bold');
-        pdf.text('Air/Sea Shipping Prices', 40, airSeaPriceTableYStart);
-        pdf.setFont(undefined, 'normal');
-        pdf.autoTable({
-          startY: airSeaPriceTableYStart + 10,
-          head: [
-            ['SKU', 'Express Air Price', 'Regular Air Price', 'Regular Sea Container Price', 'Express Sea Container Price']
-          ],
-          body: Object.keys(product.quantities.Q1 || {}).map((skuIndex) => [
-            parseInt(skuIndex) + 1,
-            '', // Express Air Price
-            '', // Regular Air Price
-            '', // Regular Sea Container Price
-            '', // Express Sea Container Price
-          ]),
-          theme: 'grid',
-          styles: { fontSize: 10 },
-        });
-  
-        // Add reference image if exists
-        const imageYStart = pdf.lastAutoTable.finalY + 40;
-        if (product.imageUrl) {
-          pdf.setFontSize(12);
-          pdf.setFont(undefined, 'bold');
-          pdf.text('Image Reference', 40, imageYStart);
-          await addImageToPDF(pdf, product.imageUrl, 40, imageYStart + 20, pageWidth - 80, 300); // Set fixed height to 300, max width to 700
+
+        const filteredProducts = realTimeQuote.products.filter(product => product.productType === selectedTab);
+
+        for (let productIndex = 0; productIndex < filteredProducts.length; productIndex++) {
+            const product = filteredProducts[productIndex];
+
+            if (productIndex > 0) {
+                pdf.addPage();
+            }
+
+            pdf.setFontSize(20);
+            pdf.setFont(undefined, 'bold');
+            pdf.text(`Product ${productIndex + 1}: ${product.productType || ''}`, 40, 100);
+
+            pdf.setFontSize(12);
+            pdf.setFont(undefined, 'normal');
+            pdf.autoTable({
+                startY: 120,
+                head: [['Field', 'Value']],
+                body: [
+                    ['Customer Name', realTimeQuote.customerName || ''],
+                    ['Sales Rep Name', realTimeQuote.salesRepName || ''],
+                    ['Project Name', realTimeQuote.projectName || ''],
+                    ['Project ID', realTimeQuote.projectId || ''],
+                ],
+                theme: 'grid',
+                styles: { fontSize: 10 },
+            });
+
+            const specialShippingY = pdf.lastAutoTable.finalY + 25;
+            pdf.setFontSize(12);
+            pdf.setFont(undefined, 'bold');
+            pdf.setTextColor(255, 0, 0);
+            pdf.text('Special Instructions:', 40, specialShippingY);
+            pdf.setTextColor(0, 0, 0);
+            pdf.setFont(undefined, 'normal');
+            pdf.text(product.packagingInstructions || '', 150, specialShippingY);
+            pdf.setFont(undefined, 'bold');
+            pdf.setTextColor(255, 0, 0);
+            pdf.text('Shipping Instructions:', 40, specialShippingY + 20);
+            pdf.setTextColor(0, 0, 0);
+            pdf.setFont(undefined, 'normal');
+            pdf.text(product.shippingInstructions || '', 150, specialShippingY + 20);
+
+            const fieldsTableYStart = specialShippingY + 60;
+            const productFields = Object.entries(product.fields || {})
+                .filter(([key]) => key !== 'bottleImage' && key !== 'artwork')
+                .sort((a, b) => a[0].localeCompare(b[0]))
+                .map(([key, value]) => {
+                    const formattedName = formatFieldName(key);
+                    const displayValue = typeof value === 'object' && value !== null
+                        ? `Width: ${value.width} x Height ${value.height} x Length ${value.length} x Gusset ${value.gusset} x Depth ${value.depth}`
+                        : value;
+                    return [formattedName, displayValue || ''];
+                });
+
+            pdf.setFontSize(12);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Product Fields', 40, fieldsTableYStart - 10);
+            pdf.setFont(undefined, 'normal');
+            pdf.autoTable({
+                startY: fieldsTableYStart,
+                head: [['Field', 'Value']],
+                body: productFields,
+                theme: 'grid',
+                styles: { fontSize: 10 },
+            });
+
+            // Quantities Table
+            const quantitiesTableYStart = pdf.lastAutoTable.finalY + 20;
+            pdf.setFontSize(12);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Quantities', 40, quantitiesTableYStart);
+            pdf.setFont(undefined, 'normal');
+
+            const quantityHeaders = ['SKU', ...product.skuDetails[0].quantities.map((_, i) => `Quantity ${i + 1}`)];
+            const quantityBody = product.skuDetails.map((skuDetail) => [
+                skuDetail.sku,
+                ...skuDetail.quantities.map(qty => qty.value)
+            ]);
+
+            pdf.autoTable({
+                startY: quantitiesTableYStart + 10,
+                head: [quantityHeaders],
+                body: quantityBody,
+                theme: 'grid',
+                styles: { fontSize: 10 },
+            });
+
+            // Prices Table
+            const pricesTableYStart = pdf.lastAutoTable.finalY + 20;
+            pdf.setFontSize(12);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Prices', 40, pricesTableYStart);
+            pdf.setFont(undefined, 'normal');
+
+            const pricesHeaders = ['SKU', 'Q1 Price', 'Q2 Price', 'Q3 Price'];
+            const pricesBody = product.skuDetails.map((skuDetail) => [
+                skuDetail.sku,
+                '', '', '' // Replace with actual price data if available
+            ]);
+
+            pdf.autoTable({
+                startY: pricesTableYStart + 10,
+                head: [pricesHeaders],
+                body: pricesBody,
+                theme: 'grid',
+                styles: { fontSize: 10 },
+            });
+
+            // Shipping Dimensions Table
+            const shippingDimensionsTableYStart = pdf.lastAutoTable.finalY + 20;
+            pdf.setFontSize(12);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Shipping Dimensions', 40, shippingDimensionsTableYStart);
+            pdf.setFont(undefined, 'normal');
+
+            const shippingDimensionsHeaders = ['SKU', 'Q1 Shipping Dimensions', 'Q2 Shipping Dimensions', 'Q3 Shipping Dimensions'];
+            const shippingDimensionsBody = product.skuDetails.map((skuDetail) => [
+                skuDetail.sku,
+                '', '', '' // Replace with actual dimension data if available
+            ]);
+
+            pdf.autoTable({
+                startY: shippingDimensionsTableYStart + 10,
+                head: [shippingDimensionsHeaders],
+                body: shippingDimensionsBody,
+                theme: 'grid',
+                styles: { fontSize: 10 },
+            });
+
+            // Air/Sea Shipping Quantities Table
+            const airSeaQuantitiesTableYStart = pdf.lastAutoTable.finalY + 20;
+            pdf.setFontSize(12);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Air/Sea Shipping Quantities', 40, airSeaQuantitiesTableYStart);
+            pdf.setFont(undefined, 'normal');
+
+            const airSeaQuantitiesHeaders = ['SKU', 'Express Air Qty', 'Regular Air Qty', 'Regular Sea Container Qty', 'Express Sea Container Qty'];
+            const airSeaQuantitiesBody = product.skuDetails.map((skuDetail) => [
+                skuDetail.sku,
+                '', '', '', '' // Replace with actual shipping quantity data if available
+            ]);
+
+            pdf.autoTable({
+                startY: airSeaQuantitiesTableYStart + 10,
+                head: [airSeaQuantitiesHeaders],
+                body: airSeaQuantitiesBody,
+                theme: 'grid',
+                styles: { fontSize: 10 },
+            });
+
+            // Air/Sea Shipping Prices Table
+            const airSeaPricesTableYStart = pdf.lastAutoTable.finalY + 20;
+            pdf.setFontSize(12);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Air/Sea Shipping Prices', 40, airSeaPricesTableYStart);
+            pdf.setFont(undefined, 'normal');
+
+            const airSeaPricesHeaders = ['SKU', 'Express Air Price', 'Regular Air Price', 'Regular Sea Container Price', 'Express Sea Container Price'];
+            const airSeaPricesBody = product.skuDetails.map((skuDetail) => [
+                skuDetail.sku,
+                '', '', '', '' // Replace with actual shipping price data if available
+            ]);
+
+            pdf.autoTable({
+                startY: airSeaPricesTableYStart + 10,
+                head: [airSeaPricesHeaders],
+                body: airSeaPricesBody,
+                theme: 'grid',
+                styles: { fontSize: 10 },
+            });
+
+            // Shipping Details Table
+            const shippingDetailsYStart = pdf.lastAutoTable.finalY + 40;
+            const shippingDetails = [
+                { label: 'Commodity Type', value: '' },
+                { label: 'From Shipping Address', value: '' },
+                { label: 'Split Shipping With Breakdown', value: '' },
+                { label: 'Palletize', value: '' },
+                { label: 'Special Notes', value: product.shippingInstructions || '' },
+                { label: 'Total Units Per Commodity', value: '' },
+                { label: 'Number Of Units Per Box', value: '' },
+                { label: 'Total Number Of Boxes Per Commodity', value: '' },
+                { label: 'Ship Box Dimensions', value: '' },
+                { label: 'Ship Weight Per Box', value: '' },
+                { label: 'Total Qty Of Boxes Per Commodity', value: '' },
+                { label: 'Shipping Volume Per Product', value: '' },
+                { label: 'Total Volume For The Whole Order', value: '' }
+            ];
+
+            const shippingDetailsBody = shippingDetails.map(detail => [detail.label, detail.value]);
+            pdf.setFontSize(12);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Shipping Details', 40, shippingDetailsYStart);
+            pdf.setFont(undefined, 'normal');
+            pdf.autoTable({
+                startY: shippingDetailsYStart + 10,
+                head: [['Field', 'Value']],
+                body: shippingDetailsBody,
+                theme: 'grid',
+                styles: { fontSize: 10 },
+                columnStyles: {
+                    0: { cellWidth: 0.5 * pageWidth - 40 },
+                    1: { cellWidth: 0.5 * pageWidth - 40 }
+                },
+            });
         }
-      }
-  
-      pdf.save(`quote-details - ${selectedTab} - (${realTimeQuote.projectId}).pdf`);
+
+        pdf.save(`quote-details - ${selectedTab} - (${realTimeQuote.projectId}).pdf`);
     } catch (error) {
-      console.error('Error generating PDF:', error);
+        console.error('Error generating PDF:', error);
     }
-  };
-  
-  
+};
+
 
   const handleAddVendorDetails = async () => {
     if (!vendorName || !vendorPdf || !productType) {
-      alert("Please enter vendor name, select product type, and upload a file.");
+      alert('Please enter vendor name, select product type, and upload a file.');
       return;
     }
 
@@ -458,9 +437,9 @@ const QuoteDetails = () => {
         ))}
       </div>
       <div ref={printRef} className="p-6">
-        {groupedProducts[selectedTab]?.map((product, index) => (
-          <div key={index} className="mb-10">
-            <div className="text-lg font-semibold mb-4">Quote Requirements - {product.productType} {index + 1}</div>
+        {groupedProducts[selectedTab]?.map((product, productIndex) => (
+          <div key={productIndex} className="mb-10">
+            <div className="text-lg font-semibold mb-4">Quote Requirements - {product.productType} {productIndex + 1}</div>
 
             {product.imageUrl && (
               <div className="mb-4 relative">
@@ -496,31 +475,31 @@ const QuoteDetails = () => {
             )}
             <div className="mb-4 grid text-sm grid-cols-3">
               <div>
-                <span className='tracking-wide font-bold leading-6 text-gray-900'>Customer Name: </span>
+                <span className="tracking-wide font-bold leading-6 text-gray-900">Customer Name: </span>
                 <p>{realTimeQuote.customerName}</p>
               </div>
               <div>
-                <span className='tracking-wide font-bold leading-6 text-gray-900'>Sales Rep Name: </span>
+                <span className="tracking-wide font-bold leading-6 text-gray-900">Sales Rep Name: </span>
                 <p>{realTimeQuote.salesRepName}</p>
               </div>
               <div>
-                <span className='tracking-wide font-bold leading-6 text-gray-900'>Project Name: </span>
+                <span className="tracking-wide font-bold leading-6 text-gray-900">Project Name: </span>
                 <p>{realTimeQuote.projectName}</p>
               </div>
               <div>
-                <span className='tracking-wide font-bold leading-6 text-gray-900'>Project ID: </span>
+                <span className="tracking-wide font-bold leading-6 text-gray-900">Project ID: </span>
                 <p>{realTimeQuote.projectId}</p>
               </div>
             </div>
 
             <div className="mb-4">
-              <span className='tracking-wide font-bold leading-6 text-red-700'>Special Instructions: </span>
-              <p className='text-red-700'>{product.packagingInstructions}</p>
+              <span className="tracking-wide font-bold leading-6 text-red-700">Special Instructions: </span>
+              <p className="text-red-700">{product.packagingInstructions}</p>
             </div>
 
             <div className="mb-4">
-              <span className='tracking-wide font-bold leading-6 text-red-700'>Shipping Instructions: </span>
-              <p className='text-red-700'>{product.shippingInstructions}</p>
+              <span className="tracking-wide font-bold leading-6 text-red-700">Shipping Instructions: </span>
+              <p className="text-red-700">{product.shippingInstructions}</p>
             </div>
 
             <div className="mb-4 grid text-sm grid-cols-3">
@@ -528,8 +507,8 @@ const QuoteDetails = () => {
                 .filter(([key]) => key !== 'bottleImage' && key !== 'artwork')
                 .sort((a, b) => a[0].localeCompare(b[0]))
                 .map(([key, value]) => (
-                  <p key={key} className='p-2 m-1 rounded-md border border-dashed border-slate-900 bg-slate-50'>
-                    <span className='tracking-wide font-bold leading-6 text-gray-900'>{formatFieldName(key)}: </span>
+                  <p key={key} className="p-2 m-1 rounded-md border border-dashed border-slate-900 bg-slate-50">
+                    <span className="tracking-wide font-bold leading-6 text-gray-900">{formatFieldName(key)}: </span>
                     {typeof value === 'object' && value !== null
                       ? `Width: ${value.width} x Height ${value.height} x Length ${value.length} x Gusset ${value.gusset}`
                       : value}
@@ -543,64 +522,38 @@ const QuoteDetails = () => {
                 <thead>
                   <tr>
                     <th className="border px-2 py-1 border-slate-900 text-center">SKU</th>
-                    <th className="border px-2 py-1 border-slate-900 text-center">Q1</th>
-                    <th className="border px-2 py-1 border-slate-900 text-center">Q2</th>
-                    <th className="border px-2 py-1 border-slate-900 text-center">Q3</th>
+                    {product.skuDetails[0]?.quantities.map((_, qtyIndex) => (
+                      <th key={qtyIndex} className="border px-2 py-1 border-slate-900 text-center">Quantity {qtyIndex + 1}</th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.keys(product.quantities.Q1).map((skuIndex) => (
+                  {product.skuDetails.map((skuDetail, skuIndex) => (
                     <tr key={skuIndex}>
-                      <td className="border px-2 py-1 border-slate-900 text-center">{parseInt(skuIndex) + 1}</td>
-                      <td className="border px-2 py-1 border-slate-900 text-center">
-                        {isEditing ? (
-                          <input
-                            type="number"
-                            value={product.quantities.Q1[skuIndex]}
-                            onChange={(e) => handleQuantityChange(e, skuIndex, 'Q1')}
-                            className="w-full text-center"
-                          />
-                        ) : (
-                          product.quantities.Q1[skuIndex]
-                        )}
-                      </td>
-                      <td className="border px-2 py-1 border-slate-900 text-center">
-                        {isEditing ? (
-                          <input
-                            type="number"
-                            value={product.quantities.Q2[skuIndex]}
-                            onChange={(e) => handleQuantityChange(e, skuIndex, 'Q2')}
-                            className="w-full text-center"
-                          />
-                        ) : (
-                          product.quantities.Q2[skuIndex]
-                        )}
-                      </td>
-                      <td className="border px-2 py-1 border-slate-900 text-center">
-                        {isEditing ? (
-                          <input
-                            type="number"
-                            value={product.quantities.Q3[skuIndex]}
-                            onChange={(e) => handleQuantityChange(e, skuIndex, 'Q3')}
-                            className="w-full text-center"
-                          />
-                        ) : (
-                          product.quantities.Q3[skuIndex]
-                        )}
-                      </td>
+                      <td className="border px-2 py-1 text-center border-slate-900">{skuDetail.sku}</td>
+                      {skuDetail.quantities.map((quantity, quantityIndex) => (
+                        <td key={quantityIndex} className="border px-2 py-1 text-center border-slate-900">
+                          {isEditing ? (
+                            <input
+                              type="number"
+                              value={quantity.value}
+                              onChange={(e) => handleQuantityChange(e, productIndex, skuIndex, quantityIndex)}
+                              className="w-full text-center"
+                            />
+                          ) : (
+                            quantity.value
+                          )}
+                        </td>
+                      ))}
                     </tr>
                   ))}
                   <tr>
                     <td className="border px-2 py-1 border-slate-900 text-center font-bold">Total</td>
-                    <td className="border px-2 py-1 border-slate-900 text-center font-bold">
-                      {Object.values(product.quantities.Q1).reduce((acc, value) => acc + parseInt(value, 10), 0)}
-                    </td>
-                    <td className="border px-2 py-1 border-slate-900 text-center font-bold">
-                      {Object.values(product.quantities.Q2).reduce((acc, value) => acc + parseInt(value, 10), 0)}
-                    </td>
-                    <td className="border px-2 py-1 border-slate-900 text-center font-bold">
-                      {Object.values(product.quantities.Q3).reduce((acc, value) => acc + parseInt(value, 10), 0)}
-                    </td>
+                    {product.skuDetails[0]?.quantities.map((_, qtyIndex) => (
+                      <td key={qtyIndex} className="border px-2 py-1 text-center border-slate-900 font-bold">
+                        {product.skuDetails.reduce((acc, skuDetail) => acc + parseInt(skuDetail.quantities[qtyIndex].value || 0, 10), 0)}
+                      </td>
+                    ))}
                   </tr>
                 </tbody>
               </table>
