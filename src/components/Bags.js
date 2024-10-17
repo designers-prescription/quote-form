@@ -1,123 +1,274 @@
 import React, { useState, useEffect } from 'react';
 
 const Bags = ({ product, updateProduct }) => {
-  // Initialize state for bagType from product.fields.bagType
+  // Initialize state for bagType and selectedMaterial
   const [bagType, setBagType] = useState(product.fields.bagType || '');
+  const [selectedMaterial, setSelectedMaterial] = useState(product.fields.material || '');
+  const [bagSpecifications, setBagSpecifications] = useState(product.fields.bagSpecifications || []);
+  const [width, setWidth] = useState(product.fields.width || '');
+  const [height, setHeight] = useState(product.fields.height || '');
 
   useEffect(() => {
     // Update product.fields.bagType whenever bagType state changes
     updateProduct('bagType', bagType);
   }, [bagType, updateProduct]);
 
-  const handleSizeChange = (dimension, value) => {
-    const size = { ...product.fields.size, [dimension]: value };
-    if (dimension === 'heightMM') {
-      size.height = (value / 25.4).toFixed(2);
-    }
-    if (dimension === 'widthMM') {
-      size.width = (value / 25.4).toFixed(2);
-    }
-    updateProduct('size', size);
-  };
+  useEffect(() => {
+    // Update product.fields.bagSpecifications whenever bagSpecifications state changes
+    updateProduct('bagSpecifications', bagSpecifications);
+  }, [bagSpecifications, updateProduct]);
 
-  const handleFoilNumberChange = (e) => {
-    updateProduct('foilNumber', e.target.value);
-  };
+  useEffect(() => {
+    // Update product.fields.width whenever width state changes
+    updateProduct('width', width);
+  }, [width, updateProduct]);
 
+  useEffect(() => {
+    // Update product.fields.height whenever height state changes
+    updateProduct('height', height);
+  }, [height, updateProduct]);
+
+  // Bag types (static, not affecting other options)
   const bagTypes = [
-    { value: 1, label: '3 Sided Sealed' },
-    { value: 2, label: 'Stand Up with bottom gusset without zipper' },
-    { value: 3, label: '3 Side Sealed With Zipper' },
-    { value: 4, label: 'Stand Up with bottom Gusset and Zipper' },
-    { value: 5, label: 'Back Side Sealed' },
-    { value: 6, label: 'Side Gusset Pouch' },
-    { value: 7, label: 'Flat bottom with Zipper' },
-    { value: 8, label: 'Special Shape Bag' },
-    { value: 9, label: 'Roll Film' },
-    { value: 10, label: 'Spout Bag' }
+    { value: '1', label: '3 Sided Sealed' },
+    { value: '2', label: 'Stand Up with Bottom Gusset' },
+    { value: '3', label: '3 Side Sealed with Zipper' },
+    { value: '4', label: 'Flat Bottom with Zipper' },
+    { value: '5', label: 'Back Side Sealed' },
+    { value: '6', label: 'Side Gusset Pouch' },
+    { value: '7', label: 'Roll Film' },
+    { value: '8', label: 'Spout Bag' }
   ];
 
+  // Material options
   const materialOptions = [
-    "None",
-    "PET / VMPET / PE (METALLIC GLOSS) Non Metallic as an option",
-    "PET / PE (WHITE GLOSS 2 Layer) ",
-    "MATTE OPP / VMPET / PE (MATTE) Silver Matt 3 Layers, Non Silver as an option",
-    "PET / AL / PE 3 Layer Metallic/Non-Metallic as an Option Thicker Barrier than VMPET",
-    "PET / LDPE - Smellproof, Metallic, Thicker Material Non Metallic is an option",
-    "ALOX (Smellproof, Microwaveble, Air Proof) stronger than PET / LDPE",
-    "KRAFT PAPER / PE 2 Layer (No Metallic Options)",
-    "KRAFT PAPER / VMPET / PE 3 Layer (No Metallic Options)",
-    "PE / PE (Recyclable)",
-    "KRAFT PAPER / PLA (Compostable / Biodegradable) No Metallic Options",
+    "PET / VMPET / PE",
+    "PET / PE",
+    "MATTE OPP / VMPET / PE",
+    "PET / AL / PE",
+    "PET / LDPE",
+    "ALOX",
+    "KRAFT PAPER / PE",
+    "KRAFT PAPER / VMPET / PE",
+    "PE / PE",
+    "KRAFT PAPER / PLA"
   ];
 
-  const renderCommonFields = () => (
-    <>
-      <div className="form-group">
-        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Width (in mm):</label>
-        <input
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="number"
-          value={product.fields.size?.widthMM || ""}
-          onChange={(e) => handleSizeChange('widthMM', e.target.value)}
-          placeholder="Width in mm"
-        />
-      </div>
-      <div className="form-group">
-        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Height (in mm):</label>
-        <input
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="number"
-          value={product.fields.size?.heightMM || ""}
-          onChange={(e) => handleSizeChange('heightMM', e.target.value)}
-          placeholder="Height in mm"
-        />
-      </div>
-    </>
-  );
+  // Mapping of materials to their specific options
+  const materialToOptionsMap = {
+    "PET / VMPET / PE": {
+      microns: ["90","100", "110", "120"],
+      layers: ["1", "2" ,"3"],
+      specialFeatures: ["Smell Proof", "Light Proof", "Air Proof", "Recyclable"],
+      printingFinishes: ["Gloss", "Matte", "Soft Touch", "Varnish", "Lamination", "Spot UV"],
+      substrateType: ["Hologram", "Metallic", "Clear", "White", "Kraft"]
+    },
+    "PET / PE": {
+      microns: ["90","100","110", "120"],
+      layers: ["1", "2"],
+      specialFeatures: ["Smell Proof", "Air Proof"],
+      printingFinishes: ["Gloss", "Matte", "Soft Touch", "Varnish", "Lamination", "Spot UV"],
+      substrateType: ["Hologram", "Metallic", "Clear", "White", "Kraft"]
+    },
+    "MATTE OPP / VMPET / PE": {
+      microns: ["90", "100", "110", "120"],
+      layers: ["1", "2" ,"3"],
+      specialFeatures: ["Smell Proof", "Light Proof", "Air Proof"],
+      printingFinishes: ["Gloss", "Matte", "Soft Touch", "Varnish", "Lamination", "Spot UV"],
+      substrateType: ["Hologram", "Metallic", "Clear", "White", "Kraft"]
+    },
+    "PET / AL / PE": {
+      microns: ["90", "100", "110", "120"],
+      layers: ["1", "2" ,"3"],
+      specialFeatures: ["Smell Proof", "Light Proof", "Air Proof"],
+      printingFinishes: ["Gloss", "Matte", "Soft Touch", "Varnish", "Lamination", "Spot UV"],
+      substrateType: ["Hologram", "Metallic", "Clear", "White", "Kraft"]
+    },
+    "PET / LDPE": {
+      microns: ["90", "100", "110", "120"],
+      layers: ["1", "2"],
+      specialFeatures: ["Smell Proof", "Air Proof"],
+      printingFinishes: ["Gloss", "Matte", "Soft Touch", "Varnish", "Lamination", "Spot UV"],
+      substrateType: ["Hologram", "Metallic", "Clear", "White", "Kraft"]
+    },
+    "ALOX": {
+      microns: ["90", "100", "110", "120"],
+      layers: [""],
+      specialFeatures: ["Thin Transparent Aluminum Oxide Coating"],
+      printingFinishes: [],
+      substrateType: []
+    },
+    "KRAFT PAPER / PE": {
+      microns: ["90", "100", "110", "120"],
+      layers: [""],
+      specialFeatures: ["Smell Proof", "Light Proof", "Air Proof", "Recyclable"],
+      printingFinishes: [],
+      substrateType: []
+    },
+    "KRAFT PAPER / VMPET / PE": {
+      microns: ["90", "100", "110", "120"],
+      layers: [""],
+      specialFeatures: ["Smell Proof", "Light Proof", "Air Proof"],
+      printingFinishes: [],
+      substrateType: []
+    },
+    "PE / PE": {
+      microns: ["90", "100", "110", "120"],
+      layers: [""],
+      specialFeatures: ["Smell Proof", "Light Proof", "Air Proof", "Recyclable"],
+      printingFinishes: ["Gloss", "Matte", "Soft Touch", "Varnish", "Lamination", "Spot UV"],
+      substrateType: []
+    },
+    "KRAFT PAPER / PLA": {
+      microns: ["90", "100", "110", "120"],
+      layers: [""],
+      specialFeatures: ["Smell Proof", "Light Proof", "Air Proof", "Biodegradable", "Recyclable"],
+      printingFinishes: ["Gloss", "Matte", "Soft Touch", "Varnish", "Lamination", "Spot UV"],
+      substrateType: []
+    }
+  };
 
-  const renderMaterialFields = () => (
-    <>
-      <div className="form-group">
-        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Front Material:</label>
-        <select
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          value={product.fields.frontMaterial || ""}
-          onChange={(e) => updateProduct('frontMaterial', e.target.value)}
-        >
-          {materialOptions.map((option, index) => (
-            <option key={index} value={option}>{option}</option>
-          ))}
-        </select>
-      </div>
-      <div className="form-group">
-        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Back Material:</label>
-        <select
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          value={product.fields.backMaterial || ""}
-          onChange={(e) => updateProduct('backMaterial', e.target.value)}
-        >
-          {materialOptions.map((option, index) => (
-            <option key={index} value={option}>{option}</option>
-          ))}
-        </select>
-      </div>
-    </>
-  );
+  // Handle material change
+  const handleMaterialChange = (e) => {
+    const material = e.target.value;
+    setSelectedMaterial(material);
+    updateProduct('material', material);
+    // Reset dependent fields
+    updateProduct('microns', '');
+    updateProduct('layers', '');
+    updateProduct('specialFeatures', []);
+    updateProduct('printingFinishes', '');
+    updateProduct('substrateType', '');
+  };
 
-  const renderFinishingOptions = () => (
+  // Handle special features change
+  const handleSpecialFeaturesChange = (feature) => {
+    let currentFeatures = product.fields.specialFeatures || [];
+    if (currentFeatures.includes(feature)) {
+      currentFeatures = currentFeatures.filter(f => f !== feature);
+    } else {
+      currentFeatures.push(feature);
+    }
+    updateProduct('specialFeatures', currentFeatures);
+  };
+
+  // Handle bag specifications change
+  const handleBagSpecificationChange = (option) => {
+    let updatedSpecifications = [...bagSpecifications];
+    if (updatedSpecifications.includes(option)) {
+      updatedSpecifications = updatedSpecifications.filter(spec => spec !== option);
+    } else {
+      updatedSpecifications.push(option);
+    }
+    setBagSpecifications(updatedSpecifications);
+  };
+
+  // Render conditional fields based on selected material
+  const renderConditionalFields = () => {
+    if (!selectedMaterial) return null;
+    const options = materialToOptionsMap[selectedMaterial] || {};
+
+    return (
+      <>
+        {/* Microns */}
+        <div className="form-group">
+          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Microns:</label>
+          <select
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg"
+            value={product.fields.microns || ''}
+            onChange={(e) => updateProduct('microns', e.target.value)}
+          >
+            <option value="">Select Microns</option>
+            {options.microns.map((micron, index) => (
+              <option key={index} value={micron}>{micron}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Layers */}
+        <div className="form-group">
+          <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Layers:</label>
+          <select
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg"
+            value={product.fields.layers || ''}
+            onChange={(e) => updateProduct('layers', e.target.value)}
+          >
+            <option value="">Select Layers</option>
+            {options.layers.map((layer, index) => (
+              <option key={index} value={layer}>{layer}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Special Features */}
+        {options.specialFeatures.length > 0 && (
+          <div className="form-group">
+            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Special Features:</label>
+            <div className="grid gap-2 grid-cols-2">
+              {options.specialFeatures.map((feature, index) => (
+                <label key={index} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={product.fields.specialFeatures?.includes(feature) || false}
+                    onChange={() => handleSpecialFeaturesChange(feature)}
+                    className="mr-2"
+                  />
+                  {feature}
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Printing Finishes */}
+        {options.printingFinishes.length > 0 && (
+          <div className="form-group">
+            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Printing Finishes:</label>
+            <select
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg"
+              value={product.fields.printingFinishes || ''}
+              onChange={(e) => updateProduct('printingFinishes', e.target.value)}
+            >
+              <option value="">Select Printing Finish</option>
+              {options.printingFinishes.map((finish, index) => (
+                <option key={index} value={finish}>{finish}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Substrate Type */}
+        {options.substrateType.length > 0 && (
+          <div className="form-group">
+            <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Substrate Type:</label>
+            <select
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg"
+              value={product.fields.substrateType || ''}
+              onChange={(e) => updateProduct('substrateType', e.target.value)}
+            >
+              <option value="">Select Substrate Type</option>
+              {options.substrateType.map((substrate, index) => (
+                <option key={index} value={substrate}>{substrate}</option>
+              ))}
+            </select>
+          </div>
+        )}
+      </>
+    );
+  };
+
+  // Render Bag Specification checkboxes
+  const renderBagSpecifications = () => (
     <div className="form-group">
-      <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Finishings:</label>
+      <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Bag Specification:</label>
       <div className="grid gap-2 grid-cols-2">
-        {['Matte Lamination', 'Gloss Lamination', 'Soft Touch Lamination', 'Metallic White Support', 'Spot UV', 'Raised Varnish', 'Embossing', 'Hologram', 'Hot Foil Stamping'].map(option => (
-          <label key={option} className="tracking-wide text-xs font-bold leading-6 text-gray-900 flex w-full flex-row" style={{ justifySelf: 'flex-start' }}>
+        {['Tear Notch', 'Zipper', 'Rounded Corners', 'Pull Tab', 'Punch Hole', 'Sombrero Hole', 'Straight Corners', 'Tin tie'].map(option => (
+          <label key={option} className="flex items-center">
             <input
               type="checkbox"
-              name={option}
-              checked={product.fields[option] || false}
-              onChange={(e) => updateProduct(option, e.target.checked)}
-              className="mr-2 text-gray-900 dark:text-gray-300"
-              style={{ width: '15px', height: '15px' }}
+              checked={bagSpecifications.includes(option)}
+              onChange={() => handleBagSpecificationChange(option)}
+              className="mr-2"
             />
             {option}
           </label>
@@ -126,314 +277,117 @@ const Bags = ({ product, updateProduct }) => {
     </div>
   );
 
-  const renderBagOptions = () => {
-    switch (bagType) {
-      case '1':
-        return (
-          <>
-            {renderCommonFields()}
-            <div className="form-group">
-              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Open Side:</label>
-              <select
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                value={product.fields.openSide || ""}
-                onChange={(e) => updateProduct('openSide', e.target.value)}
-              >
-                <option value="">Select Side</option>
-                <option value="top">Top</option>
-                <option value="bottom">Bottom</option>
-              </select>
-            </div>
-            {renderMaterialFields()}
-            {renderFinishingOptions()}
-          </>
-        );
-      case '2':
-        return (
-          <>
-            {renderCommonFields()}
-            <div className="form-group">
-              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Total Gusset (in mm):</label>
-              <input
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                type="number"
-                value={product.fields.size?.totalGusset || ""}
-                onChange={(e) => handleSizeChange('totalGusset', e.target.value)}
-                placeholder="Total Gusset in mm"
-              />
-            </div>
-            <div className="form-group">
-              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Gusset Type:</label>
-              <select
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                value={product.fields.gussetType || ""}
-                onChange={(e) => updateProduct('gussetType', e.target.value)}
-              >
-                <option value="">Select Gusset Type</option>
-                <option value="doyen">Doyen Gusset</option>
-                <option value="k-seal">K Seal Gusset</option>
-              </select>
-            </div>
-            {renderMaterialFields()}
-            {renderFinishingOptions()}
-          </>
-        );
-      case '3':
-      case '8':
-        return (
-          <>
-            {renderCommonFields()}
-            <div className="form-group">
-              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Open Side:</label>
-              <select
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                value={product.fields.openSide || ""}
-                onChange={(e) => updateProduct('openSide', e.target.value)}
-              >
-                <option value="">Select Side</option>
-                <option value="top">Top</option>
-                <option value="bottom">Bottom</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Options:</label>
-              <div className="grid gap-2 grid-cols-2">
-                {['Tear Notches', 'Rounded Corners', 'Hang Hole', 'Sombrero Hole', 'Zipper', 'CR Zipper', 'Clear Window'].map(option => (
-                  <label key={option} className="tracking-wide text-xs font-bold leading-6 text-gray-900 flex w-full flex-row" style={{ justifySelf: 'flex-start' }}>
-                    <input
-                      type="checkbox"
-                      name={option}
-                      checked={product.fields[option] || false}
-                      onChange={(e) => updateProduct(option, e.target.checked)}
-                      className="mr-2 text-gray-900 dark:text-gray-300"
-                      style={{ width: '15px', height: '15px' }}
-                    />
-                    {option}
-                  </label>
-                ))}
-              </div>
-            </div>
-            {renderMaterialFields()}
-            {renderFinishingOptions()}
-          </>
-        );
-      case '4':
-        return (
-          <>
-            {renderCommonFields()}
-            <div className="form-group">
-              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Total Gusset (in mm):</label>
-              <input
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                type="number"
-                value={product.fields.size?.totalGusset || ""}
-                onChange={(e) => handleSizeChange('totalGusset', e.target.value)}
-                placeholder="Total Gusset in mm"
-              />
-            </div>
-            <div className="form-group">
-              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Gusset Type:</label>
-              <select
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                value={product.fields.gussetType || ""}
-                onChange={(e) => updateProduct('gussetType', e.target.value)}
-              >
-                <option value="">Select Gusset Type</option>
-                <option value="doyen">Doyen Gusset</option>
-                <option value="k-seal">K Seal Gusset</option>
-              </select>
-            </div>
-            {renderMaterialFields()}
-            {renderFinishingOptions()}
-            <div className="form-group">
-              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Zipper Type:</label>
-              <select
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                value={product.fields.zipperType || ""}
-                onChange={(e) => updateProduct('zipperType', e.target.value)}
-              >
-                <option value="">Select Zipper Type</option>
-                <option value="regular-zipper">Regular Zipper</option>
-                <option value="cr-zipper">CR Zipper</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Options:</label>
-              <div className="grid gap-2 grid-cols-2">
-                {['Tear Notches', 'Rounded Corners', 'Hang Hole', 'Sombrero Hole', 'Clear Window'].map(option => (
-                  <label key={option} className="tracking-wide text-xs font-bold leading-6 text-gray-900 flex w-full flex-row" style={{ justifySelf: 'flex-start' }}>
-                    <input
-                      type="checkbox"
-                      name={option}
-                      checked={product.fields[option] || false}
-                      onChange={(e) => updateProduct(option, e.target.checked)}
-                      className="mr-2 text-gray-900 dark:text-gray-300"
-                      style={{ width: '15px', height: '15px' }}
-                    />
-                    {option}
-                  </label>
-                ))}
-              </div>
-            </div>
-          </>
-        );
-      case '5':
-        return (
-          <>
-            {renderCommonFields()}
-            {renderMaterialFields()}
-            {renderFinishingOptions()}
-          </>
-        );
-      case '6':
-        return (
-          <>
-            {renderCommonFields()}
-            <div className="form-group">
-              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Total Side Gusset (in mm):</label>
-              <input
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                type="number"
-                value={product.fields.size?.totalSideGusset || ""}
-                onChange={(e) => handleSizeChange('totalSideGusset', e.target.value)}
-                placeholder="Total Side Gusset in mm"
-              />
-            </div>
-            {renderMaterialFields()}
-            {renderFinishingOptions()}
-          </>
-        );
-      case '7':
-        return (
-          <>
-            {renderCommonFields()}
-            <div className="form-group">
-              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Total Gusset (in mm):</label>
-              <input
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                type="number"
-                value={product.fields.size?.totalGusset || ""}
-                onChange={(e) => handleSizeChange('totalGusset', e.target.value)}
-                placeholder="Total Gusset in mm"
-              />
-            </div>
-            {renderMaterialFields()}
-            {renderFinishingOptions()}
-            <div className="form-group">
-              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Options:</label>
-              <div className="grid gap-2 grid-cols-2">
-                {['Valve', 'Peel Stick', 'Tear Tab', 'Clear Window'].map(option => (
-                  <label key={option} className="tracking-wide text-xs font-bold leading-6 text-gray-900 flex w-full flex-row" style={{ justifySelf: 'flex-start' }}>
-                    <input
-                      type="checkbox"
-                      name={option}
-                      checked={product.fields[option] || false}
-                      onChange={(e) => updateProduct(option, e.target.checked)}
-                      className="mr-2 text-gray-900 dark:text-gray-300"
-                      style={{ width: '15px', height: '15px' }}
-                    />
-                    {option}
-                  </label>
-                ))}
-              </div>
-            </div>
-          </>
-        );
-      case '9':
-        return (
-          <>
-            {renderCommonFields()}
-            <div className="form-group">
-              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Thickness (in mm):</label>
-              <input
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                type="number"
-                value={product.fields.thicknessMM || ""}
-                onChange={(e) => handleSizeChange('thicknessMM', e.target.value)}
-                placeholder="Thickness in mm"
-              />
-            </div>
-            <div className="form-group">
-              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Material:</label>
-              <input
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                type="text"
-                value={product.fields.material || ""}
-                onChange={(e) => updateProduct('material', e.target.value)}
-                placeholder="Material"
-              />
-            </div>
-            {renderFinishingOptions()}
-          </>
-        );
-      case '10':
-        return (
-          <>
-            {renderCommonFields()}
-            <div className="form-group">
-              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Total Gusset (in mm):</label>
-              <input
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                type="number"
-                value={product.fields.size?.totalGusset || ""}
-                onChange={(e) => handleSizeChange('totalGusset', e.target.value)}
-                placeholder="Total Gusset in mm"
-              />
-            </div>
-            <div className="form-group">
-              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Gusset Type:</label>
-              <select
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                value={product.fields.gussetType || ""}
-                onChange={(e) => updateProduct('gussetType', e.target.value)}
-              >
-                <option value="">Select Gusset Type</option>
-                <option value="doyen">Doyen Gusset</option>
-                <option value="k-seal">K Seal Gusset</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Spout:</label>
-              <select
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                value={product.fields.spout || ""}
-                onChange={(e) => updateProduct('spout', e.target.value)}
-              >
-                <option value="">Select Spout</option>
-                <option value="Standard Cap">Standard Cap</option>
-                <option value="Baby Safe Cap">Baby Safe Cap</option>
-              </select>
-            </div>
-            {renderMaterialFields()}
-            {renderFinishingOptions()}
-          </>
-        );
-      default:
-        return null;
-    }
-  };
+  // Render Loading Side dropdown
+  const renderLoadingSide = () => (
+    <div className="form-group">
+      <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Loading Side:</label>
+      <select
+        className="bg-gray-50 border border-gray-300 text-gray-900         text-sm rounded-lg"
+        value={product.fields.loadingSide || ''}
+        onChange={(e) => updateProduct('loadingSide', e.target.value)}
+      >
+        <option value="">Select Loading Side</option>
+        <option value="top">Top</option>
+        <option value="bottom">Bottom</option>
+        <option value="left">Left Side</option>
+        <option value="right">Right Side</option>
+      </select>
+    </div>
+  );
+
+  // Render CR (Childproof) radio button
+  const renderCRChildproof = () => (
+    <div className="form-group">
+      <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">CR (Childproof):</label>
+      <div className="flex items-center space-x-4">
+        <label className="flex items-center">
+          <input
+            type="radio"
+            name="crChildproof"
+            value="yes"
+            checked={product.fields.crChildproof === 'yes'}
+            onChange={(e) => updateProduct('crChildproof', e.target.value)}
+            className="mr-2"
+          />
+          Yes
+        </label>
+        <label className="flex items-center">
+          <input
+            type="radio"
+            name="crChildproof"
+            value="no"
+            checked={product.fields.crChildproof === 'no'}
+            onChange={(e) => updateProduct('crChildproof', e.target.value)}
+            className="mr-2"
+          />
+          No
+        </label>
+      </div>
+    </div>
+  );
 
   return (
     <div className="product-form">
+      {/* Bag Type */}
       <div className="form-group">
-        <img src="https://shipping-quote.labelslab.com/bags.png" alt="Placeholder" />
-      </div>
-      <div className="form-group">
-        <label className='block tracking-wide text-sm font-bold leading-6 text-gray-900'>Select Bag Type:</label>
+        <img src="https://shipping-quote.labelslab.com/bags.png" alt="BagsImage" />
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Select Bag Type:</label>
         <select
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg"
           value={bagType}
           onChange={(e) => setBagType(e.target.value)}
         >
           <option value="">Select Bag Type</option>
           {bagTypes.map((type) => (
-            <option key={type.value} value={type.value}>
-              {`Type ${type.value} - ${type.label}`}
-            </option>
+            <option key={type.value} value={type.value}>{`${type.value} - ${type.label}`}</option>
           ))}
         </select>
       </div>
-      {renderBagOptions()}
+
+      {/* Width */}
+      <div className="form-group">
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Width (in mm):</label>
+        <input
+          type="number"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg"
+          value={width}
+          onChange={(e) => setWidth(e.target.value)}
+        />
+      </div>
+
+      {/* Height */}
+      <div className="form-group">
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Height (in mm):</label>
+        <input
+          type="number"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg"
+          value={height}
+          onChange={(e) => setHeight(e.target.value)}
+        />
+      </div>
+
+      {/* Material */}
+      <div className="form-group">
+        <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Material:</label>
+        <select
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg"
+          value={selectedMaterial}
+          onChange={handleMaterialChange}
+        >
+          <option value="">Select Material</option>
+          {materialOptions.map((material, index) => (
+            <option key={index} value={material}>{material}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Conditional Fields Based on Material */}
+      {renderConditionalFields()}
+
+      {/* Additional Fields */}
+      {renderBagSpecifications()}
+      {renderLoadingSide()}
+      {renderCRChildproof()}
     </div>
   );
 };

@@ -123,41 +123,6 @@ const QuoteDetails = () => {
     const pageHeight = pdf.internal.pageSize.height;
     const pageWidth = pdf.internal.pageSize.width;
 
-    const addImageToPDF = async (pdf, imgSrc, x, y, maxWidth, maxHeight) => {
-        return new Promise((resolve, reject) => {
-            if (imgSrc) {
-                const img = new Image();
-                img.crossOrigin = 'Anonymous';
-                img.src = imgSrc;
-                img.onload = () => {
-                    let width = img.width;
-                    let height = img.height;
-
-                    const aspectRatio = width / height;
-
-                    if (height > maxHeight) {
-                        height = maxHeight;
-                        width = height * aspectRatio;
-                    }
-
-                    if (width > maxWidth) {
-                        width = maxWidth;
-                        height = width / aspectRatio;
-                    }
-
-                    pdf.addImage(img, 'PNG', x, y, width, height);
-                    resolve();
-                };
-                img.onerror = (error) => {
-                    console.error(`Error loading image ${imgSrc}:`, error);
-                    reject(error);
-                };
-            } else {
-                resolve();
-            }
-        });
-    };
-
     try {
         if (!realTimeQuote || !realTimeQuote.products) {
             console.error('Quote data is missing or incomplete');
@@ -180,17 +145,20 @@ const QuoteDetails = () => {
             pdf.setFontSize(12);
             pdf.setFont(undefined, 'normal');
             pdf.autoTable({
-                startY: 120,
-                head: [['Field', 'Value']],
-                body: [
-                    ['Customer Name', realTimeQuote.customerName || ''],
-                    ['Sales Rep Name', realTimeQuote.salesRepName || ''],
-                    ['Project Name', realTimeQuote.projectName || ''],
-                    ['Project ID', realTimeQuote.projectId || ''],
-                ],
-                theme: 'grid',
-                styles: { fontSize: 10 },
-            });
+              startY: 120,
+              head: [['Field', 'Value']],
+              body: [
+                  ['Customer Name', realTimeQuote.customerName || ''],
+                  ['Sales Rep Name', realTimeQuote.salesRepName || ''],
+                  ['Project Name', realTimeQuote.projectName || ''],
+                  ['Project ID', realTimeQuote.projectId || ''],
+                  ['Printing Style', product.printingStyle === 'Both' ? 'CMYK & PMS Both' : (product.printingStyle ? product.printingStyle : '')],
+              ],
+              theme: 'grid',
+              styles: { fontSize: 10 },
+          });
+          
+          
 
             const specialShippingY = pdf.lastAutoTable.finalY + 25;
             pdf.setFontSize(12);
@@ -199,13 +167,13 @@ const QuoteDetails = () => {
             pdf.text('Special Instructions:', 40, specialShippingY);
             pdf.setTextColor(0, 0, 0);
             pdf.setFont(undefined, 'normal');
-            pdf.text(product.packagingInstructions || '', 150, specialShippingY);
+            pdf.text(product.packagingInstructions || '', 180, specialShippingY);
             pdf.setFont(undefined, 'bold');
             pdf.setTextColor(255, 0, 0);
             pdf.text('Shipping Instructions:', 40, specialShippingY + 20);
             pdf.setTextColor(0, 0, 0);
             pdf.setFont(undefined, 'normal');
-            pdf.text(product.shippingInstructions || '', 150, specialShippingY + 20);
+            pdf.text(product.shippingInstructions || '', 180, specialShippingY + 20);
 
             const fieldsTableYStart = specialShippingY + 60;
             const productFields = Object.entries(product.fields || {})
@@ -213,11 +181,16 @@ const QuoteDetails = () => {
                 .sort((a, b) => a[0].localeCompare(b[0]))
                 .map(([key, value]) => {
                     const formattedName = formatFieldName(key);
-                    const displayValue = typeof value === 'object' && value !== null
-                        ? `Width: ${value.width} x Height ${value.height} x Length ${value.length} x Gusset ${value.gusset} x Depth ${value.depth}`
-                        : value;
+                    const displayValue = (Array.isArray(value) && (key === 'bagSpecifications' || key === 'specialFeatures'))
+                        ? value.join(', ')
+                        : (typeof value === 'object' && value !== null)
+                            ? `Width: ${value.width} x Height ${value.height} x Length ${value.length} x Gusset ${value.gusset} x Depth ${value.depth}`
+                            : value;
                     return [formattedName, displayValue || ''];
                 });
+
+            // Add the Bag SKU number to the product fields
+            productFields.push(['Number of SKU', product.skuDetails.length]);
 
             pdf.setFontSize(12);
             pdf.setFont(undefined, 'bold');
@@ -252,50 +225,38 @@ const QuoteDetails = () => {
                 styles: { fontSize: 10 },
             });
 
-            // Prices Table
-            const pricesTableYStart = pdf.lastAutoTable.finalY + 20;
+            // Add Printing Technology Table with 20px spacing after the title
+            const printingTechnologyYStart = pdf.lastAutoTable.finalY + 40;
             pdf.setFontSize(12);
             pdf.setFont(undefined, 'bold');
-            pdf.text('Prices', 40, pricesTableYStart);
+            pdf.text('Printing Technology', 40, printingTechnologyYStart);
             pdf.setFont(undefined, 'normal');
 
-            const pricesHeaders = ['SKU', 'Q1 Price', 'Q2 Price', 'Q3 Price'];
-            const pricesBody = product.skuDetails.map((skuDetail) => [
-                skuDetail.sku,
-                '', '', '' // Replace with actual price data if available
-            ]);
+            // Add a 20px space after the Printing Technology title
+            const printingTypeY = printingTechnologyYStart + 20;
+            pdf.text('Printing Type:', 40, printingTypeY);
+            pdf.text('( ) Digital Printing', 150, printingTypeY);
+            pdf.text('( ) Plates Printing', 300, printingTypeY);
+
+            // Additional fields for Printing Technology
+            const printingDetailsYStart = printingTypeY + 20;
+            const printingDetails = [
+                ['Total Plates', ''],
+                ['Price Per Plate', ''],
+                ['Plate Size', ''],
+                ['Total Price of the Plates', '']
+            ];
 
             pdf.autoTable({
-                startY: pricesTableYStart + 10,
-                head: [pricesHeaders],
-                body: pricesBody,
+                startY: printingDetailsYStart,
+                head: [['Field', 'Value']],
+                body: printingDetails,
                 theme: 'grid',
                 styles: { fontSize: 10 },
             });
 
-            // Shipping Dimensions Table
-            const shippingDimensionsTableYStart = pdf.lastAutoTable.finalY + 20;
-            pdf.setFontSize(12);
-            pdf.setFont(undefined, 'bold');
-            pdf.text('Shipping Dimensions', 40, shippingDimensionsTableYStart);
-            pdf.setFont(undefined, 'normal');
-
-            const shippingDimensionsHeaders = ['SKU', 'Q1 Shipping Dimensions', 'Q2 Shipping Dimensions', 'Q3 Shipping Dimensions'];
-            const shippingDimensionsBody = product.skuDetails.map((skuDetail) => [
-                skuDetail.sku,
-                '', '', '' // Replace with actual dimension data if available
-            ]);
-
-            pdf.autoTable({
-                startY: shippingDimensionsTableYStart + 10,
-                head: [shippingDimensionsHeaders],
-                body: shippingDimensionsBody,
-                theme: 'grid',
-                styles: { fontSize: 10 },
-            });
-
-            // Air/Sea Shipping Quantities Table
-            const airSeaQuantitiesTableYStart = pdf.lastAutoTable.finalY + 20;
+            // Add Air/Sea Shipping Quantities Table
+            const airSeaQuantitiesTableYStart = pdf.lastAutoTable.finalY + 40;
             pdf.setFontSize(12);
             pdf.setFont(undefined, 'bold');
             pdf.text('Air/Sea Shipping Quantities', 40, airSeaQuantitiesTableYStart);
@@ -304,7 +265,7 @@ const QuoteDetails = () => {
             const airSeaQuantitiesHeaders = ['SKU', 'Express Air Qty', 'Regular Air Qty', 'Regular Sea Container Qty', 'Express Sea Container Qty'];
             const airSeaQuantitiesBody = product.skuDetails.map((skuDetail) => [
                 skuDetail.sku,
-                '', '', '', '' // Replace with actual shipping quantity data if available
+                '', '', '', '' // Replace with actual quantity data if available
             ]);
 
             pdf.autoTable({
@@ -315,7 +276,7 @@ const QuoteDetails = () => {
                 styles: { fontSize: 10 },
             });
 
-            // Air/Sea Shipping Prices Table
+            // Add Air/Sea Shipping Prices Table
             const airSeaPricesTableYStart = pdf.lastAutoTable.finalY + 20;
             pdf.setFontSize(12);
             pdf.setFont(undefined, 'bold');
@@ -325,7 +286,7 @@ const QuoteDetails = () => {
             const airSeaPricesHeaders = ['SKU', 'Express Air Price', 'Regular Air Price', 'Regular Sea Container Price', 'Express Sea Container Price'];
             const airSeaPricesBody = product.skuDetails.map((skuDetail) => [
                 skuDetail.sku,
-                '', '', '', '' // Replace with actual shipping price data if available
+                '', '', '', '' // Replace with actual price data if available
             ]);
 
             pdf.autoTable({
@@ -377,6 +338,8 @@ const QuoteDetails = () => {
         console.error('Error generating PDF:', error);
     }
 };
+
+
 
 
   const handleAddVendorDetails = async () => {
@@ -490,6 +453,18 @@ const QuoteDetails = () => {
                 <span className="tracking-wide font-bold leading-6 text-gray-900">Project ID: </span>
                 <p>{realTimeQuote.projectId}</p>
               </div>
+              {product.printingStyle === "Both" ? (
+                  <div>
+                    <span className="tracking-wide font-bold leading-6 text-gray-900">Printing Style: </span>
+                    <p>CMYK & PMS Both</p>
+                  </div>
+                ) : (
+                  <div>
+                    <span className="tracking-wide font-bold leading-6 text-gray-900">Printing Style: </span>
+                    <p>{product.printingStyle}</p>
+                  </div>
+                )}
+
             </div>
 
             <div className="mb-4">
@@ -509,13 +484,21 @@ const QuoteDetails = () => {
                 .map(([key, value]) => (
                   <p key={key} className="p-2 m-1 rounded-md border border-dashed border-slate-900 bg-slate-50">
                     <span className="tracking-wide font-bold leading-6 text-gray-900">{formatFieldName(key)}: </span>
-                    {typeof value === 'object' && value !== null
-                      ? `Width: ${value.width} x Height ${value.height} x Length ${value.length} x Gusset ${value.gusset}`
-                      : value}
+                    {Array.isArray(value) && (key === 'bagSpecifications' || key === 'specialFeatures') ? (
+                      <ul className="list-disc list-inside">
+                        {value.map((item, index) => (
+                          <li key={index}>{item}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      typeof value === 'object' && value !== null
+                        ? `Width: ${value.width} x Height ${value.height} x Length ${value.length} x Gusset ${value.gusset}`
+                        : value
+                    )}
                   </p>
                 ))}
-                
             </div>
+
 
             <div className="mb-4">
               <h3 className="text-md font-semibold mb-2">Quantities</h3>

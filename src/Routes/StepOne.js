@@ -29,7 +29,8 @@ const StepOne = () => {
       address: '',
       packagingInstructions: '',
       shippingInstructions: '',
-      imageUrl: ''
+      imageUrl: '',
+      printingStyle: '' // New field for printing style
     }
   ]);
   const [customerName, setCustomerName] = useState("");
@@ -87,6 +88,13 @@ const StepOne = () => {
     newProducts[index].skuDetails[skuIndex].quantities[qtyIndex].value = parseInt(value) || 0;
     setProducts(newProducts);
   };
+
+  const handlePrintingStyleChange = (index, value) => {
+    const newProducts = [...products];
+    newProducts[index].printingStyle = value;
+    setProducts(newProducts);
+  };
+  
 
   const handleFieldChange = (index, field, value) => {
     const newProducts = [...products];
@@ -377,15 +385,43 @@ const StepOne = () => {
 
                 {/* Additional Product Fields */}
                 <div className="mb-4">
-                  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">PMS QTY:</label>
-                  <input
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                    type="number"
-                    value={product.fields.pmsQty || ""}
-                    onChange={(e) => handleFieldChange(index, "pmsQty", e.target.value)}
-                    placeholder="PMS QTY"
-                  />
-                </div>
+  <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Printing Style:</label>
+  <div className="flex items-center space-x-4 mt-2">
+    <label className="flex items-center">
+      <input
+        type="radio"
+        name={`printingStyle-${index}`}
+        value="PMS"
+        checked={product.printingStyle === "PMS"}
+        onChange={() => handlePrintingStyleChange(index, "PMS")}
+        className="form-radio text-blue-500"
+      />
+      <span className="ml-2">PMS</span>
+    </label>
+    <label className="flex items-center">
+      <input
+        type="radio"
+        name={`printingStyle-${index}`}
+        value="CMYK"
+        checked={product.printingStyle === "CMYK"}
+        onChange={() => handlePrintingStyleChange(index, "CMYK")}
+        className="form-radio text-blue-500"
+      />
+      <span className="ml-2">CMYK</span>
+    </label>
+    <label className="flex items-center">
+      <input
+        type="radio"
+        name={`printingStyle-${index}`}
+        value="Both"
+        checked={product.printingStyle === "Both"}
+        onChange={() => handlePrintingStyleChange(index, "Both")}
+        className="form-radio text-blue-500"
+      />
+      <span className="ml-2">Both</span>
+    </label>
+  </div>
+</div>
 
                 {/* Product Image Upload */}
                 <div className="mb-4">
