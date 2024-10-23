@@ -51,7 +51,8 @@ const Bags = ({ product, updateProduct }) => {
     "KRAFT PAPER / PE",
     "KRAFT PAPER / VMPET / PE",
     "PE / PE",
-    "KRAFT PAPER / PLA"
+    "KRAFT PAPER / PLA",
+    "With clear window: Matte opp/PET/PE" // New option added here
   ];
 
   // Mapping of materials to their specific options
@@ -125,6 +126,13 @@ const Bags = ({ product, updateProduct }) => {
       specialFeatures: ["Smell Proof", "Light Proof", "Air Proof", "Biodegradable", "Recyclable"],
       printingFinishes: ["Gloss", "Matte", "Soft Touch", "Varnish", "Lamination", "Spot UV"],
       substrateType: []
+    },
+    "With clear window: Matte opp/PET/PE": { // New material options
+      microns: ["90", "100", "110", "120"],
+      layers: ["1", "2"],
+      specialFeatures: ["Clear Window", "Smell Proof", "Air Proof"],
+      printingFinishes: ["Gloss", "Matte"],
+      substrateType: ["Clear", "White"]
     }
   };
 
@@ -282,7 +290,7 @@ const Bags = ({ product, updateProduct }) => {
     <div className="form-group">
       <label className="block tracking-wide text-sm font-bold leading-6 text-gray-900">Loading Side:</label>
       <select
-        className="bg-gray-50 border border-gray-300 text-gray-900         text-sm rounded-lg"
+        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg"
         value={product.fields.loadingSide || ''}
         onChange={(e) => updateProduct('loadingSide', e.target.value)}
       >
